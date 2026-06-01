@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vera Roofing Photo Background Options</title>
+  <meta name="description" content="Vera Roofing homepage background photo candidates for Gustavo Vera to compare." />
+  <style>
+    :root {
+      --ink: #141612;
+      --paper: #f7efe2;
+      --cream: #fff8ec;
+      --pine: #1f3329;
+      --brass: #8a4f22;
+      --line: rgba(20, 22, 18, .14);
+      --white: #fff;
+      --shadow: 0 28px 80px rgba(20, 22, 18, .22);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(184, 121, 57, .18), transparent 34%),
+        linear-gradient(180deg, #fff7ea 0%, #ead9c0 100%);
+    }
+    a { color: inherit; }
+    a:focus-visible, button:focus-visible { outline: 3px solid #005fcc; outline-offset: 4px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .shell { width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 248, 236, .86);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav { min-height: 90px; display: grid; grid-template-columns: auto auto; align-items: center; justify-content: space-between; gap: 14px 18px; }
+    .nav-links { grid-column: 1 / -1; justify-self: stretch; justify-content: center; }
+    .brand { min-height: 48px; display: inline-flex; align-items: center; gap: 12px; font: 900 12px/1.2 ui-sans-serif, system-ui, sans-serif; letter-spacing: .08em; text-transform: uppercase; text-decoration: none; }
+    .mark { width: 38px; height: 38px; border-radius: 14px; display: grid; place-items: center; color: #fff; background: var(--pine); box-shadow: inset 0 -10px 18px rgba(0,0,0,.18); }
+    .back-link { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 12px 16px; border-radius: 999px; text-decoration: none; background: var(--pine); color: #fff; font: 900 12px/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; }
+    .nav-links { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; font: 700 12px/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; }
+    .nav-links a { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; text-decoration: none; border: 1px solid var(--line); padding: 10px 12px; border-radius: 999px; background: rgba(255,255,255,.5); }
+    .intro { padding: 76px 0 50px; }
+    .eyebrow { margin: 0 0 14px; font: 800 12px/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .14em; color: var(--brass); }
+    h1 { margin: 0; max-width: 980px; font-size: clamp(42px, 8vw, 108px); line-height: .9; letter-spacing: -.07em; }
+    .lede { margin: 24px 0 0; max-width: 780px; font: 500 clamp(18px, 2vw, 25px)/1.45 ui-sans-serif, system-ui, sans-serif; color: rgba(20, 22, 18, .76); }
+    .jump { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 34px; }
+    .jump a { min-height: 84px; display: flex; align-items: end; padding: 12px; border-radius: 20px; text-decoration: none; color: #fff; overflow: hidden; position: relative; background: #111 var(--thumb) center/cover no-repeat; box-shadow: var(--shadow); }
+    .jump a::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 10%, rgba(0,0,0,.72)); }
+    .jump span { position: relative; font: 800 12px/1.1 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; }
+    .variant { min-height: 88vh; display: grid; align-items: stretch; border-top: 1px solid rgba(255,255,255,.18); background: #111; color: #fff; position: relative; overflow: hidden; }
+    .variant::before { content: ""; position: absolute; inset: 0; background: var(--photo) var(--position, center)/cover no-repeat; transform: scale(1.02); }
+    .variant::after { content: ""; position: absolute; inset: 0; background:
+      linear-gradient(90deg, rgba(6, 8, 7, var(--left, .88)) 0%, rgba(6, 8, 7, .62) 46%, rgba(6, 8, 7, var(--right, .2)) 100%),
+      radial-gradient(circle at 78% 16%, rgba(255,255,255,.16), transparent 28%);
+    }
+    .variant-inner { position: relative; z-index: 2; display: grid; align-items: center; min-height: 88vh; padding: 78px 0; }
+    .variant-copy { max-width: 680px; }
+    .kicker { margin: 0 0 18px; color: #f0c486; font: 900 12px/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .16em; }
+    .variant h2 { margin: 0; font-size: clamp(40px, 7vw, 92px); line-height: .9; letter-spacing: -.06em; }
+    .variant p { margin: 22px 0 0; font: 500 clamp(17px, 1.7vw, 22px)/1.5 ui-sans-serif, system-ui, sans-serif; color: rgba(255,255,255,.84); }
+    .scorecard { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 30px; }
+    .scorecard div { padding: 18px; min-height: 128px; border: 1px solid rgba(255,255,255,.2); border-radius: 22px; background: rgba(8, 11, 10, .5); backdrop-filter: blur(14px); }
+    .scorecard b { display: block; margin-bottom: 10px; color: #fff; font: 900 12px/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .1em; }
+    .scorecard span { color: rgba(255,255,255,.78); font: 500 14px/1.45 ui-sans-serif, system-ui, sans-serif; }
+    .choice-row { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-top: 26px; }
+    .choice-note { color: #f7d098; font: 800 13px/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .1em; }
+    .choice-link { display: inline-flex; align-items: center; min-height: 46px; padding: 13px 18px; border-radius: 999px; text-decoration: none; background: #fff; color: #111; font: 900 12px/1.2 ui-sans-serif, system-ui, sans-serif; text-transform: uppercase; letter-spacing: .08em; }
+    .recommend { color: #fff; background: var(--pine); padding: 58px 0; }
+    .recommend-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 42px; align-items: start; }
+    .recommend h2 { margin: 0; font-size: clamp(34px, 5vw, 70px); line-height: .94; letter-spacing: -.05em; }
+    .recommend p { margin: 0; color: rgba(255,255,255,.78); font: 500 18px/1.55 ui-sans-serif, system-ui, sans-serif; }
+    @media (max-width: 860px) {
+      html { scroll-padding-top: 210px; }
+      .intro h1 { font-size: clamp(38px, 12vw, 48px); line-height: .98; letter-spacing: -.055em; }
+      .nav { display: flex; align-items: flex-start; flex-direction: column; padding: 16px 0; min-height: 0; }
+      .back-link { width: 100%; }
+      .nav-links { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+      .nav-links a { display: grid; place-items: center; text-align: center; min-height: 46px; padding: 10px 8px; }
+      .jump { grid-template-columns: repeat(2, 1fr); }
+      .variant, .variant-inner { min-height: 76vh; }
+      .variant::after { background: linear-gradient(180deg, rgba(6,8,7,.86), rgba(6,8,7,.62) 48%, rgba(6,8,7,.86)); }
+      .scorecard, .recommend-grid { grid-template-columns: 1fr; }
+      .scorecard div { min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell nav">
+      <a class="brand" href="/gustavo-roofing-options/" aria-label="Back to Vera Roofing concept chooser"><span class="mark" aria-hidden="true">V</span><span>Vera Roofing</span></a>
+      <a class="back-link" href="/gustavo-roofing-options/">Back to concept choices</a><div class="nav-links" aria-label="Photo option navigation">
+        <a href="#waterfront">Waterfront</a>
+        <a href="#blue-metal">Blue metal</a>
+        <a href="#finished-home">Finished home</a>
+        <a href="#black-detail">Black detail</a>
+        <a href="#silver-lines">Silver lines</a>
+        <a href="#copper">Copper</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="shell">
+        <p class="eyebrow">Homepage photo direction · Vera Roofing</p>
+        <h1>Choose the strongest Vera Roofing background.</h1>
+        <p class="lede">These are curated from Gustavo’s actual roofing photos, prepared for clear website presentation. The goal is not to show every job. The goal is to pick the one image that makes Vera Roofing feel premium, local, and serious immediately.</p>
+        <div class="jump" aria-label="Photo background thumbnails">
+          <a href="#waterfront" style="--thumb:url('/gustavo-roofing-options/hero-photos/black-metal-coastal-panorama.jpeg')"><span>Waterfront</span><span class="sr-only">Black metal coastal roof panorama with water and neighborhood context.</span></a>
+          <a href="#blue-metal" style="--thumb:url('/gustavo-roofing-options/hero-photos/blue-metal-clean-panorama.jpeg')"><span>Blue metal</span><span class="sr-only">Bright blue metal roof panorama with clean roof planes.</span></a>
+          <a href="#finished-home" style="--thumb:url('/gustavo-roofing-options/hero-photos/finished-home-roof-no-address.jpeg')"><span>Finished home</span><span class="sr-only">Finished residential home roof without visible address details.</span></a>
+          <a href="#black-detail" style="--thumb:url('/gustavo-roofing-options/hero-photos/bright-metal-sky-detail.jpeg')"><span>Black detail</span><span class="sr-only">Close black metal roof detail against a blue sky.</span></a>
+          <a href="#silver-lines" style="--thumb:url('/gustavo-roofing-options/hero-photos/silver-metal-neighborhood.jpeg')"><span>Silver lines</span><span class="sr-only">Silver metal roof lines in a residential neighborhood setting.</span></a>
+          <a href="#copper" style="--thumb:url('/gustavo-roofing-options/hero-photos/copper-flashing-polished-detail.jpeg')"><span>Copper</span><span class="sr-only">Copper flashing detail beside brick and roof shingles.</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="variant" id="waterfront" aria-label="Waterfront black metal roof background option" style="--photo:url('/gustavo-roofing-options/hero-photos/black-metal-coastal-panorama.jpeg');--position:center 48%;--left:.88;--right:.16">
+      <div class="shell variant-inner"><div class="variant-copy">
+        <p class="kicker">Waterfront metal roof · Coastal first impression</p>
+        <h2>Waterfront metal roof with premium scale.</h2>
+        <p>This is the strongest hero candidate because it shows roof geometry, coastal setting, and a finished metal system in one image. It feels established without sounding inflated.</p>
+        <div class="scorecard"><div><b>Best for</b><span>Main homepage, premium first impression, Brunswick County coastal positioning.</span></div><div><b>Why it works</b><span>It gives the site depth, local context, and immediate roofing credibility.</span></div><div><b>Consideration</b><span>Use a dark overlay so the background stays powerful without competing with the headline.</span></div></div>
+        <div class="choice-row"><span class="choice-note">Strongest homepage background.</span><a class="choice-link" href="/gustavo-roofing-options/">Back to concept chooser</a></div>
+      </div></div>
+    </section>
+
+    <section class="variant" id="blue-metal" aria-label="Blue metal roof background option" style="--photo:url('/gustavo-roofing-options/hero-photos/blue-metal-clean-panorama.jpeg');--position:center 58%;--left:.84;--right:.18">
+      <div class="shell variant-inner"><div class="variant-copy">
+        <p class="kicker">Blue metal roof · Modern metal direction</p>
+        <h2>A cleaner, brighter metal-roof statement.</h2>
+        <p>This image is more colorful and energetic. It can make the brand feel fresh and modern, but it is slightly less broadly appealing than the waterfront black metal image.</p>
+        <div class="scorecard"><div><b>Best for</b><span>A bolder landing page, metal-roof emphasis, sharper visual contrast.</span></div><div><b>Why it works</b><span>The roof planes are clean and the color is memorable on mobile.</span></div><div><b>Consideration</b><span>Because the blue is loud, the rest of the page should stay restrained and premium.</span></div></div>
+        <div class="choice-row"><span class="choice-note">Strong secondary candidate.</span><a class="choice-link" href="/gustavo-roofing-options/luxury/">View luxury concept</a></div>
+      </div></div>
+    </section>
+
+    <section class="variant" id="finished-home" aria-label="Finished home roof background option" style="--photo:url('/gustavo-roofing-options/hero-photos/finished-home-roof-no-address.jpeg');--position:center 48%;--left:.86;--right:.22">
+      <div class="shell variant-inner"><div class="variant-copy">
+        <p class="kicker">Finished home · Warm residential direction</p>
+        <h2>A finished-home image that feels safe and local.</h2>
+        <p>This is the warmest option. It helps referral traffic and careful homeowners picture the roof as part of a cared-for home, not just a construction project.</p>
+        <div class="scorecard"><div><b>Best for</b><span>Neighborhood referrals, family-home trust, softer first impression.</span></div><div><b>Why it works</b><span>It feels approachable and residential while still showing the roof clearly.</span></div><div><b>Consideration</b><span>It is less technical, so pair it with metal and copper detail photos lower on the page.</span></div></div>
+        <div class="choice-row"><span class="choice-note">Warm local direction.</span><a class="choice-link" href="/gustavo-roofing-options/neighborhood/">View neighborhood concept</a></div>
+      </div></div>
+    </section>
+
+    <section class="variant" id="black-detail" aria-label="Black metal detail background option" style="--photo:url('/gustavo-roofing-options/hero-photos/bright-metal-sky-detail.jpeg');--position:center 54%;--left:.84;--right:.2">
+      <div class="shell variant-inner"><div class="variant-copy">
+        <p class="kicker">Black metal detail · Metal detail focus</p>
+        <h2>Close metal detail with a sharp sky line.</h2>
+        <p>This image is useful when the site needs to communicate precise material work quickly. It is less emotional than the waterfront image, but it feels specialized.</p>
+        <div class="scorecard"><div><b>Best for</b><span>Metal roof services, technical sections, service-detail pages.</span></div><div><b>Why it works</b><span>Strong diagonal lines make the layout feel intentional and professional.</span></div><div><b>Consideration</b><span>Because the crop is tight, it needs surrounding copy that explains the homeowner benefit.</span></div></div>
+        <div class="choice-row"><span class="choice-note">Strong technical support image.</span><a class="choice-link" href="/gustavo-roofing-options/craft/">View craft concept</a></div>
+      </div></div>
+    </section>
+
+    <section class="variant" id="silver-lines" aria-label="Silver metal roof lines background option" style="--photo:url('/gustavo-roofing-options/hero-photos/silver-metal-neighborhood.jpeg');--position:center 42%;--left:.86;--right:.18">
+      <div class="shell variant-inner"><div class="variant-copy">
+        <p class="kicker">Silver metal lines · Bright residential direction</p>
+        <h2>Silver metal lines with a clean residential feel.</h2>
+        <p>This option is orderly and easy to understand. It is practical for sections that explain metal roofing, but it has less emotional pull than the best hero image.</p>
+        <div class="scorecard"><div><b>Best for</b><span>Service explanations, metal roof cards, background texture.</span></div><div><b>Why it works</b><span>The roof lines are readable and make the work feel organized.</span></div><div><b>Consideration</b><span>The foreground shadow makes it weaker as the primary homepage hero.</span></div></div>
+        <div class="choice-row"><span class="choice-note">Good support image.</span><a class="choice-link" href="/gustavo-roofing-options/">Back to concepts</a></div>
+      </div></div>
+    </section>
+
+    <section class="variant" id="copper" aria-label="Copper flashing detail background option" style="--photo:url('/gustavo-roofing-options/hero-photos/copper-flashing-polished-detail.jpeg');--position:center 50%;--left:.88;--right:.22">
+      <div class="shell variant-inner"><div class="variant-copy">
+        <p class="kicker">Copper detail · Specialty detail direction</p>
+        <h2>Copper flashing detail for specialty work.</h2>
+        <p>This should not be the main homepage background, but it is excellent for proving that Vera Roofing can talk about details homeowners rarely know how to judge.</p>
+        <div class="scorecard"><div><b>Best for</b><span>Craft section, copper flashing, water-management explanations.</span></div><div><b>Why it works</b><span>It makes the company feel hands-on and detail-aware.</span></div><div><b>Consideration</b><span>Use it as supporting proof so the homepage still leads with a beautiful exterior image.</span></div></div>
+        <div class="choice-row"><span class="choice-note">Strong specialty support image.</span><a class="choice-link" href="/gustavo-roofing-options/craft/">View craft concept</a></div>
+      </div></div>
+    </section>
+
+    <section class="recommend">
+      <div class="shell recommend-grid">
+        <div><p class="eyebrow">Recommendation</p><h2>Use the waterfront metal roof for the homepage. Use the others as proof sections.</h2></div>
+        <p>The waterfront black metal roof is the strongest first impression because it looks coastal, real, and premium without needing exaggerated copy. The blue metal, copper, storm, and finished-home images should support service sections so the final site feels broad, credible, and grounded in Gustavo’s actual work.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
