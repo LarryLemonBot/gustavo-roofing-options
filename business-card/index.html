@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vera Roofing | Card-Inspired Identity Website Concept</title>
+  <meta name="description" content="A premium Vera Roofing website concept that keeps the black, purple, silver, and white branding from Gustavo Vera's existing business card." />
+  <style>
+    :root {
+      --black: #07060b;
+      --night: #12101b;
+      --purple: #5e2b91;
+      --violet: #8d4fe0;
+      --silver: #d8d8e2;
+      --white: #ffffff;
+      --muted: #c8c1d4;
+      --line: rgba(255, 255, 255, .18);
+      --gold: #c7a15a;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--white); background: var(--black); font-family: "Avenir Next", "Aptos", "Gill Sans", sans-serif; }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid #79b7ff; outline-offset: 4px; }
+    img { max-width: 100%; display: block; }
+    .hero { min-height: 94vh; position: relative; overflow: hidden; isolation: isolate; background: radial-gradient(circle at 70% 20%, rgba(141,79,224,.32), transparent 32%), linear-gradient(135deg, #06050a 0%, #171125 52%, #09070f 100%); }
+    .hero::before { content: ""; position: absolute; inset: 0; z-index: -2; background: url('/gustavo-roofing-options/hero-photos/business-card-logo-crop.jpeg') center 24% / cover no-repeat; opacity: .32; filter: saturate(1.15) contrast(1.08); transform: scale(1.05); }
+    .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(6,5,10,.95) 0%, rgba(6,5,10,.82) 42%, rgba(6,5,10,.45) 100%); }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .nav { min-height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 18px; text-transform: uppercase; font-size: .78rem; font-weight: 900; letter-spacing: .09em; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; min-height: 48px; }
+    .mark { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(255,255,255,.54); background: linear-gradient(145deg, rgba(141,79,224,.38), rgba(255,255,255,.06)); font-family: Georgia, serif; color: var(--white); box-shadow: inset 0 -14px 24px rgba(0,0,0,.35); }
+    .nav a.back { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 16px; border: 1px solid rgba(255,255,255,.34); border-radius: 999px; text-decoration: none; background: rgba(255,255,255,.08); }
+    .hero-grid { min-height: calc(94vh - 82px); display: grid; grid-template-columns: .98fr 1.02fr; gap: 48px; align-items: center; padding: 42px 0 70px; }
+    .eyebrow { margin: 0 0 16px; color: #d8b6ff; text-transform: uppercase; letter-spacing: .14em; font-weight: 900; font-size: .78rem; }
+    h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; }
+    h1 { margin: 0; font-size: clamp(3.3rem, 7vw, 7.4rem); line-height: .88; letter-spacing: -.065em; }
+    .lead { max-width: 660px; margin: 22px 0 0; color: rgba(255,255,255,.84); font-size: 1.14rem; line-height: 1.72; }
+    .service-line { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; padding: 0; list-style: none; }
+    .service-line li { border: 1px solid rgba(255,255,255,.24); border-radius: 999px; padding: 9px 12px; color: rgba(255,255,255,.9); background: rgba(255,255,255,.07); font-size: .78rem; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; padding: 0 18px; border-radius: 999px; font-weight: 900; text-decoration: none; border: 1px solid rgba(255,255,255,.5); }
+    .button.primary { background: var(--white); color: var(--black); border-color: var(--white); }
+    .button.secondary { background: rgba(255,255,255,.08); color: var(--white); }
+    .card-frame { position: relative; padding: 14px; border: 1px solid rgba(255,255,255,.22); border-radius: 28px; background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(141,79,224,.14)); box-shadow: 0 40px 110px rgba(0,0,0,.46); transform: rotate(1.4deg); }
+    .card-frame::before { content: ""; position: absolute; inset: -22px; border-radius: 42px; background: radial-gradient(circle at 40% 30%, rgba(141,79,224,.34), transparent 45%); z-index: -1; }
+    .card-frame img { width: 100%; border-radius: 18px; border: 1px solid rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+    .contact-plate { margin-top: 16px; padding: 18px; border: 1px solid rgba(255,255,255,.18); border-radius: 22px; background: rgba(7,6,11,.72); color: rgba(255,255,255,.86); box-shadow: 0 26px 70px rgba(0,0,0,.34); }
+    .contact-plate b { display: block; color: #e7d5ff; text-transform: uppercase; letter-spacing: .1em; font-size: .72rem; margin-bottom: 8px; }
+    .contact-plate span { display: inline-block; margin-right: 16px; line-height: 1.8; font-weight: 800; }
+    .brand-strip { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: linear-gradient(90deg, #0b0911, #201331, #0b0911); }
+    .strip-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(255,255,255,.13); }
+    .strip-grid div { padding: 22px; background: rgba(7,6,11,.78); min-height: 120px; }
+    .strip-grid b { display: block; margin-bottom: 9px; color: #e7d5ff; font-size: .76rem; letter-spacing: .1em; text-transform: uppercase; }
+    .strip-grid span { color: rgba(255,255,255,.78); line-height: 1.55; }
+    .section { padding: 78px 0; background: #f7f3ef; color: #131119; }
+    .section.dark { background: #100c19; color: var(--white); }
+    .grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: 48px; align-items: start; }
+    h2 { margin: 0; font-size: clamp(2.4rem, 5vw, 5.2rem); line-height: .94; letter-spacing: -.055em; }
+    .text { margin: 0; color: #4d4856; line-height: 1.75; font-size: 1.05rem; }
+    .section:not(.dark) .eyebrow { color: #5e2b91; }
+    .contact-plate a { color: rgba(255,255,255,.92); text-decoration: none; font-weight: 900; }
+    .contact-plate a:hover { text-decoration: underline; }
+    .dark .text { color: rgba(255,255,255,.75); }
+    .palette { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
+    .swatch { border-radius: 18px; min-height: 120px; padding: 16px; display: flex; align-items: end; color: #fff; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; font-size: .74rem; box-shadow: 0 18px 42px rgba(0,0,0,.16); }
+    .swatch.black { background: #07060b; } .swatch.purple { background: #5e2b91; } .swatch.violet { background: #8d4fe0; } .swatch.silver { background: #d8d8e2; color: #15131b; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { padding: 24px; border-radius: 24px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); }
+    .card h3 { margin: 0 0 12px; font-size: 1.42rem; }
+    .card p { margin: 0; color: rgba(255,255,255,.74); line-height: 1.62; }
+    .final-band { padding: 54px 0; background: linear-gradient(135deg, #08060d, #241137 55%, #08060d); border-top: 1px solid rgba(255,255,255,.14); }
+    .final-band .shell { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+    .final-band h2 { font-size: clamp(2.1rem, 4vw, 4rem); }
+    .final-band p { margin: 14px 0 0; color: rgba(255,255,255,.74); max-width: 760px; line-height: 1.6; }
+    @media (max-width: 900px) {
+      .nav { align-items: flex-start; flex-direction: column; padding: 18px 0; }
+      .nav a.back, .button { width: 100%; }
+      .hero-grid, .grid, .cards, .strip-grid, .palette, .final-band .shell { grid-template-columns: 1fr; }
+      .hero-grid { gap: 28px; padding-top: 26px; }
+      h1 { font-size: clamp(3rem, 14vw, 4.5rem); line-height: .92; }
+      .card-frame { transform: none; }
+      .strip-grid div { min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="shell">
+      <nav class="nav" aria-label="Business card brand concept navigation">
+        <a class="brand" href="/gustavo-roofing-options/"><span class="mark" aria-hidden="true">V</span><span>Vera Roofing</span></a>
+        <a class="back" href="/gustavo-roofing-options/">Back to concept choices</a>
+      </nav>
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">Card-Inspired Identity · Black, purple, silver</p>
+          <h1>A sharper online home for Vera Roofing.</h1>
+          <p class="lead">This direction keeps Gustavo’s black-and-purple business card identity while making the website clear for homeowners who need tear-offs, new construction roofing, repairs, metal work, or a professional roof review.</p>
+          <ul class="service-line" aria-label="Card-inspired service categories">
+            <li>Tear-offs</li>
+            <li>New construction</li>
+            <li>Repairs</li>
+            <li>Roof review</li>
+          </ul>
+          <div class="actions">
+            <a class="button primary" href="#brand-system">See how the style works</a>
+            <a class="button secondary" href="/gustavo-roofing-options/photos/">Compare roof photos</a>
+          </div>
+        </div>
+        <figure class="card-frame">
+          <img src="/gustavo-roofing-options/hero-photos/business-card-brand-reference.jpeg" alt="Vera Roofing business card with black purple and silver branding" />
+          <figcaption class="contact-plate">
+            <b>Card details carried forward</b>
+            <a href="tel:+19102288034">910.228.8034</a>
+            <a href="mailto:verasroofing@gmail.com">verasroofing@gmail.com</a>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </header>
+
+  <section class="brand-strip" aria-label="Business card inspired positioning">
+    <div class="shell strip-grid">
+      <div><b>Color anchor</b><span>Deep black, dimensional purple, bright silver, and white type stay close to the existing card.</span></div>
+      <div><b>Recognition</b><span>The website feels connected to the card instead of becoming a separate unrelated brand.</span></div>
+      <div><b>Roofing energy</b><span>The darker palette works well for roof replacements, repairs, metal work, and storm calls.</span></div>
+      <div><b>Use case</b><span>Best if Gustavo wants the website to feel connected to the card he already hands out.</span></div>
+    </div>
+  </section>
+
+  <main>
+    <section class="section" id="brand-system">
+      <div class="shell grid">
+        <div>
+          <p class="eyebrow">Card-inspired style</p>
+          <h2>Keep the card. Upgrade the presentation.</h2>
+        </div>
+        <div>
+          <p class="text">The business card has a strong memory hook: black background, purple roof energy, silver/white type, and a bold service-first feel. This concept keeps those cues while making the website easier to read, cleaner on mobile, and more polished for homeowners comparing roofers online.</p>
+          <div class="palette" aria-label="Business card color palette">
+            <div class="swatch black">Black</div>
+            <div class="swatch purple">Purple</div>
+            <div class="swatch violet">Violet</div>
+            <div class="swatch silver">Silver</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark">
+      <div class="shell grid">
+        <div>
+          <p class="eyebrow">How this would become the final site</p>
+          <h2>A familiar identity with a stronger digital finish.</h2>
+        </div>
+        <div class="cards">
+          <article class="card"><h3>Homepage</h3><p>Use the card-inspired palette with real roof photography for a premium, recognizable first impression.</p></article>
+          <article class="card"><h3>Services</h3><p>Carry the purple/silver system into tear-offs, new construction, repairs, storm damage, metal work, and copper details.</p></article>
+          <article class="card"><h3>Contact</h3><p>Make the phone number and quote path feel as clear as the business card, but easier to use on mobile.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-band">
+      <div class="shell">
+        <div>
+          <p class="eyebrow">Brand continuity</p>
+          <h2>Same recognizable identity, stronger website finish.</h2>
+          <p>If Gustavo likes his current card, this direction respects it instead of replacing it. The final build can keep this identity while adding stronger photography, service pages, and a cleaner call-to-action flow.</p>
+        </div>
+        <a class="button primary" href="/gustavo-roofing-options/">View all concepts</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
