@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vera Roofing | Heritage Coastal Classic</title>
+    <meta name="description" content="Brunswick County roofing professionals. Premium hand-nailing, fortified roofs, storm restoration, and 50-year warranty workmanship." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#f9f1e3;
+        --ink:#1d2638;
+        --panel:#fffdf7;
+        --accent:#a96a2f;
+        --accent-2:#5d6c83;
+        --line:#d8ccbc;
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        font-family:"Source Sans 3", Arial, sans-serif;
+        color:var(--ink);
+        background:
+          radial-gradient(circle at 10% 0%, #ebddc6 0 16%, transparent 20%),
+          radial-gradient(circle at 90% 20%, #e0d0b9 0 18%, transparent 24%),
+          linear-gradient(165deg, #efe4d1, #f9f1e3 45%, #f0e4d2 100%);
+      }
+      a{color:inherit}
+      .shell{
+        max-width:1120px;
+        margin:0 auto;
+        padding:26px 24px 48px;
+      }
+      .eyebrow{
+        font-family: "Cormorant Garamond", serif;
+        text-transform: uppercase;
+        letter-spacing:.18em;
+        font-size:.82rem;
+        color:var(--accent);
+        margin-bottom:10px;
+      }
+      .hero{
+        display:grid;
+        grid-template-columns:1.2fr .9fr;
+        gap:28px;
+        align-items:center;
+      }
+      .badge{
+        width:56px;height:56px;
+        border-radius:999px;
+        display:grid;place-items:center;
+        background:var(--panel);
+        border:2px solid var(--line);
+        color:var(--accent-2);
+        font-weight:700;
+      }
+      h1{
+        font-family:"Cormorant Garamond",serif;
+        font-size:clamp(2rem,4vw,3.6rem);
+        line-height:1.02;
+        margin:10px 0;
+      }
+      h2,h3{font-family:"Cormorant Garamond",serif}
+      .lead{
+        font-size:1.08rem;
+        max-width:70ch;
+      }
+      .btns{
+        display:flex;
+        flex-wrap:wrap;
+        gap:12px;
+        margin:20px 0 0;
+      }
+      .btn{
+        display:inline-block;
+        padding:12px 18px;
+        border-radius:10px;
+        text-decoration:none;
+        font-weight:700;
+      }
+      .btn-primary{
+        background:linear-gradient(180deg,#a96a2f,#7c4d1d);
+        color:#fff;
+      }
+      .btn-secondary{
+        border:1px solid var(--accent);
+        color:var(--ink);
+        background:#fff8ec;
+      }
+      .panel{
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:14px;
+        padding:20px;
+        box-shadow:0 12px 30px rgba(29,38,56,.1);
+      }
+      .quote{
+        margin-top:14px;
+        padding:16px 16px 10px;
+        border-left:3px solid var(--accent);
+        background:#fff8ec;
+      }
+      .stack{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:18px;
+        margin-top:16px;
+      }
+      .card{
+        background:#fff;
+        border-radius:12px;
+        padding:16px;
+        border:1px solid var(--line);
+      }
+      .kicker{
+        color:var(--accent);
+        text-transform:uppercase;
+        letter-spacing:.1em;
+        font-size:.76rem;
+        font-weight:700;
+      }
+      .claim{
+        background:#2a3448;
+        color:#f6f1e9;
+        border-radius:14px;
+        padding:24px;
+        margin:16px 0;
+      }
+      .claim ul{padding-left:18px}
+      .claim li{margin:8px 0}
+      footer{
+        margin-top:26px;
+        padding-top:20px;
+        border-top:1px solid var(--line);
+        color:#4a5568;
+        font-size:.94rem;
+      }
+      .reveal{
+        opacity:0;
+        transform:translateY(18px);
+        transition:opacity .6s ease, transform .6s ease;
+      }
+      .reveal.show{
+        opacity:1;
+        transform:translateY(0);
+      }
+      @media (max-width:900px){
+        .hero{grid-template-columns:1fr}
+      }
+    
+      .hero-photo {
+        margin: 18px 0 0;
+        border: 1px solid rgba(20, 33, 61, 0.12);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #f6f2ea;
+        box-shadow: 0 16px 28px rgba(16, 23, 42, 0.12);
+      }
+      .hero-photo img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+      }
+      .hero-photo figcaption {
+        padding: 10px 12px;
+        background: #fff;
+        color: #526076;
+        font: 600 12px/1.4 Inter, Arial, Helvetica, sans-serif;
+      }
+</style>
+  </head>
+  <body>
+    <main class="shell">
+      <p class="eyebrow">Gustavo Vera Roofing • Brunswick County, NC</p>
+      <section class="hero">
+        <div>
+          <div class="badge reveal">GV</div>
+          <h1>Build roofs to last a generation, not a season.</h1>
+          <p class="lead reveal">From hand-nailed cedar shake to fortified systems and storm damage restoration, Gustavo and his team restore, protect, and secure homes with owner inspection and a workmanship confidence you can verify.</p>
+          <div class="btns reveal">
+            <a class="btn btn-primary" href="/gustavo-roofing-options/share-pack.html">Open share pack</a>
+            <a class="btn btn-secondary" href="#services">See Services</a>
+          </div>
+        </div>
+        <aside class="panel reveal">
+          <h3>Promise of Quality</h3>
+          <p><strong>50-year workmanship and labor warranties</strong> on qualifying projects with documented quality checks.</p>
+          <div class="quote">
+            “Inspected by the owner. Finished with precision. No shortcuts.” 
+          </div>
+          <ul>
+            <li>Hand-nailed installation discipline</li>
+            <li>Insurance-claim assisted documentation</li>
+            <li>Copper flashing integration for long life</li>
+          </ul>
+        </aside>
+      
+        <figure class="hero-photo">
+          <img src="/gustavo-roofing-options/photos/family-inspection-roofing.png" alt="Homeowner and roofing inspector reviewing a coastal home" loading="lazy" />
+          <figcaption>Trust-first photo for family-safe and neighborhood-led concepts.</figcaption>
+        </figure></section>
+
+      <section id="services" class="reveal">
+        <h2>Services You Requested</h2>
+        <div class="stack">
+          <article class="card">
+            <p class="kicker">Core Roofing</p>
+            <h3>Roofing & Fortified Roofs</h3>
+            <p>Complete replacement and reinforcement solutions for coastal stress, wind exposure, and long-term durability.</p>
+          </article>
+          <article class="card">
+            <p class="kicker">Specialty Materials</p>
+            <h3>EPDM Hyperstock • Cedar Shake • Copper Flashing</h3>
+            <p>Detail-driven installs for flat and sloped systems that balance performance, beauty, and longevity.</p>
+          </article>
+          <article class="card">
+            <p class="kicker">Recovery & Claims</p>
+            <h3>Storm Damage Response</h3>
+            <p>Quick triage for shingles, deck transitions, eaves, and sheathing support with claim-oriented reporting.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="claim reveal">
+        <h2 style="margin-top:0">Insurance Claims Process (Built In)</h2>
+        <p>When storms happen, uncertainty increases. The claim path must be clear and documented.</p>
+        <ul>
+          <li>Initial damage review and immediate protective recommendations.</li>
+          <li>Photographic and dimensional condition log for adjuster review.</li>
+          <li>Scope recommendations linked directly to coverage categories and labor notes.</li>
+          <li>On-site updates for approvals, repairs, and safety checkpoints.</li>
+        </ul>
+      </section>
+
+      <section class="stack">
+        <article class="panel reveal">
+          <p class="kicker">Lead to Finish</p>
+          <h3>Work Flow with Owner Presence</h3>
+          <p>Inspection, planning, install, and final walkthrough are scheduled in a predictable format so homeowners can see what is happening, not just hear updates.</p>
+        </article>
+        <article class="panel reveal">
+          <p class="kicker">Community Feeling</p>
+          <h3>Built to protect what matters most</h3>
+          <p>Every home is a lived-in story. The goal is simple: keep roofs safe, quiet, and covered through storms, heat, and weather cycles with craftsmanship you can trust.</p>
+        </article>
+      </section>
+
+      <footer class="reveal">
+        <strong>Need the client-ready set?</strong> The share pack pairs each option with its matching preview so the client can review the right design fast.
+      </footer>
+    </main>
+    <script>
+      const targets = document.querySelectorAll('.reveal');
+      const reveal = () => {
+        targets.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight * 0.88) el.classList.add('show');
+        });
+      };
+      reveal();
+      window.addEventListener('scroll', reveal);
+    </script>
+  </body>
+</html>

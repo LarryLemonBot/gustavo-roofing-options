@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vera Roofing | Coastal Emergency Calm</title>
+    <meta name="description" content="Calm, high-clarity storm-response landing page for Gustavo Vera Roofing in Brunswick County, NC with fast support, claims, and workmanship assurance." />
+    <style>
+      :root {
+        --deep:#081c2f;
+        --water:#0f4c66;
+        --panel:#0e2f45;
+        --paper:#f4f8fc;
+        --text:#e9f1f7;
+        --muted:#c8d9e8;
+        --accent:#f4a261;
+        --line:#21455d;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 10% -20%, #18445f 0%, transparent 35%),
+          radial-gradient(circle at 90% 20%, #123f5b 0%, transparent 25%),
+          linear-gradient(170deg, #0c1724 0%, #0a2133 45%, #0f2b43 100%);
+        font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      }
+      .site {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 22px 16px 42px;
+      }
+      .hero {
+        border: 1px solid var(--line);
+        background: linear-gradient(135deg, #0e2f49 0%, #112e4f 100%);
+        border-radius: 18px;
+        padding: 26px;
+      }
+      .pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 6px 12px;
+        border: 1px solid rgba(244,162,97,.45);
+        color: var(--accent);
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: .76rem;
+      }
+      h1 {
+        font-size: clamp(2rem, 4vw, 3rem);
+        margin: 12px 0 10px;
+        line-height: 1.13;
+      }
+      .lead { color: var(--muted); line-height: 1.7; max-width: 70ch; }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .btn {
+        text-decoration: none;
+        padding: 11px 15px;
+        border-radius: 11px;
+        font-weight: 700;
+      }
+      .btn-primary { background: var(--accent); color: #152130; }
+      .btn-ghost {
+        color: #d3ebff;
+        border: 1px solid #5a7d9a;
+        background: rgba(255,255,255,.03);
+      }
+      .grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1.2fr .8fr;
+        gap: 12px;
+      }
+      .card {
+        background: rgba(14, 47, 69, 0.95);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+      }
+      h2 { margin: 0 0 10px; font-size: 1.35rem; }
+      ul { color: #e3eef8; line-height: 1.72; }
+      .timeline {
+        display: grid;
+        gap: 10px;
+      }
+      .step {
+        border-left: 3px solid #65a9dd;
+        padding-left: 10px;
+      }
+      .proof-grid {
+        margin-top: 10px;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(4, minmax(0,1fr));
+      }
+      .proof {
+        background: #0f283e;
+        border: 1px solid #28577a;
+        border-radius: 11px;
+        padding: 10px;
+      }
+      .proof b {
+        color: #8ed8f7;
+        display: block;
+        margin-bottom: 6px;
+      }
+      .service-grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 10px;
+      }
+      .service {
+        background: #10293f;
+        border: 1px solid #2b597c;
+        border-radius: 12px;
+        padding: 10px;
+      }
+      .service b { color: #f1d48e; display: block; margin-bottom: 3px; }
+      footer {
+        color: #9db4ca;
+        margin-top: 16px;
+      }
+      @media (max-width: 980px) {
+        .grid, .proof-grid, .service-grid { grid-template-columns: 1fr; }
+      }
+    
+      .hero-photo {
+        margin: 18px 0 0;
+        border: 1px solid rgba(20, 33, 61, 0.12);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #f6f2ea;
+        box-shadow: 0 16px 28px rgba(16, 23, 42, 0.12);
+      }
+      .hero-photo img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+      }
+      .hero-photo figcaption {
+        padding: 10px 12px;
+        background: #fff;
+        color: #526076;
+        font: 600 12px/1.4 Inter, Arial, Helvetica, sans-serif;
+      }
+</style>
+  </head>
+  <body>
+    <main class="site">
+      <section class="hero">
+        <span class="pill">Coastal Emergency Calm</span>
+        <h1>Storm impact happens fast. Confidence should happen faster.</h1>
+        <p class="lead">If rain is hitting hard or shingles are lifting, your first goal is simple: stop the damage and stay in control. This page is built for that emotional state with calm priorities, not pressure tactics.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="/gustavo-roofing-options/share-pack.html">Open share pack</a>
+          <a class="btn btn-ghost" href="#process">See exact 1-hour response path</a>
+          <a class="btn btn-ghost" href="#process">See the process steps</a>
+        </div>
+
+        <div class="proof-grid">
+          <div class="proof"><b>Owner inspected</b> Every scope and final walk-through is reviewed by the owner team.</div>
+          <div class="proof"><b>Hand-nailing where it counts</b> For critical fastener points and structural security.</div>
+          <div class="proof"><b>50-year structure</b> Workmanship and labor language presented up front.</div>
+          <div class="proof"><b>Claims support</b> We prepare photos, notes, and timelines for adjusters.</div>
+        </div>
+
+        <div class="grid" id="process">
+          <article class="card">
+            <h2>Brunswick County emergency process</h2>
+            <div class="timeline">
+              <p class="step"><strong>Minute 15:</strong> Safety-first roof check, temporary stabilization guidance, and urgency assessment.</p>
+              <p class="step"><strong>Hour 1:</strong> Priority photos, material recommendations, and written timeline.</p>
+              <p class="step"><strong>Hours 4-24:</strong> Owner-inspected execution plan and start window with clear daily updates.</p>
+              <p class="step"><strong>Day 1-3:</strong> Repair/replace execution, cleanup, and claim packet handoff.</p>
+            </div>
+          </article>
+
+          <article class="card">
+            <h2>Service matrix</h2>
+            <div class="service-grid">
+              <div class="service"><b>Roofing</b>Replacement, repair, full replacement support.</div>
+              <div class="service"><b>Fortified roofs</b>Wind and impact-aware build approach for coastal exposure.</div>
+              <div class="service"><b>EPDM Hyperstock</b>Low-maintenance membrane profile for long-life performance.</div>
+              <div class="service"><b>Cedar shake</b>Craft-oriented finishing for traditional architecture.</div>
+              <div class="service"><b>Storm damage</b>Urgent response and controlled recovery sequencing.</div>
+              <div class="service"><b>Insurance claims</b>Work order, photos, and adjustment coordination.</div>
+              <div class="service"><b>Copper flashing</b>Precision flashing integration and installation detail.</div>
+              <div class="service"><b>Warranty</b>50-year workmanship/labor expectations described clearly.</div>
+            </div>
+          </article>
+        </div>
+      
+        <figure class="hero-photo">
+          <img src="/gustavo-roofing-options/photos/storm-response-roofing.png" alt="Roofing crew inspecting a coastal home after storm weather" loading="lazy" />
+          <figcaption>Storm-response photo for urgent and inspection-first concepts.</figcaption>
+        </figure></section>
+
+      <footer>Humanized design choice: this page uses urgency hierarchy without alarm language, short sentences, and one clear emotional destination: safety + predictability.</footer>
+    </main>
+  </body>
+</html>

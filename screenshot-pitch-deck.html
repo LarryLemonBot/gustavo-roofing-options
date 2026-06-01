@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Client-friendly landing-page chooser for Gustavo Vera Roofing with one-tap feedback and direct share actions."
+    />
+    <title>Gustavo Vera Roofing — Client Review Hub</title>
+    <style>
+      :root {
+        --bg: #efe7d8;
+        --paper: #fff9ef;
+        --card: #ffffff;
+        --line: #d8ceb8;
+        --ink: #14213d;
+        --muted: #41516d;
+        --accent: #b97e2a;
+        --accent-2: #2d4a66;
+        --success: #205f3f;
+        --warn: #8f4a2f;
+        --shadow: 0 16px 30px rgba(17, 26, 44, 0.12);
+        --review-font: 'Merriweather', Georgia, 'Times New Roman', serif;
+        --review-size: 15px;
+        --card-min: 320px;
+        --card-gap: 14px;
+      }
+
+      * { box-sizing: border-box; }
+
+      html,
+      body {
+        margin: 0;
+        font-family: var(--review-font);
+        color: var(--ink);
+        background:
+          radial-gradient(1200px 450px at 30% -80px, #fdf8ef, transparent 60%),
+          radial-gradient(900px 400px at 85% -130px, #f2e6d0, transparent 60%),
+          linear-gradient(180deg, #f0e5d0, #eadfc8);
+      }
+
+      .wrap {
+        width: min(1320px, 100%);
+        margin: 0 auto;
+        padding: 18px 16px 30px;
+      }
+
+      .hero {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      .kicker {
+        margin: 0;
+        display: inline-block;
+        font: 700 11px/1.2 'Inter', 'Segoe UI', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #7a4b1f;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #f6e7cd;
+      }
+
+      h1 {
+        margin: 10px 0 8px;
+        font-size: clamp(1.6rem, 3vw, 2.4rem);
+      }
+
+      .sub {
+        margin: 0;
+        color: var(--muted);
+        max-width: 84ch;
+        font: 500 16px/1.5 'Inter', 'Segoe UI', Roboto, sans-serif;
+      }
+
+      .status {
+        margin-top: 10px;
+        background: #fff4e5;
+        border-left: 4px solid var(--accent);
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: #553912;
+        font: 700 13px/1.4 'Inter', 'Segoe UI', sans-serif;
+      }
+
+      .links {
+        margin-top: 12px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .linkBtn,
+      .btn {
+        appearance: none;
+        border: 1px solid #ccbca0;
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font: 700 13px/1 'Inter', 'Segoe UI', sans-serif;
+        color: #274468;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .linkBtn:hover,
+      .btn:hover { background: #f3ebde; }
+
+      .linkBtn.primary,
+      .btn.primary {
+        border-color: var(--accent);
+        background: linear-gradient(180deg, #f3ca8c, #deac64);
+        color: #3e2712;
+      }
+
+      .dashboard {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 14px;
+      }
+
+      .settings,
+      .summary {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        box-shadow: var(--shadow);
+      }
+
+      .settings h2,
+      .summary h2 {
+        margin: 2px 0 10px;
+        font: 700 1.05rem/1.2 'Inter', 'Segoe UI', sans-serif;
+        color: #16253d;
+      }
+
+      .settings p,
+      .summary p,
+      .note {
+        color: var(--muted);
+        font: 500 14px/1.5 'Inter', 'Segoe UI', sans-serif;
+      }
+
+      .group {
+        margin-bottom: 12px;
+      }
+
+      .contactGrid {
+        display: grid;
+        gap: 8px;
+      }
+
+      .contactGrid label {
+        margin-bottom: 0;
+      }
+
+      .group label {
+        display: block;
+        font: 700 12px/1 'Inter', 'Segoe UI', sans-serif;
+        margin-bottom: 5px;
+        letter-spacing: 0.02em;
+      }
+
+      .textField {
+        width: 100%;
+        border: 1px solid #ccb69a;
+        border-radius: 9px;
+        padding: 8px 10px;
+        font: 500 13px/1.2 'Inter', 'Segoe UI', sans-serif;
+        color: #1f3652;
+        background: #fff;
+      }
+
+      .segmented {
+        display: inline-flex;
+        border: 1px solid #ccbdaa;
+        background: #f9f4eb;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .segmented button {
+        border: 0;
+        border-right: 1px solid #ccbdaa;
+        background: transparent;
+        font: 700 12px/1 'Inter', 'Segoe UI', sans-serif;
+        color: #28425f;
+        padding: 8px 10px;
+        cursor: pointer;
+      }
+
+      .segmented button:last-child { border-right: 0; }
+
+      .segmented button.active {
+        background: var(--accent-2);
+        color: #fff;
+      }
+
+      .slider {
+        width: 100%;
+        margin-top: 6px;
+      }
+
+      .summaryCard {
+        margin-top: 10px;
+        border: 1px dashed #c5b79b;
+        border-radius: 10px;
+        padding: 10px;
+        background: #fffaf0;
+      }
+
+      .summaryRow {
+        display: grid;
+        gap: 6px;
+      }
+
+      .summaryRow strong {
+        color: #253c59;
+      }
+
+      .summaryList {
+        margin: 8px 0 0;
+        padding-left: 16px;
+        color: #2c4059;
+      }
+
+      .chip {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #f0e3cf;
+        color: #553f1a;
+        font: 700 11px/1.2 'Inter', 'Segoe UI', sans-serif;
+        margin: 0 6px 6px 0;
+      }
+
+      .actions {
+        margin-top: 10px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .actionRow {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        border-radius: 10px;
+        padding: 9px 11px;
+        background: #fff;
+      }
+
+      .btn.ghost {
+        background: transparent;
+      }
+
+      .btn.success {
+        border-color: #3b7750;
+        background: #daf1e0;
+      }
+
+      .btn.danger {
+        border-color: #b07a5b;
+        background: #ffe2d8;
+      }
+
+      #optionCards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(var(--card-min), 1fr));
+        gap: var(--card-gap);
+      }
+
+      .optionCard {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+
+      .optionHead {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(180deg, #fff, #faf3e7);
+        border-bottom: 1px solid #ebdfca;
+        padding: 10px 11px;
+      }
+
+      .optionHead h2 {
+        margin: 0;
+        font: 700 1rem/1.2 'Inter', 'Segoe UI', sans-serif;
+      }
+
+      .badge {
+        border-radius: 999px;
+        border: 1px solid #c2b39b;
+        background: #fff;
+        color: #30415b;
+        padding: 4px 8px;
+        font: 700 11px/1.1 'Inter', 'Segoe UI', sans-serif;
+      }
+
+      .shotWrap {
+        padding: 8px;
+      }
+
+      .shotWrap img {
+        width: 100%;
+        height: min(60vh, 420px);
+        object-fit: contain;
+        border: 1px solid #dccdb7;
+        background: #f8f3eb;
+        border-radius: 10px;
+        cursor: zoom-in;
+      }
+
+      .shotWrap:focus-visible img,
+      .actionBtn:focus-visible {
+        outline: 2px solid #2d4a66;
+        outline-offset: 2px;
+      }
+
+      .tag {
+        margin: 0;
+        padding: 0 10px 10px;
+        color: #5a6380;
+        font: 500 12px/1.4 'Inter', 'Segoe UI', sans-serif;
+      }
+
+      .voteRow,
+      .linksRow {
+        display: flex;
+        gap: 8px;
+        padding: 0 10px;
+        flex-wrap: wrap;
+      }
+
+      .voteRow button {
+        flex: 1;
+        min-width: 90px;
+      }
+
+      .voteRow button.selected {
+        border-color: #2e4f6b;
+        background: #e3edf8;
+        color: #18314d;
+      }
+
+      .voteRow button[value='love'] { border-left: 4px solid var(--success); }
+      .voteRow button[value='maybe'] { border-left: 4px solid #866f2c; }
+      .voteRow button[value='no'] { border-left: 4px solid var(--warn); }
+
+      .comment {
+        margin: 10px;
+      }
+
+      .comment textarea {
+        width: 100%;
+        min-height: 72px;
+        border: 1px solid #c8bda8;
+        border-radius: 10px;
+        background: #fff;
+        padding: 8px;
+        font: 500 13px/1.5 'Inter', 'Segoe UI', sans-serif;
+        color: #253247;
+      }
+
+      .comment small {
+        display: block;
+        margin-top: 4px;
+        color: #52607f;
+        font: 500 11px/1.2 'Inter', 'Segoe UI', sans-serif;
+      }
+
+      .quickLinks {
+        margin-top: 4px;
+        font: 500 12px 'Inter', 'Segoe UI', sans-serif;
+      }
+
+      .quickLinks a {
+        color: #244264;
+        text-decoration: none;
+      }
+
+      .toast {
+        position: fixed;
+        right: 18px;
+        bottom: 16px;
+        background: #132842;
+        color: #fff;
+        border-radius: 999px;
+        padding: 10px 14px;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: 0.2s ease;
+        pointer-events: none;
+        z-index: 20;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .compact-layout #optionCards { --card-min: 260px; --card-gap: 10px; }
+      .normal-layout #optionCards { --card-min: 340px; --card-gap: 12px; }
+      .spacious-layout #optionCards { --card-min: 390px; --card-gap: 18px; }
+
+      .legacy-font { font-family: 'Merriweather', Georgia, 'Times New Roman', serif; }
+      .modern-font { font-family: 'Inter', 'Segoe UI', Roboto, sans-serif; }
+      .craft-font { font-family: 'Lora', Georgia, 'Times New Roman', serif; }
+
+      @media (max-width: 1100px) {
+        .dashboard { grid-template-columns: 1fr; }
+      }
+
+      @media (max-width: 720px) {
+        .kicker { font-size: 10px; }
+        .links { gap: 6px; }
+        .linkBtn,
+        .btn {
+          font-size: 12px;
+          padding: 9px 10px;
+        }
+        .optionCard .badge { font-size: 10px; }
+        .optionHead { flex-wrap: wrap; }
+      }
+    </style>
+  </head>
+  <body class="normal-layout modern-font">
+    <main class="wrap">
+      <section class="hero">
+        <p class="kicker">Client choice workflow</p>
+        <h1>Review Gustavo Vera Roofing options — one screen, one tap</h1>
+        <p class="sub">
+          Click or tap a card to open it full-screen, then choose
+          <strong>Love</strong>, <strong>Maybe</strong>, or <strong>No</strong>, add notes, and share your picks instantly by text or email.
+        </p>
+        <div class="status">Everything is auto-saved in this browser for this device. Keep this page open and continue from phone or laptop.</div>
+        <div class="links">
+          <a class="linkBtn primary" href="/gustavo-roofing-options/visual-showcase.html">Back to full showcase</a>
+          <a class="linkBtn" href="/gustavo-roofing-options/share-pack.html">Open client share pack</a>
+          <a class="linkBtn" href="/gustavo-roofing-options/" target="_blank" rel="noopener">Landing page chooser</a>
+          <a class="linkBtn" href="#comments" id="jumpNotes">Jump to feedback actions</a>
+        </div>
+      </section>
+
+      <section class="dashboard">
+        <aside class="settings" aria-label="Visual controls">
+          <h2>Tap controls (style + readability)</h2>
+          <p class="note">Choose appearance and layout preferences before/while voting. It updates the cards in real time.</p>
+
+          <div class="group">
+            <label for="fontFamily">Font style</label>
+            <div class="segmented" id="fontFamily" role="group" aria-label="Font style">
+              <button type="button" data-value="legacy" class="active">Classic serif</button>
+              <button type="button" data-value="modern">Clean sans</button>
+              <button type="button" data-value="craft">Warm editorial</button>
+            </div>
+          </div>
+
+          <div class="group">
+            <label for="sizeSlider">Text size: <span id="sizeValue">15</span>px</label>
+            <input class="slider" id="sizeSlider" type="range" min="13" max="22" value="15" />
+          </div>
+
+          <div class="group">
+            <label for="layoutStyle">Card layout</label>
+            <div class="segmented" id="layoutStyle" role="group" aria-label="Card layout">
+              <button type="button" data-value="compact-layout">Compact</button>
+              <button type="button" data-value="normal-layout" class="active">Normal</button>
+              <button type="button" data-value="spacious-layout">Spacious</button>
+            </div>
+          </div>
+
+          <div class="summaryCard">
+            <div class="summaryRow">
+              <strong>Quick review tally</strong>
+              <span class="chip" id="loveCount">Love: 0</span>
+              <span class="chip" id="maybeCount">Maybe: 0</span>
+              <span class="chip" id="noCount">No: 0</span>
+              <span class="chip" id="commentsCount">Notes: 0</span>
+            </div>
+            <ul id="summaryList" class="summaryList"></ul>
+          </div>
+        </aside>
+
+        <section id="comments" class="summary" aria-label="Feedback share actions">
+          <h2>Send him your feedback in seconds</h2>
+          <p class="note">Create a clean message with your top picks and comments.</p>
+
+          <div class="group">
+            <div class="contactGrid">
+              <label for="recipientName">Send this to</label>
+              <input id="recipientName" class="textField" type="text" />
+              <label for="recipientEmail">Email address</label>
+              <input id="recipientEmail" class="textField" type="email" />
+              <label for="recipientPhone">Phone for text</label>
+              <input id="recipientPhone" class="textField" type="tel" />
+              <small style="display:block;color:#4f5f77;font:500 11px/1.4 'Inter', 'Segoe UI', sans-serif;">Tip: add the best email or phone for the person who should receive the review.</small>
+            </div>
+          </div>
+
+          <div class="actionRow">
+            <button class="btn primary" id="copySummaryBtn">Copy feedback text</button>
+            <button class="btn" id="copyReviewLinkBtn">Copy page link</button>
+          </div>
+
+          <div class="actionRow" style="margin-top:8px">
+            <a id="emailLink" class="btn success" href="#">Open email draft</a>
+            <a id="smsLink" class="btn ghost" href="#">Open text draft</a>
+          </div>
+
+          <div class="actions">
+            <button class="btn" id="downloadJsonBtn">Download feedback JSON</button>
+            <button class="btn danger" id="resetBtn">Reset all selections</button>
+          </div>
+
+          <p class="note" style="margin-top:10px">Tip: For easiest review, tell him to tap <strong>Love</strong> on 2–3 favorites first, then add short notes for edits.</p>
+          <ul id="liveSummary" class="summaryList"></ul>
+        </section>
+      </section>
+
+      <section id="optionCards" aria-live="polite" style="margin-top:14px">
+        <!-- cards injected by script -->
+      </section>
+    </main>
+
+    <div class="toast" id="toast">Copied to clipboard</div>
+
+    <script>
+      const STORAGE_KEY = 'gustavo-review-hub-v2';
+
+      const options = [
+        {
+          id: 1,
+          title: 'Option 1 — Heritage Coastal Classic',
+          tone: 'Trust-first, legacy-safe, referral-minded',
+          url: '/gustavo-roofing-options/heritage-coastal.html',
+          screenshot: '/gustavo-roofing-options/screenshots/heritage-coastal.png',
+        },
+        {
+          id: 2,
+          title: 'Option 2 — Fortress Modern',
+          tone: 'Urgent, direct, high-action',
+          url: '/gustavo-roofing-options/fortress-modern.html',
+          screenshot: '/gustavo-roofing-options/screenshots/fortress-modern.png',
+        },
+        {
+          id: 3,
+          title: 'Option 3 — Rustic Precision + Copper Accent',
+          tone: 'Craft-led premium style for cedar and copper',
+          url: '/gustavo-roofing-options/copper-craft.html',
+          screenshot: '/gustavo-roofing-options/screenshots/copper-craft.png',
+        },
+        {
+          id: 4,
+          title: 'Option 4 — Precision Minimal',
+          tone: 'Clear, direct, lowest visual friction',
+          url: '/gustavo-roofing-options/precision-minimalist.html',
+          screenshot: '/gustavo-roofing-options/screenshots/precision-minimalist.png',
+        },
+        {
+          id: 5,
+          title: 'Option 5 — Proof-First Premium',
+          tone: 'Proof blocks and confidence-first sequencing',
+          url: '/gustavo-roofing-options/proof-first-premium.html',
+          screenshot: '/gustavo-roofing-options/screenshots/proof-first-premium.png',
+        },
+        {
+          id: 6,
+          title: 'Option 6 — Emergency Command',
+          tone: 'Emergency flow with timeline clarity',
+          url: '/gustavo-roofing-options/emergency-command.html',
+          screenshot: '/gustavo-roofing-options/screenshots/emergency-command.png',
+        },
+        {
+          id: 7,
+          title: 'Option 7 — Family-Safe Home',
+          tone: 'Calm emotional path for stressed families',
+          url: '/gustavo-roofing-options/family-safe-home.html',
+          screenshot: '/gustavo-roofing-options/screenshots/family-safe-home.png',
+        },
+        {
+          id: 8,
+          title: 'Option 8 — Process Dashboard',
+          tone: 'Workflow transparency and operational trust',
+          url: '/gustavo-roofing-options/process-dashboard.html',
+          screenshot: '/gustavo-roofing-options/screenshots/process-dashboard.png',
+        },
+        {
+          id: 9,
+          title: 'Option 9 — Luxury Assurance',
+          tone: 'Premium brand-forward and polished',
+          url: '/gustavo-roofing-options/luxury-assurance.html',
+          screenshot: '/gustavo-roofing-options/screenshots/luxury-assurance.png',
+        },
+        {
+          id: 10,
+          title: 'Option 10 — Coastal Emergency Calm',
+          tone: 'Urgent support with regulated tone',
+          url: '/gustavo-roofing-options/coastal-emergency-calm.html',
+          screenshot: '/gustavo-roofing-options/screenshots/coastal-emergency-calm.png',
+        },
+        {
+          id: 11,
+          title: 'Option 11 — Neighborhood Trust Hub',
+          tone: 'Community-focused trust architecture',
+          url: '/gustavo-roofing-options/neighborhood-trust-hub.html',
+          screenshot: '/gustavo-roofing-options/screenshots/neighborhood-trust-hub.png',
+        },
+        {
+          id: 12,
+          title: 'Option 12 — Quote Clarity Station',
+          tone: 'Decision-oriented and comparison-friendly',
+          url: '/gustavo-roofing-options/quote-clarity-station.html',
+          screenshot: '/gustavo-roofing-options/screenshots/quote-clarity-station.png',
+        },
+      ];
+
+      const appState = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
+      appState.settings = appState.settings || { font: 'modern', size: 15, layout: 'normal-layout' };
+      appState.votes = appState.votes || {};
+      appState.contact = appState.contact || {
+        recipientName: 'Gustavo Vera Roofing',
+        recipientEmail: '',
+        recipientPhone: '',
+      };
+      const query = new URLSearchParams(window.location.search);
+      if (query.get('name')) appState.contact.recipientName = query.get('name');
+      if (query.get('email')) appState.contact.recipientEmail = query.get('email');
+      if (query.get('phone')) appState.contact.recipientPhone = query.get('phone');
+      if (!appState.summary) {
+        appState.summary = {
+          savedAt: new Date().toISOString(),
+        };
+      }
+
+      const root = document.body;
+      const optionContainer = document.getElementById('optionCards');
+      const summaryList = document.getElementById('summaryList');
+      const liveSummary = document.getElementById('liveSummary');
+      const loveCount = document.getElementById('loveCount');
+      const maybeCount = document.getElementById('maybeCount');
+      const noCount = document.getElementById('noCount');
+      const commentsCount = document.getElementById('commentsCount');
+      const toast = document.getElementById('toast');
+
+      const sizeSlider = document.getElementById('sizeSlider');
+      const sizeValue = document.getElementById('sizeValue');
+      const fontButtons = Array.from(document.querySelectorAll('#fontFamily button'));
+      const layoutButtons = Array.from(document.querySelectorAll('#layoutStyle button'));
+
+      const copySummaryBtn = document.getElementById('copySummaryBtn');
+      const copyReviewLinkBtn = document.getElementById('copyReviewLinkBtn');
+      const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const emailLink = document.getElementById('emailLink');
+      const smsLink = document.getElementById('smsLink');
+      const recipientName = document.getElementById('recipientName');
+      const recipientEmail = document.getElementById('recipientEmail');
+      const recipientPhone = document.getElementById('recipientPhone');
+
+      const fontClassMap = {
+        legacy: 'legacy-font',
+        modern: 'modern-font',
+        craft: 'craft-font',
+      };
+
+      const showToast = (text) => {
+        toast.textContent = text;
+        toast.classList.add('show');
+        window.clearTimeout(showToast._timer);
+        showToast._timer = window.setTimeout(() => {
+          toast.classList.remove('show');
+        }, 1600);
+      };
+
+      const saveState = () => {
+        appState.summary.savedAt = new Date().toISOString();
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      };
+
+      const setFontFamily = (value) => {
+        root.classList.remove('legacy-font', 'modern-font', 'craft-font');
+        root.classList.add(fontClassMap[value] || 'modern-font');
+        appState.settings.font = value;
+        fontButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.value === value));
+        saveState();
+      };
+
+      const setFontSize = (value) => {
+        sizeValue.textContent = value;
+        root.style.setProperty('--review-size', `${value}px`);
+        root.style.fontSize = `${value}px`;
+        appState.settings.size = value;
+        saveState();
+      };
+
+      const setLayout = (value) => {
+        root.classList.remove('compact-layout', 'normal-layout', 'spacious-layout');
+        root.classList.add(value);
+        appState.settings.layout = value;
+        layoutButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.value === value));
+        saveState();
+      };
+
+      const formatRecipientText = (value) => {
+        return (value || '').trim();
+      };
+
+      const normalizePhone = (value) => {
+        const cleaned = (value || '').replace(/[^0-9+]/g, '').trim();
+        if (!cleaned) return '';
+        return cleaned;
+      };
+
+      const syncContactInputs = () => {
+        recipientName.value = appState.contact.recipientName || 'Gustavo Vera Roofing';
+        recipientEmail.value = appState.contact.recipientEmail || '';
+        recipientPhone.value = appState.contact.recipientPhone || '';
+      };
+
+      const setContactField = (field, value) => {
+        appState.contact[field] = value;
+        saveState();
+        updateActionLinks();
+      };
+
+      const statusLabel = (status) => ({
+        love: 'Love',
+        maybe: 'Maybe',
+        no: 'No',
+      })[status] || 'Not chosen';
+
+      const updateSummaryList = () => {
+        const grouped = {
+          love: [],
+          maybe: [],
+          no: [],
+        };
+        let commentTotal = 0;
+
+        Object.keys(appState.votes).forEach((id) => {
+          const record = appState.votes[id];
+          if (!record || !record.choice) return;
+          const option = options.find((o) => String(o.id) === String(id));
+          grouped[record.choice]?.push({
+            option: option ? option.title : `Option ${id}`,
+            comment: (record.comment || '').trim(),
+          });
+          if ((record.comment || '').trim()) {
+            commentTotal += 1;
+          }
+        });
+
+        loveCount.textContent = `Love: ${grouped.love.length}`;
+        maybeCount.textContent = `Maybe: ${grouped.maybe.length}`;
+        noCount.textContent = `No: ${grouped.no.length}`;
+        commentsCount.textContent = `Notes: ${commentTotal}`;
+
+        const totalNotes = [];
+        [grouped.love, grouped.maybe, grouped.no].forEach((group, index) => {
+          const labels = ['love', 'maybe', 'no'];
+          const label = labels[index];
+          group.forEach((entry) => {
+            const line = `${statusLabel(label)} • ${entry.option}` +
+              (entry.comment ? ` — ${entry.comment}` : '');
+            totalNotes.push(`<li>${line}</li>`);
+          });
+        });
+
+        if (totalNotes.length === 0) {
+          summaryList.innerHTML = '<li>No selections yet.</li>';
+          liveSummary.innerHTML = '<li>No feedback yet.</li>';
+        } else {
+          summaryList.innerHTML = totalNotes.join('');
+          liveSummary.innerHTML = totalNotes.join('');
+        }
+      };
+
+      const buildSummaryText = () => {
+        const byChoice = { love: [], maybe: [], no: [] };
+        const recipient = formatRecipientText(recipientName.value || appState.contact.recipientName || 'Gustavo Vera Roofing');
+
+        options.forEach((option) => {
+          const current = appState.votes[option.id] || {};
+          if (current.choice) {
+            byChoice[current.choice].push(option);
+          }
+        });
+
+        const formatSection = (title, arr) => {
+          if (!arr.length) {
+            return `${title}: None yet`;
+          }
+          return `${title}: ${arr.map((o) => o.title).join('; ')}`;
+        };
+
+        const summaryParts = [
+          'Hi Gustavo Vera Roofing,',
+          '',
+          'Here are my choices from the client review sheet:',
+          formatSection('Love', byChoice.love),
+          formatSection('Maybe', byChoice.maybe),
+          formatSection('Not this direction', byChoice.no),
+          '',
+        ];
+
+        options.forEach((option) => {
+          const current = appState.votes[option.id] || {};
+          if (current.comment && current.comment.trim()) {
+            summaryParts.push(`• ${option.title}: ${current.comment.trim()}`);
+          }
+        });
+
+        summaryParts.push('');
+        summaryParts.push(`Recipient: ${recipient}`);
+        summaryParts.push(`Submitted: ${new Date().toLocaleString()}`);
+        summaryParts.push('Review page: ' + window.location.href);
+        summaryParts.push(`Page link: ${window.location.href}`);
+
+        const summaryText = summaryParts.join('\n');
+        return { summaryText, byChoice, recipient };
+      };
+
+      const updateActionLinks = () => {
+        const { summaryText, recipient } = buildSummaryText();
+        const subject = 'Gustavo Vera Roofing website review';
+        const emailAddress = formatRecipientText(recipientEmail.value || appState.contact.recipientEmail || '');
+        const phone = normalizePhone(recipientPhone.value || appState.contact.recipientPhone || '');
+
+        emailLink.textContent = emailAddress ? `Open email draft for ${recipient}` : 'Open email draft';
+        emailLink.href = `mailto:${emailAddress ? encodeURIComponent(emailAddress) : ''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(summaryText)}`;
+
+        const smsBase = phone ? `sms:${phone}` : 'sms:';
+        smsLink.textContent = phone ? `Open text draft for ${phone}` : 'Open text draft';
+        smsLink.href = `${smsBase}?body=${encodeURIComponent(summaryText)}`;
+
+        return { summaryText, subject };
+      };
+
+      const copySummary = async () => {
+        const { summaryText } = buildSummaryText();
+        if (!navigator.clipboard) {
+          window.prompt('Copy this text:', summaryText);
+          return;
+        }
+        await navigator.clipboard.writeText(summaryText);
+        showToast('Feedback copied');
+      };
+
+      const copyReviewLink = async () => {
+        const text = window.location.href;
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(text);
+          showToast('Link copied');
+        } else {
+          window.prompt('Copy this link:', text);
+        }
+      };
+
+      const setVote = (id, choice) => {
+        if (!appState.votes[id]) {
+          appState.votes[id] = {};
+        }
+
+        if (appState.votes[id].choice === choice) {
+          delete appState.votes[id].choice;
+        } else {
+          appState.votes[id].choice = choice;
+        }
+
+        const row = document.querySelector(`.optionCard[data-id="${id}"]`);
+        if (row) {
+          const buttons = row.querySelectorAll('.voteRow button');
+          buttons.forEach((btn) => {
+            btn.classList.toggle('selected', btn.value === appState.votes[id].choice);
+          });
+        }
+
+        updateSummaryList();
+        updateActionLinks();
+        saveState();
+      };
+
+      const updateComment = (id, value) => {
+        if (!appState.votes[id]) {
+          appState.votes[id] = {};
+        }
+        appState.votes[id].comment = value;
+        updateSummaryList();
+        updateActionLinks();
+        saveState();
+      };
+
+      const createCard = (option) => {
+        const card = document.createElement('article');
+        card.className = 'optionCard';
+        card.dataset.id = String(option.id);
+
+        const currentChoice = appState.votes[option.id]?.choice || '';
+
+        card.innerHTML = `
+          <header class="optionHead">
+            <h2>${option.title}</h2>
+            <span class="badge">${option.tone}</span>
+          </header>
+          <p class="tag">Tap the image to open the full page in a new tab.</p>
+          <a class="shotWrap" href="${option.url}" target="_blank" rel="noopener" aria-label="Open ${option.title}" role="button">
+            <img src="${option.screenshot}" alt="${option.title} screenshot" loading="lazy" />
+          </a>
+          <p class="tag">Layout: compact service-first flow. Color: grounded blue-ivory system.</p>
+          <div class="voteRow">
+            <button type="button" value="love" class="btn${currentChoice === 'love' ? ' selected' : ''}">Love</button>
+            <button type="button" value="maybe" class="btn${currentChoice === 'maybe' ? ' selected' : ''}">Maybe</button>
+            <button type="button" value="no" class="btn${currentChoice === 'no' ? ' selected' : ''}">No</button>
+          </div>
+          <div class="comment">
+            <textarea placeholder="Add your notes for this option (what he should keep, change, or remove)."></textarea>
+            <small>Optional: mention tone, sections, text changes, or layout edits.</small>
+          </div>
+          <p class="quickLinks" style="padding:0 10px 10px"><a href="${option.url}" target="_blank" rel="noopener">Open full page</a> · <a href="${option.screenshot}" target="_blank" rel="noopener">Open screenshot</a></p>
+        `;
+
+        const buttons = card.querySelectorAll('.voteRow button');
+        buttons.forEach((button) => {
+          button.addEventListener('click', () => {
+            setVote(option.id, button.value);
+          });
+        });
+
+        const textarea = card.querySelector('textarea');
+        textarea.value = appState.votes[option.id]?.comment || '';
+        textarea.addEventListener('input', () => {
+          updateComment(option.id, textarea.value);
+        });
+
+        return card;
+      };
+
+      const applySavedState = () => {
+        setFontFamily(appState.settings.font);
+        setFontSize(appState.settings.size);
+        setLayout(appState.settings.layout);
+      };
+
+      const downloadJSON = () => {
+        const payload = {
+          snapshotAt: new Date().toISOString(),
+          settings: appState.settings,
+          votes: appState.votes,
+        };
+        const text = JSON.stringify(payload, null, 2);
+        const blob = new Blob([text], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'gustavo-website-feedback.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      };
+
+      const resetAll = () => {
+        if (!window.confirm('Clear all selections and notes?')) return;
+        appState.votes = {};
+        saveState();
+        optionContainer.innerHTML = '';
+        buildCards();
+        updateSummaryList();
+        updateActionLinks();
+      };
+
+      const buildCards = () => {
+        optionContainer.innerHTML = '';
+        options.forEach((option) => {
+          optionContainer.appendChild(createCard(option));
+        });
+        updateSummaryList();
+      };
+
+      sizeSlider.addEventListener('input', () => {
+        const value = Number(sizeSlider.value);
+        setFontSize(value);
+      });
+
+      fontButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          setFontFamily(button.dataset.value);
+        });
+      });
+
+      layoutButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          setLayout(button.dataset.value);
+        });
+      });
+
+      recipientName.addEventListener('input', () => {
+        setContactField('recipientName', recipientName.value);
+      });
+
+      recipientEmail.addEventListener('input', () => {
+        setContactField('recipientEmail', recipientEmail.value);
+      });
+
+      recipientPhone.addEventListener('input', () => {
+        setContactField('recipientPhone', recipientPhone.value);
+      });
+
+      copySummaryBtn.addEventListener('click', async () => {
+        try {
+          await copySummary();
+        } catch (error) {
+          showToast('Could not copy.');
+        }
+      });
+
+      copyReviewLinkBtn.addEventListener('click', async () => {
+        try {
+          await copyReviewLink();
+        } catch (error) {
+          showToast('Could not copy link.');
+        }
+      });
+
+      downloadJsonBtn.addEventListener('click', downloadJSON);
+      resetBtn.addEventListener('click', resetAll);
+      document.getElementById('jumpNotes').addEventListener('click', (event) => {
+        event.preventDefault();
+        document.getElementById('comments').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      applySavedState();
+      syncContactInputs();
+      buildCards();
+      updateActionLinks();
+    </script>
+  </body>
+</html>

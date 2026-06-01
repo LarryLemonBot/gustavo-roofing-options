@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Gustavo Vera Roofing - Photo Map</title>
+    <meta name="description" content="Visual map of the Vera Roofing Photos album with contact sheets and style-direction notes." />
+    <style>
+      :root {
+        --bg: #11161f;
+        --panel: #1a2230;
+        --panel-2: #f4efe8;
+        --ink: #eef4fb;
+        --ink-2: #233047;
+        --muted: #8ea0b9;
+        --accent: #d8a055;
+        --line: #31425d;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, Arial, Helvetica, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(216, 160, 85, 0.15), transparent 30%),
+          radial-gradient(circle at top right, rgba(112, 142, 182, 0.16), transparent 28%),
+          linear-gradient(180deg, #0f141d 0%, #11161f 55%, #dcd4c8 55%, #efe8dc 100%);
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 24px 18px 56px;
+      }
+      .hero {
+        border: 1px solid var(--line);
+        background: linear-gradient(160deg, rgba(14, 22, 35, 0.95), rgba(23, 34, 52, 0.96));
+        border-radius: 22px;
+        padding: 24px;
+        box-shadow: 0 22px 56px rgba(0, 0, 0, 0.25);
+      }
+      .kicker {
+        display: inline-block;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: rgba(216, 160, 85, 0.14);
+        color: #f4d9ae;
+        border: 1px solid rgba(216, 160, 85, 0.35);
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.74rem;
+        font-weight: 700;
+      }
+      h1 {
+        margin: 10px 0 10px;
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        line-height: 1.05;
+      }
+      .lead {
+        max-width: 80ch;
+        color: #d9e3f2;
+        line-height: 1.7;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .btn {
+        display: inline-block;
+        text-decoration: none;
+        border-radius: 11px;
+        padding: 12px 16px;
+        font-weight: 700;
+      }
+      .btn-main {
+        background: linear-gradient(130deg, #f0bc74, #c98a37);
+        color: #18140f;
+      }
+      .btn-ghost {
+        border: 1px solid #6f8fb3;
+        color: #eef4fb;
+      }
+      .grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 14px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+      }
+      .panel h2 {
+        margin: 0 0 8px;
+      }
+      .panel p,
+      .panel li {
+        color: #d6e0ee;
+        line-height: 1.7;
+      }
+      .panel ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .sheet {
+        margin-top: 14px;
+        border: 1px solid #a09a90;
+        border-radius: 16px;
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.15);
+      }
+      .sheet img {
+        width: 100%;
+        display: block;
+      }
+      .sheet .caption {
+        padding: 12px 14px;
+        background: #fff;
+        color: var(--ink-2);
+        font-size: 0.95rem;
+      }
+      .highlights {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap: 12px;
+      }
+      .chip {
+        background: #f5efe6;
+        color: #30435f;
+        border-radius: 14px;
+        padding: 14px;
+        border: 1px solid #e1d5c6;
+      }
+      .chip b {
+        display: block;
+        margin-bottom: 6px;
+        color: #1f2d44;
+      }
+      .style-grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .style-card {
+        background: #f7f2ea;
+        border: 1px solid #ddd0be;
+        border-radius: 14px;
+        padding: 14px;
+        color: var(--ink-2);
+      }
+      .style-card h3 {
+        margin: 0 0 8px;
+        color: #1f2d44;
+      }
+      .style-card p {
+        margin: 0;
+        color: #42536c;
+      }
+      .footnote {
+        margin-top: 12px;
+        color: #8ea0b9;
+        font-size: 0.92rem;
+      }
+      @media (max-width: 980px) {
+        .grid,
+        .style-grid,
+        .highlights {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <span class="kicker">Vera Roofing Album · 49 photos</span>
+        <h1>Photo map for the Gustavо website styles.</h1>
+        <p class="lead">
+          The Photos app does contain a `Vera Roofing` album, and it is full of usable roofing imagery.
+          The set gives us enough material for several distinct homepage directions without feeling generic.
+        </p>
+        <div class="actions">
+          <a class="btn btn-main" href="/gustavo-roofing-options/photo-backed-style-board.html">Open style board</a>
+          <a class="btn btn-main" href="/gustavo-roofing-options/finalist-best-of.html">Open the best-of finalist</a>
+          <a class="btn btn-ghost" href="/gustavo-roofing-options/top-3-shortlist.html">Open the 3-style shortlist</a>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <h2>Full album overview</h2>
+          <p>
+            Two contact sheets cover the whole album. They show a mix of finished roofs, underlayment,
+            work-in-progress shots, coastal homes, brick homes, metal roofs, shingle roofs, and detail work.
+          </p>
+          <div class="sheet">
+            <img src="/gustavo-roofing-options/album-contact-sheets/contact-sheet-1.png" alt="Vera Roofing photo contact sheet 1">
+            <div class="caption">Sheet 1: early and middle album items, including underlayment, metal roofs, shingle roofs, house exteriors, and brand/reference photos.</div>
+          </div>
+          <div class="sheet">
+            <img src="/gustavo-roofing-options/album-contact-sheets/contact-sheet-2.png" alt="Vera Roofing photo contact sheet 2">
+            <div class="caption">Sheet 2: additional roof installs, black metal, red metal, blue metal, brick detail, copper/trim work, and more job-site photos.</div>
+          </div>
+        </article>
+
+        <aside class="panel">
+          <h2>What the album supports</h2>
+          <div class="highlights">
+            <div class="chip">
+              <b>Premium coastal look</b>
+              Black metal, clean sky shots, and strong roof geometry support a polished high-end visual style.
+            </div>
+            <div class="chip">
+              <b>Trust-first family look</b>
+              Finished homes and calm exterior shots work well for a warm, local, referral-driven style.
+            </div>
+            <div class="chip">
+              <b>Storm / claims look</b>
+              Underlayment, in-progress, and repair-stage photos support emergency and insurance messaging.
+            </div>
+            <div class="chip">
+              <b>Craft/detail look</b>
+              Brick interfaces, copper/trim detail, and hand-work closeups give us a craftsmanship-forward route.
+            </div>
+          </div>
+
+          <div class="style-grid">
+            <div class="style-card">
+              <h3>Luxury Assurance</h3>
+              <p>Best fit for black metal, clean geometry, and the premium exterior shots.</p>
+            </div>
+            <div class="style-card">
+              <h3>Emergency Command</h3>
+              <p>Best fit for underlayment, repair stages, and damage-response flow.</p>
+            </div>
+            <div class="style-card">
+              <h3>Neighborhood Trust Hub</h3>
+              <p>Best fit for full-home exteriors and neighborhood-local reassurance.</p>
+            </div>
+            <div class="style-card">
+              <h3>Copper / Craft</h3>
+              <p>Best fit for trim, brick, and detail-heavy roofing work.</p>
+            </div>
+          </div>
+
+          <p class="footnote">
+            I can now use these photos to tune the finalist page and produce a handful of distinct, realistic website directions.
+          </p>
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>

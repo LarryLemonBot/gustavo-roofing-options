@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vera Roofing | Neighborhood Trust Hub</title>
+    <meta name="description" content="Community-first roofing landing page for Gustavo Vera Roofing focused on neighborhood trust, local service confidence, and practical decision support." />
+    <style>
+      :root {
+        --sand:#f3ede4;
+        --ink:#262a31;
+        --muted:#596173;
+        --line:#dccfc1;
+        --deep:#3f2b1c;
+        --accent:#7a5a30;
+        --soft:#f6efe7;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          linear-gradient(180deg, #f6eee4 0%, #efe6da 100%);
+        font-family: "Merriweather", Georgia, "Times New Roman", serif;
+      }
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 22px 16px 44px; }
+      .hero {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: linear-gradient(160deg, #fef9f3 0%, #f4eadc 100%);
+        padding: 24px;
+      }
+      .location {
+        display: inline-block;
+        font-family: Inter, Arial, sans-serif;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        font-size: .74rem;
+        border: 1px solid #decbc0;
+        border-radius: 999px;
+        padding: 6px 10px;
+      }
+      h1 { margin: 12px 0 8px; font-size: clamp(2rem, 4vw, 3rem); }
+      .lead { max-width: 76ch; line-height: 1.74; color: var(--muted); }
+      .hero-links { display:flex; gap: 10px; flex-wrap:wrap; margin-top:14px; }
+      .hero-links a {
+        text-decoration: none;
+        border-radius: 10px;
+        padding: 11px 14px;
+        font-family: Inter, Arial, sans-serif;
+        font-weight: 700;
+      }
+      .btn-main { background: #1f4d7a; color: #fff; }
+      .btn-soft { border:1px solid #c0ac9a; color: var(--deep); }
+      .top-grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1.15fr .85fr;
+        gap: 12px;
+      }
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        background: var(--soft);
+      }
+      .map {
+        border-radius: 12px;
+        padding: 14px;
+        border: 1px dashed var(--accent);
+        background: #efe1d4;
+      }
+      .map h2, .panel h2 { margin: 0 0 10px; }
+      .towns {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+      }
+      .town {
+        background: #fff;
+        border: 1px solid #e1d3c4;
+        border-radius: 10px;
+        padding: 8px 10px;
+        font-family: Inter, Arial, sans-serif;
+        color: #3a4454;
+        font-size: .94rem;
+      }
+      .reasonGrid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        gap: 10px;
+      }
+      .reason {
+        background: #fff8ef;
+        border: 1px solid #e4d6c8;
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .reason b {
+        font-size: 1.05rem;
+        color: #4e3c29;
+      }
+      .reason p, li {
+        line-height: 1.72;
+        color: #454f61;
+      }
+      ul { padding-left: 18px; }
+      .timeline {
+        margin-top: 10px;
+        padding-left: 12px;
+        border-left: 3px solid #b89a7d;
+      }
+      .step { margin-bottom: 12px; color:#3c4657; }
+      footer {
+        margin-top: 14px;
+        color: #5f6a7d;
+        font-family: Inter, Arial, sans-serif;
+      }
+      @media (max-width: 960px) {
+        .top-grid, .reasonGrid, .towns { grid-template-columns: 1fr; }
+      }
+    
+      .hero-photo {
+        margin: 18px 0 0;
+        border: 1px solid rgba(20, 33, 61, 0.12);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #f6f2ea;
+        box-shadow: 0 16px 28px rgba(16, 23, 42, 0.12);
+      }
+      .hero-photo img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+      }
+      .hero-photo figcaption {
+        padding: 10px 12px;
+        background: #fff;
+        color: #526076;
+        font: 600 12px/1.4 Inter, Arial, Helvetica, sans-serif;
+      }
+</style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="hero">
+        <span class="location">Brunswick County neighborhood focus</span>
+        <h1>Built by neighbors, trusted by neighbors.</h1>
+        <p class="lead">Brunswick families call this business from stress. The goal is simple: clear ownership, accountable progress, and visible quality from first visit to final cleanup.</p>
+        <div class="hero-links">
+          <a class="btn-main" href="/gustavo-roofing-options/share-pack.html">Open share pack</a>
+          <a class="btn-soft" href="#areas">See service areas</a>
+          <a class="btn-soft" href="#proof">Review quality commitments</a>
+        </div>
+
+        <div class="top-grid">
+          <article class="panel">
+            <h2>What we do for your home</h2>
+            <ul>
+              <li>Roof replacement and major roof repair work with owner inspection checkpoints.</li>
+              <li>Fortified construction details tailored for coastal wind and weather stress.</li>
+              <li>EPDM Hyperstock installations for durable, simple surface performance.</li>
+              <li>Cedar shake replacement and detailing for period-style homes.</li>
+              <li>Storm response triage to secure the roof and reduce long-term damage.</li>
+              <li>Insurance claim support through photos, notes, and timeline tracking.</li>
+              <li>Copper flashing with detail care where water and penetration meet structure.</li>
+              <li>50-year workmanship and labor clarity presented upfront in plain language.</li>
+            </ul>
+          </article>
+
+          <aside class="panel map">
+            <h2 id="areas">Service neighborhoods</h2>
+            <p>Primary service footprint for this offer page:</p>
+            <div class="towns">
+              <div class="town">Southport</div>
+              <div class="town">Oak Island</div>
+              <div class="town">Holden Beach</div>
+              <div class="town">Shallotte</div>
+              <div class="town">Supply</div>
+              <div class="town">Leland</div>
+            </div>
+          </aside>
+        </div>
+      
+        <figure class="hero-photo">
+          <img src="/gustavo-roofing-options/album-photos/neighborhood-home-exterior.jpeg" alt="Finished coastal home exterior" loading="lazy" />
+          <figcaption>Trust-first photo for family-safe and neighborhood-led concepts.</figcaption>
+        </figure></section>
+
+      <section class="panel" style="margin-top: 16px;">
+        <h2 id="proof">Why owners choose this team</h2>
+        <div class="reasonGrid">
+          <div class="reason">
+            <b>Social trust over hype</b>
+            <p>No one is sold to with urgency language. We stay straightforward and show what happens next.</p>
+          </div>
+          <div class="reason">
+            <b>Process confidence</b>
+            <p>Each stage is predictable, with photo communication and written notes.</p>
+          </div>
+          <div class="reason">
+            <b>Quality signal</b>
+            <p>Owner-reviewed final checks, hand-nailing standards, and durable material decisions.</p>
+          </div>
+        </div>
+        <div class="timeline">
+          <p class="step"><strong>Before:</strong> You get service-specific recommendations and a no-noise estimate path.</p>
+          <p class="step"><strong>During:</strong> Work is staged so storm exposure, safety, and finish quality are always tracked.</p>
+          <p class="step"><strong>After:</strong> Final check, cleanup confirmation, and file-ready claim summary are delivered.</p>
+        </div>
+      </section>
+      <footer>Design rationale: this layout feels local-first and approachable — strong neighborhood signals with clean copy, short lines, and practical proof instead of dense sales language.</footer>
+    </main>
+  </body>
+</html>

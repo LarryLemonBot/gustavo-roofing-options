@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vera Roofing | Process Dashboard</title>
+    <meta name="description" content="Clear process dashboard landing page for homeowners comparing quality, speed, and claims support from Gustavo Vera Roofing." />
+    <style>
+      :root {
+        --bg: #0d1726;
+        --panel: #101d2e;
+        --line: #28405f;
+        --ink: #eaf1f7;
+        --muted: #a8b7cb;
+        --ok: #37d28f;
+        --warn: #ffb347;
+        --card: #122139;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, 'Segoe UI', sans-serif;
+        background: radial-gradient(circle at 10% 0%, #1b2e49 0%, #0d1726 55%);
+        color: var(--ink);
+      }
+      .wrap {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 22px;
+      }
+      .hero {
+        background: linear-gradient(120deg, #13243d 0%, #101d32 100%);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 22px;
+      }
+      .tag {
+        font-size: .74rem;
+        letter-spacing: .11em;
+        text-transform: uppercase;
+        color: var(--warn);
+      }
+      h1 {
+        margin: 10px 0 10px;
+        font-size: clamp(2rem, 4vw, 3rem);
+      }
+      .lead {
+        max-width: 76ch;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+      .cta {
+        margin-top: 16px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        border: 0;
+        border-radius: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 11px 16px;
+        color: #fff;
+      }
+      .btn-main { background: linear-gradient(135deg, #2e6dff, #00b5ff); }
+      .btn-soft { background: #1e3350; border: 1px solid #35557c; }
+
+      .stats {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .stat {
+        border: 1px solid #254a78;
+        background: var(--card);
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .stat strong {
+        display: block;
+        color: #7ed5ff;
+        font-size: 1.6rem;
+      }
+
+      .grid {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1.1fr .9fr;
+        gap: 12px;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+      }
+      .panel h2 {
+        margin: 0 0 10px;
+      }
+      .stepWrap {
+        border-left: 3px solid #2d5e9a;
+        padding-left: 10px;
+      }
+      .step {
+        margin-bottom: 10px;
+        color: #d9e5f4;
+      }
+      .step strong { color: #ffd56a; }
+      .metric {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .metric div {
+        border: 1px solid #2d4564;
+        background: #142643;
+        border-radius: 12px;
+        padding: 10px;
+      }
+      .metric b { display: block; color: #8fe8b0; margin-bottom: 6px; }
+      ul { line-height: 1.65; color: #c6d6ec; }
+      .promise {
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px dashed #4f6f94;
+        background: #0d1f37;
+        color: #d8e4f4;
+      }
+      .claim {
+        background: #163056;
+        border: 1px solid #365d88;
+        padding: 11px;
+        border-radius: 12px;
+        margin-top: 8px;
+      }
+      footer { margin-top: 14px; color: #9db0c7; }
+
+      @media (max-width: 960px) {
+        .grid, .stats, .metric {
+          grid-template-columns: 1fr;
+        }
+      }
+    
+      .hero-photo {
+        margin: 18px 0 0;
+        border: 1px solid rgba(20, 33, 61, 0.12);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #f6f2ea;
+        box-shadow: 0 16px 28px rgba(16, 23, 42, 0.12);
+      }
+      .hero-photo img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+      }
+      .hero-photo figcaption {
+        padding: 10px 12px;
+        background: #fff;
+        color: #526076;
+        font: 600 12px/1.4 Inter, Arial, Helvetica, sans-serif;
+      }
+</style>
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="hero">
+        <p class="tag">Process-first conversion style</p>
+        <h1>A clear dashboard for every home in distress.</h1>
+        <p class="lead">Many roofing pages dump too much text at once. This version uses a clear operating flow: what you need today, how the process works, and what you get when we finish.</p>
+        <div class="cta">
+          <a class="btn btn-main" href="/gustavo-roofing-options/share-pack.html">Open share pack</a>
+          <a class="btn btn-soft" href="/gustavo-roofing-options/share-pack.html">Open share pack</a>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><strong>24/7</strong><span>Response path for storm leads</span></div>
+          <div class="stat"><strong>50</strong><span>Year target language for workmanship framing</span></div>
+          <div class="stat"><strong>Hand-nailed</strong><span>Critical fastener standard</span></div>
+          <div class="stat"><strong>Owner</strong><span>Direct inspection checkpoints</span></div>
+        </div>
+      
+        <figure class="hero-photo">
+          <img src="/gustavo-roofing-options/photos/storm-response-roofing.png" alt="Roofing crew inspecting a coastal home after storm weather" loading="lazy" />
+          <figcaption>Storm-response photo for urgent and inspection-first concepts.</figcaption>
+        </figure></header>
+
+      <section class="grid">
+        <article class="panel">
+          <h2>Service matrix</h2>
+          <div class="metric">
+            <div><b>Roofing</b><span>Replacement, repairs, structural inspection support</span></div>
+            <div><b>Fortified roofs</b><span>Added reinforcement in exposed coastal zones</span></div>
+            <div><b>EPDM Hyperstock</b><span>Membrane-style, low-maintenance coverage</span></div>
+            <div><b>Cedar & copper</b><span>Detail-sensitive upgrades for appearance + durability</span></div>
+            <div><b>Storm response</b><span>Emergency cleanup + temporary protection</span></div>
+            <div><b>Claims support</b><span>Paperwork, photos, adjuster coordination</span></div>
+          </div>
+
+          <div class="claim">
+            <strong>Humanized communication rule:</strong> we always write updates in plain language and next-step terms, not contractor jargon.
+          </div>
+        </article>
+
+        <aside class="panel">
+          <h2>Service workflow</h2>
+          <div class="stepWrap">
+            <p class="step"><strong>Step 1:</strong> Visual inspection and severity rating (safe / priority / structural).</p>
+            <p class="step"><strong>Step 2:</strong> Written scope and material path including fortified options.</p>
+            <p class="step"><strong>Step 3:</strong> Permit-safe execution with hand-nailed structure points where needed.</p>
+            <p class="step"><strong>Step 4:</strong> Owner walkthrough and final claim packet handoff.</p>
+          </div>
+          <div class="promise">
+            This layout is intentionally compact: each phase is one sentence, one decision, one clear action. It is built for people who need certainty before committing.
+          </div>
+        </aside>
+      </section>
+
+      <footer>Use this for paid campaigns and storm season pop-ups. The share pack keeps the full-page link paired with the matching preview image.</footer>
+    </main>
+  </body>
+</html>

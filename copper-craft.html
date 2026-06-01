@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vera Roofing | Copper Craft</title>
+    <meta name="description" content="Local quality-focused roofing in Brunswick County with hand-nailing, copper flashing, and 50-year workmanship support for severe weather restoration." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Merriweather:wght@700&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --paper:#f5f1ea;
+        --dark:#2c2217;
+        --earth:#7a5a3a;
+        --ink:#231a12;
+        --line:#d3c0a6;
+        --card:#fff7ea;
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        font-family:"Lexend", Arial, sans-serif;
+        color:var(--ink);
+        background:
+          linear-gradient(180deg, #f3e9dd 0%, #ece0d1 100%);
+      }
+      .wrap{
+        max-width:1120px;
+        margin:0 auto;
+        padding:26px 24px 54px;
+      }
+      .tag{
+        text-transform:uppercase;
+        letter-spacing:.14em;
+        color:var(--earth);
+        font-weight:700;
+        font-size:.74rem;
+      }
+      .hero{
+        border:1px solid var(--line);
+        border-radius:22px;
+        padding:30px;
+        background:
+          radial-gradient(circle at 0% 0%, #fffaf3, transparent 40%),
+          linear-gradient(115deg, #fff8ef, #f2e4d2);
+        position:relative;
+      }
+      h1{
+        font-family:"Merriweather", Georgia, serif;
+        font-size:clamp(2rem,4vw,3.4rem);
+        margin:.2em 0;
+      }
+      .actions{
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        margin-top:18px;
+      }
+      .link{
+        text-decoration:none;
+        padding:11px 15px;
+        border-radius:10px;
+        font-weight:700;
+      }
+      .solid{
+        background:linear-gradient(120deg,#7a5a3a,#5a412b);
+        color:#fff;
+      }
+      .ghost{
+        color:var(--dark);
+        border:1px solid #8c7157;
+        background:#fff1da;
+      }
+      .grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:18px;
+        margin-top:18px;
+      }
+      .panel{
+        border:1px solid var(--line);
+        border-radius:16px;
+        background:var(--card);
+        padding:18px;
+      }
+      .panel strong{color:#573f26}
+      .timeline{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+        gap:10px;
+        margin-top:12px;
+      }
+      .step{
+        border-radius:12px;
+        background:#fffaf2;
+        border:1px dashed #b18f6e;
+        padding:12px;
+      }
+      .step span{
+        display:inline-block;
+        width:26px;height:26px;
+        border-radius:999px;
+        background:#8a6544;
+        color:#fff;
+        display:grid;
+        place-items:center;
+        font-size:.85rem;
+        margin-bottom:8px;
+      }
+      .quote{
+        background:#5a402b;
+        color:#f4ede4;
+        border-radius:16px;
+        padding:18px;
+        margin-top:18px;
+      }
+      .stats{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:10px;
+        margin-top:12px;
+      }
+      .stat{
+        text-align:center;
+        background:#fff;
+        border:1px solid #d7c1a7;
+        border-radius:12px;
+        padding:14px 10px;
+      }
+      .num{
+        display:block;
+        font-family:"Merriweather", serif;
+        font-size:1.7rem;
+        color:#4e3117;
+      }
+      .social{
+        margin-top:18px;
+        background:#fff7eb;
+        border-left:4px solid #8a6544;
+        padding:14px;
+      }
+      .cards{
+        margin-top:18px;
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:12px;
+      }
+      .card{
+        background:#fff;
+        border:1px solid #d4bc9f;
+        border-radius:12px;
+        padding:14px;
+      }
+      .card h3,.card p{margin:8px 0}
+      .reveal{
+        opacity:0;
+        transform:translateY(18px);
+      }
+      .reveal.show{
+        opacity:1;
+        transform:translateY(0);
+        transition:opacity .6s ease, transform .6s ease;
+      }
+      .leaf{
+        position:absolute;
+        right:24px;
+        top:-10px;
+        font-size:2.8rem;
+        color:#a67f5c;
+        opacity:.2;
+      }
+      @media (max-width:860px){
+        .grid,.stats{grid-template-columns:1fr}
+      }
+    
+      .hero-photo {
+        margin: 18px 0 0;
+        border: 1px solid rgba(20, 33, 61, 0.12);
+        border-radius: 16px;
+        overflow: hidden;
+        background: #f6f2ea;
+        box-shadow: 0 16px 28px rgba(16, 23, 42, 0.12);
+      }
+      .hero-photo img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+      }
+      .hero-photo figcaption {
+        padding: 10px 12px;
+        background: #fff;
+        color: #526076;
+        font: 600 12px/1.4 Inter, Arial, Helvetica, sans-serif;
+      }
+</style>
+  </head>
+  <body>
+    <main class="wrap">
+      <p class="tag">Gustavo Vera | Brunswick County Roofing</p>
+      <section class="hero">
+        <span class="leaf">✦</span>
+        <h1>Craft, Protection, and Trust That Shows in Every Nail</h1>
+        <p>Homeowners want one promise above all: durable roofs and respectful communication. This concept centers that relationship with warm, craft-forward visuals and proof language.</p>
+        <div class="actions">
+          <a class="link solid" href="#contact">Book a Home Review</a>
+          <a class="link ghost" href="#services">Explore Services</a>
+        </div>
+      
+        <figure class="hero-photo">
+          <img src="/gustavo-roofing-options/album-photos/copper-detail-brick.jpeg" alt="Brick and copper roofing detail" loading="lazy" />
+          <figcaption>Premium detail photo for craftsmanship and proof-first concepts.</figcaption>
+        </figure></section>
+
+      <section class="grid">
+        <article class="panel reveal">
+          <h2>Craft-Led Service Portfolio</h2>
+          <ul>
+            <li>Roofing and reinforced roofing systems.</li>
+            <li>Fortified roofs for harsh weather and high wind zones.</li>
+            <li>EPDM Hyperstock for low-maintenance waterproof layers.</li>
+            <li>Cedar shake design and detailing.</li>
+            <li>Copper flashing installation and integration.</li>
+          </ul>
+          <div class="timeline">
+            <div class="step">
+              <span>1</span>
+              Assess roof geometry, water paths, and visible structural risks.
+            </div>
+            <div class="step">
+              <span>2</span>
+              Plan with owner review and insurance-adjuster strategy.
+            </div>
+            <div class="step">
+              <span>3</span>
+              Hand-nailed execution where required and owner inspection on-site.
+            </div>
+            <div class="step">
+              <span>4</span>
+              Warranties documented and post-completion walkthrough complete.
+            </div>
+          </div>
+        </article>
+        <aside class="panel reveal">
+          <h2>Claims & Storm Recovery</h2>
+          <p>Storm events create urgency. This section communicates confidence under pressure by showing order of operations and how value is protected.</p>
+          <div class="stats">
+            <div class="stat">
+              <span class="num">0</span>
+              <small>Damage left undocumented</small>
+            </div>
+            <div class="stat">
+              <span class="num">100%</span>
+              <small>Owner inspection checkpoints</small>
+            </div>
+            <div class="stat">
+              <span class="num">50yr</span>
+              <small>WARRANTY on qualifying installs</small>
+            </div>
+          </div>
+          <p class="quote">“From inspection to final signoff, the team explains each phase in plain language so families can make better decisions.”</p>
+        </aside>
+      </section>
+
+      <section class="panel reveal">
+        <h2>Social Trust & Emotional Attachment</h2>
+        <div class="social">
+          <p>Word-of-mouth builders thrive on one currency: trust carried by experience. This layout emphasizes neighborhood ownership, clear outcomes, and family safety over hype.</p>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <h3>Neighborhood-first language</h3>
+            <p>“We know Brunswick County weather and what it does to roof edges and flashing.”</p>
+          </article>
+          <article class="card">
+            <h3>Severity signal management</h3>
+            <p>Prioritizes storm severity, deck integrity, and immediate leak threats before cosmetic upgrades.</p>
+          </article>
+          <article class="card">
+            <h3>Human reassurance</h3>
+            <p>Simple reassurance about process and timing reduces stress during repairs and claims.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel reveal" id="services">
+        <h2>Quality Control Statement</h2>
+        <p>Every project is anchored by three standards: material accountability, workmanship consistency, and owner accountability.</p>
+      </section>
+
+      <section id="contact" class="social reveal">
+        <h2>Get Started</h2>
+        <p>Share your location and concern, and I’ll help you choose the fastest path between storm triage and full project buildout.</p>
+        <a class="link solid" href="/gustavo-roofing-options/share-pack.html">Open share pack</a>
+      </section>
+    </main>
+
+    <script>
+      const revealTargets = document.querySelectorAll('.reveal');
+      const onScroll = () => {
+        revealTargets.forEach((el, i) => {
+          if (el.getBoundingClientRect().top < window.innerHeight * 0.9) {
+            setTimeout(() => el.classList.add('show'), i * 90);
+          }
+        });
+      };
+      onScroll();
+      window.addEventListener('scroll', onScroll);
+    </script>
+  </body>
+</html>
