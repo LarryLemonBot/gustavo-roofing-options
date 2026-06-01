@@ -32,3 +32,7 @@ positioning.
 - Verify the exact warranty language before publishing.
 - Add real testimonials, Google review snippets, and final licensing/legal language.
 - Replace any temporary photos with Gustavo-approved finished-project images.
+
+## Client handoff packaging note
+
+This folder is also the GitHub Pages source repository, so `.git/` exists locally for publishing. Do not include `.git/`, `full-album-export/`, or rough album review files in any client handoff ZIP. The client-facing review route is `/gustavo-roofing-options/` and the selected public assets are the curated HTML pages plus `hero-photos/`, `album-photos/`, `photos/`, and approved screenshots only.
