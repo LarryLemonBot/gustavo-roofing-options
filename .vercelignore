@@ -16,6 +16,7 @@ POLISH-PASS-RECOMMENDATION.md
 *.tar
 *.tar.gz
 .DS_Store
+local-photo-label-audit-sheet.jpg
 scripts/**
 HANDOFF-EDITING.md
 00-NEXT-SESSION-HANDOFF.md
