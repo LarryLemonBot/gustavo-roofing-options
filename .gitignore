@@ -1,0 +1,34 @@
+# Runtime / secrets / host metadata
+.vercel/
+.env
+.env.*
+
+# Local recovery, backups, and private/internal working folders
+backups/
+archive/
+research/
+photo-audit/
+mcps/
+terminals/
+
+# Heavy QA capture evidence. Keep QA docs/scripts explicitly trackable below.
+qa/**
+!qa/
+!qa/scripts/
+!qa/scripts/**
+!qa/VISUAL-QA-WORKFLOW.md
+!qa/FINAL-QA-VERA-2026-06-11.md
+!qa/FINAL-EXPERT-SCORECARD-VERA-2026-06-11.md
+
+# Local-only audit sheets / bundles
+local-photo-label-audit-sheet.jpg
+*.zip
+*.tgz
+*.tar
+*.tar.gz
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vera-roofing-review-public.vercel.app/sitemap.xml

@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/gustavo-roofing-options/:path*",
+      "destination": "/",
+      "permanent": false
+    }
+  ]
+}
