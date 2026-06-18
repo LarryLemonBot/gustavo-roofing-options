@@ -68,7 +68,7 @@ Use descriptive filenames. Good examples:
 ```text
 roof-copper-flashing-tight.jpeg
 roof-storm-damage-inspection.jpeg
-roof-wind-rated-underlayment.jpeg
+roof-synthetic-underlayment-prep.jpeg
 hero-metal-roof-coastal.jpeg
 ```
 
@@ -80,10 +80,10 @@ Recommended image rules:
 - Keep image names descriptive.
 - Try to keep images under 1 MB each.
 
-To replace the hero background image:
+To replace the homepage hero side-card image:
 
 1. Put the new photo in `public/assets/images/`.
-2. Open `public/assets/css/site.css`.
+2. Open `public/index.html`.
 3. Search for `hero-metal-roof-coastal.jpeg`.
 4. Replace it with the new filename.
 
@@ -99,24 +99,19 @@ To replace the hero side-card image:
 Header logo currently used:
 
 ```text
-public/assets/images/vera-roofing-logo-mainmark-transparent-clean.png
+public/assets/images/vera-roofing-logo-header-black-banner.jpg
 ```
 
-This avoids visible license/insurance text in the header unless that proof is separately confirmed.
+This uses the client-supplied black-background Vera's Roofing logo and blends into the current dark header treatment.
 
-Original approved logo reference:
+Current responsive variants live in:
 
 ```text
-public/assets/images/vera-roofing-logo-approved.jpg
+public/assets/images/responsive/vera-roofing-logo-header-black-banner-*.jpg
 ```
 
-This is the Gustavo-approved Logo 10 version with:
+Older logo-choice files and rejected logo variants should stay out of `public/` and remain archived outside the deploy tree. Do not restore older logo versions unless the client explicitly asks.
 
-- Utility knife removed.
-- Circled purple swoosh behind hammer removed.
-- Purple/silver/white color scheme approved.
-
-Do not restore older logo versions from the archive unless the client explicitly asks.
 
 ## Adding or editing service cards
 
@@ -148,7 +143,7 @@ Search for:
 id="epdm-flat-roofing"
 ```
 
-Keep EPDM concise on the services page. The full Carolina Beach proof set belongs in:
+Keep EPDM concise on the services page. The full coastal deck proof set belongs in:
 
 ```text
 public/photos.html#epdm-carolina-beach
@@ -156,7 +151,7 @@ public/photos.html#epdm-carolina-beach
 
 Use careful language for claims:
 
-- Say `FORTIFIED-style` or `FORTIFIED upgrade conversations` unless credentials are verified.
+- Say `wind-mitigation`, `code-related roof-upgrade options`, or `roof-upgrade conversations` unless FORTIFIED credentials, scope language, and evaluator coordination are verified.
 - Say `documentation for insurance claim conversations`, not `we handle insurance claims` or `guaranteed approval`.
 - Say `Ask about available manufacturer warranty options for qualifying roofing systems`, not a blanket guarantee.
 
@@ -206,18 +201,32 @@ Avoid unsupported claims like:
 From this folder:
 
 ```powershell
+.\scripts\sync-public-index.ps1
+.\scripts\verify-public-mirrors.ps1
 node qa/scripts/verify-final-mobile-visual-guards.mjs
 vercel deploy --prod --yes --scope orbitals-projects
+```
+
+The scoped CLI deploy is the default path. Do not rely on an unscoped GitHub-triggered Vercel deploy for this site; it can route through the wrong team membership and fail before production is updated.
+
+If you intentionally use the prebuilt path, verify the generated output before uploading it:
+
+```powershell
+vercel build --prod --yes --scope orbitals-projects
+.\scripts\verify-vercel-output.ps1
+vercel deploy --prebuilt --prod --scope orbitals-projects
 ```
 
 Then open:
 
 ```text
-https://vera-roofing-review-public.vercel.app/
+https://verasroofing.com/
 ```
 
 Check:
 
+- `https://www.verasroofing.com/` redirects to the apex custom domain.
+- `https://vera-roofing-review-public.vercel.app/` redirects to the apex custom domain.
 - Header loads.
 - Logo loads.
 - Photos load.
@@ -229,3 +238,5 @@ Check:
 - `photos.html#epdm-carolina-beach` still shows all 9 EPDM photos.
 - Caption pills fit the text instead of stretching full-width.
 - No old preview-board content appears.
+
+Do not deploy if the public/root mirror verifier reports a mismatch. Fix the source files and re-run the verifier first.

@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  // Handoff edit point: update these values if Vera's Roofing changes contact info.
+  // Central contact values used by visible phone, text, and email links.
   const site = {
     phoneDisplay: "910.228.8034",
     phoneHref: "tel:+19102288034",

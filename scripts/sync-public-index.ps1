@@ -1,8 +1,11 @@
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
-$source = Join-Path $root 'public\index.html'
-$dest = Join-Path $root 'index.html'
+$pages = @('index', 'services', 'photos', 'areas', 'process', 'contact')
 
-Copy-Item -LiteralPath $source -Destination $dest -Force
-Write-Host "Synced public/index.html -> index.html"
+foreach ($page in $pages) {
+  $source = Join-Path $root "public\$page.html"
+  $dest = Join-Path $root "$page.html"
+  Copy-Item -LiteralPath $source -Destination $dest -Force
+  Write-Host "Synced public/$page.html -> $page.html"
+}

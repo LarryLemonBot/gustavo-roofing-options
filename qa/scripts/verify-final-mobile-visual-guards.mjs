@@ -41,11 +41,22 @@ function extractImageSources(html) {
   return [...html.matchAll(/\ssrc=["']([^"']+)["']/g)].map((match) => match[1]);
 }
 
+function extractSrcsetSources(html) {
+  return [...html.matchAll(/\ssrcset=["']([^"']+)["']/g)]
+    .flatMap((match) => match[1].split(","))
+    .map((candidate) => candidate.trim().split(/\s+/)[0])
+    .filter(Boolean);
+}
+
 const allHtml = [...htmlByPage.values()].join("\n");
 
 for (const [file, html] of htmlByPage.entries()) {
   for (const src of extractImageSources(html)) {
     if (!assetExists(src)) fail(`${file}: missing image/script asset ${src}`);
+  }
+
+  for (const src of extractSrcsetSources(html)) {
+    if (!assetExists(src)) fail(`${file}: missing responsive image candidate ${src}`);
   }
 
   if (!/href=["']tel:\+19102288034["']/.test(html)) {
@@ -69,7 +80,11 @@ for (const [file, html] of htmlByPage.entries()) {
       if (!assetExists(route)) fail(`${file}: missing linked asset ${href}`);
       continue;
     }
-    const targetFile = route === "/" || route === "" ? "index.html" : route.replace(/^\//, "");
+    let targetFile = route === "/" || route === "" ? "index.html" : route.replace(/^\//, "");
+    if (!htmlByPage.has(targetFile) && !targetFile.endsWith(".html") && htmlByPage.has(`${targetFile}.html`)) {
+      // Vercel cleanUrls=true serves /services from services.html.
+      targetFile = `${targetFile}.html`;
+    }
     if (!htmlByPage.has(targetFile)) {
       fail(`${file}: broken internal link ${href}`);
       continue;
@@ -138,14 +153,33 @@ if (!logoRefs.length) fail("no header logo references found");
 
 const highContrastLight = "(?:#fffaf2|#f7f9ff)";
 
-if (!/\.home-page\s+\.mobile-call\s*\{[^}]*display:\s*none\s*!important/i.test(css)) {
-  fail("homepage sticky mobile CTA should be disabled to avoid duplicate first-viewport call buttons");
+if (/mobile-call|mobile-cta-ready/.test(allHtml) || /mobile-call|mobile-cta-ready/.test(css)) {
+  fail("sticky mobile CTA component should stay removed to avoid duplicate first-viewport call buttons");
 }
-if (!/\.mobile-call\s*\{[^}]*min-width:\s*178px/i.test(css)) {
-  fail("compact mobile CTA width guard is missing");
+if (/vera-roofing-20260618v(?:1[89]|20|21|22)/.test(allHtml)) {
+  fail("public HTML still references an older v18/v19/v20/v21/v22 CSS cache token");
 }
-if (!/\.brand img\.brand-lockup\s*\{[^}]*width:\s*clamp\(200px,\s*18vw,\s*250px\)/i.test(css)) {
-  fail("header logo size guard changed; recheck mobile nav height before deploy");
+if (!allHtml.includes("vera-roofing-20260618v23")) {
+  fail("public HTML does not reference the current v23 CSS cache token");
+}
+if (!/Final v23 cohesion polish/i.test(css)) {
+  fail("final v23 CSS cohesion block is missing");
+}
+if (!/@media\s*\(max-width:\s*760px\)\s*\{[\s\S]*?\.navlinks\s+a\s*\{[^}]*min-height:\s*44px/i.test(css)) {
+  fail("mobile nav tap targets should stay at least 44px high");
+}
+if (!/@media\s*\(min-width:\s*761px\)\s+and\s+\(max-width:\s*1020px\)\s*\{[\s\S]*?\.navlinks\s+\.call-number\s*\{[^}]*display:\s*none/i.test(css)) {
+  fail("tablet nav must hide the phone number to prevent CTA wrapping");
+}
+if (!/\.hero h1,\s*\.page-hero h1,\s*\.photo-hero h1\s*\{[^}]*letter-spacing:\s*0;[^}]*line-height:\s*1\.06/i.test(css)) {
+  fail("home, page, and photo hero headings should use normalized tracking and line-height");
+}
+if (!/\.photo-contact h2\s*\{[^}]*letter-spacing:\s*0/i.test(css)) {
+  fail("photos lower contact heading should not use hero-scale negative tracking");
+}
+if (!/@media\s*\(max-width:\s*760px\)\s*\{[\s\S]*?\.brand img\.brand-lockup\s*\{[^}]*width:\s*min\(100%,\s*200px\);[^}]*max-height:\s*96px/i.test(css)
+  && !/@media\s*\(max-width:\s*640px\)\s*\{[\s\S]*?\.brand img\.brand-lockup\s*\{[^}]*width:\s*min\(100%,\s*150px\);[^}]*max-height:\s*70px/i.test(css)) {
+  fail("final mobile logo size guard changed; recheck mobile nav height before deploy");
 }
 if (!/@media\s*\(max-width:\s*760px\)\s*\{[\s\S]*?\.trust-band\s*\{[^}]*margin-top:\s*0;[^}]*padding-top:\s*32px;[^}]*background:\s*var\(--paper\)/i.test(css)) {
   fail("mobile trust strip must sit fully on the light page background without negative overlap");

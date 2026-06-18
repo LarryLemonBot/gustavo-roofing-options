@@ -1,4 +1,5 @@
 archive/**
+.hermes/**
 research/**
 photo-audit/**
 mcps/**
@@ -7,6 +8,8 @@ backups/**
 qa/**
 .git/**
 .vercel/**
+.env
+.env.*
 README.md
 EDITING-GUIDE.md
 implementation-brief.md
@@ -23,3 +26,4 @@ HANDOFF-EDITING.md
 HANDOFF-MINI-M3-FOR-VERA-2026-06-10.md
 HANDOFF-HERMES-MINIMAX-M3-VERA-2026-06-11.md
 HANDOFF-RETURN-*.md
+HANDOFF-CODEX-DESKTOP-*.md

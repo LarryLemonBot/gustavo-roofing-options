@@ -1,5 +1,6 @@
 # Runtime / secrets / host metadata
 .vercel/
+.hermes/
 .env
 .env.*
 

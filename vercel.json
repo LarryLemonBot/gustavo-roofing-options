@@ -1,33 +1,145 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "git": {
+    "deploymentEnabled": false
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/assets/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/favicon.ico",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/apple-touch-icon.png",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    }
+  ],
   "redirects": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "vera-roofing-review-public.vercel.app"
+        }
+      ],
+      "destination": "https://verasroofing.com/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "vera-roofing-review-public.vercel.app"
+        }
+      ],
+      "destination": "https://verasroofing.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/services/",
+      "destination": "/services",
+      "permanent": true
+    },
+    {
+      "source": "/photos/",
+      "destination": "/photos",
+      "permanent": true
+    },
+    {
+      "source": "/areas/",
+      "destination": "/areas",
+      "permanent": true
+    },
+    {
+      "source": "/process/",
+      "destination": "/process",
+      "permanent": true
+    },
+    {
+      "source": "/contact/",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/roof-work",
+      "destination": "/photos",
+      "permanent": true
+    },
+    {
+      "source": "/areas-served",
+      "destination": "/areas",
+      "permanent": true
+    },
+    {
+      "source": "/assets/favicon.ico",
+      "destination": "/favicon.ico",
+      "permanent": true
+    },
+    {
+      "source": "/assets/apple-touch-icon.png",
+      "destination": "/apple-touch-icon.png",
+      "permanent": true
+    },
+    {
+      "source": "/gustavo-roofing-options/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/gustavo-roofing-options/index.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/gustavo-roofing-options/index",
+      "destination": "/",
+      "permanent": true
+    },
     {
       "source": "/gustavo-roofing-options/:path*",
       "destination": "/",
-      "permanent": false
-    },
-    {
-      "source": "/services",
-      "destination": "/services.html",
-      "permanent": true
-    },
-    {
-      "source": "/photos",
-      "destination": "/photos.html",
-      "permanent": true
-    },
-    {
-      "source": "/areas",
-      "destination": "/areas.html",
-      "permanent": true
-    },
-    {
-      "source": "/process",
-      "destination": "/process.html",
-      "permanent": true
-    },
-    {
-      "source": "/contact",
-      "destination": "/contact.html",
       "permanent": true
     }
   ]
