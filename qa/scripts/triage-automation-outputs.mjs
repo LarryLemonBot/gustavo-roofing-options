@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -131,6 +132,83 @@ function addUnique(list, item) {
   if (!list.includes(item)) list.push(item);
 }
 
+function runGit(args) {
+  const result = spawnSync("git", args, { cwd: root, encoding: "utf8", shell: false });
+  return {
+    command: `git ${args.join(" ")}`,
+    code: result.status,
+    stdout: (result.stdout || "").trim(),
+    stderr: (result.stderr || "").trim(),
+  };
+}
+
+function isDeployExcluded(filePath) {
+  const normalized = filePath.replace(/\\/g, "/");
+  if (
+    [
+      "README.md",
+      "EDITING-GUIDE.md",
+      "implementation-brief.md",
+      "POLISH-PASS-RECOMMENDATION.md",
+      "HANDOFF-EDITING.md",
+      "00-NEXT-SESSION-HANDOFF.md",
+      "local-photo-label-audit-sheet.jpg",
+    ].includes(normalized)
+  ) {
+    return true;
+  }
+  if (
+    normalized.startsWith("archive/") ||
+    normalized.startsWith(".hermes/") ||
+    normalized.startsWith("research/") ||
+    normalized.startsWith("photo-audit/") ||
+    normalized.startsWith("mcps/") ||
+    normalized.startsWith("terminals/") ||
+    normalized.startsWith("backups/") ||
+    normalized.startsWith("qa/") ||
+    normalized.startsWith(".git/") ||
+    normalized.startsWith(".vercel/") ||
+    normalized.startsWith("scripts/")
+  ) {
+    return true;
+  }
+  if (/^HANDOFF-(CODEX-DESKTOP-|RETURN-).+\.md$/.test(normalized)) return true;
+  if (/^HANDOFF-HERMES-MINIMAX-M3-VERA-2026-06-11\.md$/.test(normalized)) return true;
+  if (/^HANDOFF-MINI-M3-FOR-VERA-2026-06-10\.md$/.test(normalized)) return true;
+  if (/\.(zip|tgz|tar|tar\.gz)$/i.test(normalized)) return true;
+  if (/\.DS_Store$/i.test(normalized)) return true;
+  return false;
+}
+
+function deployDiffBetween(fromCommit, toCommit) {
+  if (!fromCommit || !toCommit || fromCommit === toCommit) {
+    return {
+      fromCommit,
+      toCommit,
+      command: null,
+      changedFiles: [],
+      deployRelevantFiles: [],
+      deployExcludedFiles: [],
+      diffReadable: true,
+    };
+  }
+  const diff = runGit(["diff", "--name-only", fromCommit, toCommit]);
+  const changedFiles = diff.stdout ? diff.stdout.split(/\r?\n/).filter(Boolean) : [];
+  const deployRelevantFiles = changedFiles.filter((file) => !isDeployExcluded(file));
+  const deployExcludedFiles = changedFiles.filter((file) => isDeployExcluded(file));
+  return {
+    fromCommit,
+    toCommit,
+    command: diff.command,
+    code: diff.code,
+    stderr: diff.stderr,
+    changedFiles,
+    deployRelevantFiles,
+    deployExcludedFiles,
+    diffReadable: diff.code === 0,
+  };
+}
+
 const blockingIssues = [];
 const warnings = [];
 const resolvedFindings = [];
@@ -194,17 +272,33 @@ if (!latestLivePath) {
 
 const latestReleaseGateMtime = mtimeMs(latestReleaseGatePath);
 const latestLiveMtime = mtimeMs(latestLivePath);
+const latestDeployDiff = deployDiffBetween(latestLiveSourceCommit, latestReleaseGateSourceCommit);
+const hasDeployRelevantCommitDrift = !latestDeployDiff.diffReadable || latestDeployDiff.deployRelevantFiles.length > 0;
 if (latestReleaseGatePath && latestLivePath && latestLiveMtime < latestReleaseGateMtime) {
-  addUnique(
-    blockingIssues,
-    `Latest live custom-domain QA is older than the latest release gate; run node qa/scripts/capture-live-custom-domain-final-qa.mjs after deploy. Live: ${path.relative(root, latestLivePath)}; release: ${path.relative(root, latestReleaseGatePath)}`,
-  );
+  if (hasDeployRelevantCommitDrift) {
+    addUnique(
+      blockingIssues,
+      `Latest live custom-domain QA is older than the latest release gate for deploy-relevant changes; run node qa/scripts/capture-live-custom-domain-final-qa.mjs after deploy. Live: ${path.relative(root, latestLivePath)}; release: ${path.relative(root, latestReleaseGatePath)}`,
+    );
+  } else {
+    addUnique(
+      nonActions,
+      `Latest release gate is newer than live QA only because deploy-excluded files changed (${latestDeployDiff.deployExcludedFiles.join(", ")}). No public redeploy is required for this drift.`,
+    );
+  }
 }
 if (latestReleaseGateSourceCommit && latestLiveSourceCommit && latestReleaseGateSourceCommit !== latestLiveSourceCommit) {
-  addUnique(
-    blockingIssues,
-    `Latest live custom-domain QA commit does not match latest release gate commit. Live: ${latestLiveSourceCommit}; release: ${latestReleaseGateSourceCommit}`,
-  );
+  if (hasDeployRelevantCommitDrift) {
+    addUnique(
+      blockingIssues,
+      `Latest live custom-domain QA commit does not match latest release gate commit for deploy-relevant changes. Live: ${latestLiveSourceCommit}; release: ${latestReleaseGateSourceCommit}`,
+    );
+  } else {
+    addUnique(
+      nonActions,
+      `Latest live custom-domain QA commit differs from the release gate commit, but the diff is deploy-excluded only (${latestDeployDiff.deployExcludedFiles.join(", ")}).`,
+    );
+  }
 }
 
 const liveProbes = [];
@@ -277,10 +371,12 @@ const report = {
     latestLiveIssueCount: latestLiveReport?.issueCount ?? null,
     latestLiveCaptureCount: latestLiveReport?.captures?.length ?? null,
     latestLiveSourceCommit,
+    latestDeployDiff,
     sourceCommitMatches:
       latestReleaseGateSourceCommit && latestLiveSourceCommit
         ? latestReleaseGateSourceCommit === latestLiveSourceCommit
         : null,
+    deployRelevantSourceCommitDrift: latestReleaseGateSourceCommit && latestLiveSourceCommit ? hasDeployRelevantCommitDrift : null,
     latestLiveIsNewerThanReleaseGate: latestReleaseGatePath && latestLivePath ? latestLiveMtime >= latestReleaseGateMtime : null,
   },
   liveProbes,
