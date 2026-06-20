@@ -144,7 +144,7 @@ const expression = `(() => {
     emptyAltImages: images.filter(img => !img.alt && !img.src.includes('favicon')).length,
     footerCount: document.querySelectorAll('footer.site-footer').length,
     headerCount: document.querySelectorAll('header.site-header').length,
-    requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Call to Request|Text to Request/i.test(a.textContent || '')).length,
+    requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Request Gutter Help|Call to Request|Text to Request/i.test(a.textContent || '')).length,
     hasTrustCopy: bodyTextLower.includes('family-owned and operated') && bodyTextLower.includes('owner-led final review'),
     forbiddenClaimHits: ['guaranteed insurance approval','best roofer','BBB','GAF certified','FORTIFIED certified','license number','insurance carrier','policy number'].filter(claim => bodyTextLower.includes(claim.toLowerCase())),
     symmetryIssues,

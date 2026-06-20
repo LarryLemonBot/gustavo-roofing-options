@@ -169,7 +169,7 @@ const reportExpression = `(() => {
     offenders,
     trustCopy: bodyTextLower.includes('family-owned and operated') && bodyTextLower.includes('owner-led final review'),
     badFortifiedCertified: bodyText.includes('FORTIFIED certified'),
-    requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Call to Request|Text to Request/i.test(a.textContent || '')).length,
+    requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Request Gutter Help|Call to Request|Text to Request/i.test(a.textContent || '')).length,
     forbiddenClaimHits: ['guaranteed insurance approval','best roofer','BBB','GAF certified','FORTIFIED certified','license number','insurance carrier','policy number'].filter(claim => bodyTextLower.includes(claim.toLowerCase())),
     brokenLoadedImages: images.filter(i => i.complete && (i.nw === 0 || i.nh === 0)),
     symmetryIssues,

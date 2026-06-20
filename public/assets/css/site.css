@@ -5085,8 +5085,12 @@ a.btn-secondary:hover,
   }
 
   .brand img.brand-lockup {
-    width: min(100%, 140px);
-    max-height: 64px;
+    width: min(100%, 128px);
+    max-height: 58px;
+  }
+
+  .navlinks {
+    gap: 8px;
   }
 
   .navlinks a {
@@ -5141,7 +5145,7 @@ a.btn-secondary:hover,
 
 @media (max-width: 380px) {
   .brand img.brand-lockup {
-    width: min(100%, 136px);
-    max-height: 62px;
+    width: min(100%, 122px);
+    max-height: 55px;
   }
 }
