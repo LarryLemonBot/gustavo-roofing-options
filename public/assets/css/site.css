@@ -1726,9 +1726,7 @@ p { text-wrap: pretty; }
   padding: clamp(22px, 3vw, 34px);
   border: 1px solid rgba(24, 21, 31, 0.12);
   border-radius: 24px;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(232, 237, 242, 0.88)),
-    radial-gradient(circle at 85% 10%, rgba(141, 85, 191, 0.12), transparent 18rem);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(232, 237, 242, 0.88));
   box-shadow: 0 18px 44px rgba(24, 21, 31, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
@@ -2146,9 +2144,7 @@ section.section.why .why-list > p.eyebrow {
 }
 
 .area-context {
-  background:
-    linear-gradient(180deg, rgba(251, 252, 253, 0.92), rgba(237, 242, 247, 0.94)),
-    radial-gradient(circle at 85% 5%, rgba(141, 85, 191, 0.12), transparent 28rem);
+  background: linear-gradient(180deg, rgba(251, 252, 253, 0.92), rgba(237, 242, 247, 0.94));
 }
 
 .area-context-grid {

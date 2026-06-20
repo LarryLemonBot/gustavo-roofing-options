@@ -57,6 +57,10 @@ Invoke-Step "Run live custom-domain QA" {
   node ".\qa\scripts\capture-live-custom-domain-final-qa.mjs"
 }
 
+Invoke-Step "Verify live deploy surface" {
+  node ".\qa\scripts\verify-live-deploy-surface.mjs"
+}
+
 if (-not $SkipIndexNow) {
   Invoke-Step "Submit sitemap URLs to IndexNow" {
     node ".\scripts\submit-indexnow.mjs"
