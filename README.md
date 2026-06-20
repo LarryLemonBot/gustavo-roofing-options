@@ -81,6 +81,7 @@ git status --short --branch
 node qa/scripts/run-release-gate.mjs
 vercel deploy --prod --yes --scope orbitals-projects
 node qa/scripts/capture-live-custom-domain-final-qa.mjs
+node scripts/submit-indexnow.mjs
 node qa/scripts/triage-automation-outputs.mjs
 ```
 
@@ -111,6 +112,7 @@ After deploy, verify:
 - `https://www.verasroofing.com/` redirects to `https://verasroofing.com/`.
 - `https://vera-roofing-review-public.vercel.app/` redirects to `https://verasroofing.com/`.
 - `node qa/scripts/capture-live-custom-domain-final-qa.mjs` returns `issueCount: 0` on the live custom domain.
+- `https://verasroofing.com/d87505eee9cf47a09d6c9d9065c53b7d.txt` returns the IndexNow key before running `node scripts/submit-indexnow.mjs`.
 - `node qa/scripts/triage-automation-outputs.mjs` returns `PASS` after the live custom-domain capture.
 
 Do not deploy if the mobile nav/logo feels oversized, first-viewport CTAs duplicate each other, text overlaps, image pills stretch wider than their text, unsupported license/insurance/FORTIFIED/review claims appear, or the homepage has grown past the intended seven sections.
