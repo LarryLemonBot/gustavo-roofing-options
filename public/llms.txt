@@ -17,7 +17,7 @@
 
 ## Business summary
 
-Vera's Roofing LLC is a family-owned and operated, licensed and insured roofing business focused on practical roofing help for homes, rentals, and business properties in coastal North Carolina. The site emphasizes roof repair, roof replacement, hand-nailed shingle work when included in the agreed scope, CertainTeed roof-system planning questions, storm photos and condition checks, metal roofing, copper flashing, EPDM rubber membrane work for flat and low-slope roof areas, gutter cleaning, gutter guard installation, waterproofing details, roof preparation, material-planning questions, and owner-led final review.
+Vera's Roofing LLC is a family-owned and operated, licensed and insured roofing business focused on practical roofing help for homes, rentals, and business properties in coastal North Carolina. The site emphasizes roof repair, roof replacement, hand-nailed shingle work when included in the agreed scope, CertainTeed ShingleMaster credentialed roofing company and roof-system planning questions, storm photos and condition checks, metal roofing, copper flashing, EPDM rubber membrane work for flat and low-slope roof areas, gutter cleaning, gutter guard installation, waterproofing details, roof preparation, material-planning questions, and owner-led final review.
 
 ## Contact
 
@@ -40,7 +40,7 @@ Primary locations and regional language used on the site:
 
 - This is a static, public business website for Vera's Roofing LLC.
 - The site uses real Vera's Roofing job photos to help property owners compare roof details before they call or text.
-- Vera's Roofing can review CertainTeed shingle-system options before materials are ordered. Warranty availability is described conditionally because eligibility depends on the selected materials, full roof system, installation requirements, registration, property type, transfer rules, exclusions, and CertainTeed's written terms.
-- FORTIFIED Home references are limited to program-requirements conversations when they apply; Vera's Roofing does not promise a blanket project designation or approval.
+- Vera's Roofing is described on the site as a CertainTeed ShingleMaster credentialed roofing company and can review CertainTeed shingle-system options before materials are ordered. Warranty availability is described conditionally because eligibility depends on the selected materials, full roof system, installation requirements, registration, property type, transfer rules, exclusions, and CertainTeed's written terms.
+- FORTIFIED Home references are limited to program-requirements conversations when they apply; exam completion is not itself a blanket contractor certification or project designation, and Vera's Roofing does not promise a blanket project designation or approval.
 - For urgent roof concerns, pricing, scheduling, warranty, licensing, and project-specific questions, contact Vera's Roofing directly.
 - The site does not promise insurance approvals, specific claim outcomes, fixed pricing, same-day response, or 24/7 availability.
