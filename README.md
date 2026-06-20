@@ -85,9 +85,18 @@ node scripts/submit-indexnow.mjs
 node qa/scripts/triage-automation-outputs.mjs
 ```
 
+Or run the guarded production sequence with:
+
+```powershell
+.\scripts\deploy-production.ps1
+```
+
+Use `.\scripts\deploy-production.ps1 -SkipDeploy` to run the local release checks without uploading a new deployment.
+
 `sync-public-index.ps1` keeps its historical name, but it now syncs all seven `public/*.html` files to their root mirror files.
 `report-local-state.mjs` separates release-blocking tracked or visible untracked changes from ignored generated QA/output artifacts. Do not use broad cleanup commands such as `git clean -xdf` to make ignored artifacts disappear.
 `run-release-gate.mjs` records the source commit and refuses to pass with uncommitted tracked changes. Use `ALLOW_DIRTY_RELEASE_GATE=1` only for local investigation, never for a production deploy gate.
+`deploy-production.ps1` runs the same release checks, deploys with Vercel CLI, runs live custom-domain QA, submits IndexNow, and triages automation outputs so post-deploy search notification is not missed.
 
 If native Codex Browser control fails while `report-local-state.mjs` shows browser bridge prerequisites passing, the remaining safe repair is to restart Codex Desktop or its app-server, then retry the Browser tool. Do not change or redeploy the website to fix a local Browser bridge failure.
 

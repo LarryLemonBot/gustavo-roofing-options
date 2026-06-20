@@ -1408,6 +1408,10 @@ p { text-wrap: pretty; }
   gap: 12px;
 }
 
+.roof-choice-mobile-list {
+  display: none;
+}
+
 .roof-choice-card {
   min-width: 0;
   padding: 18px;
@@ -1916,19 +1920,63 @@ p { text-wrap: pretty; }
     border-radius: 24px;
   }
 
+  .services-page .roof-choice-board-copy h2 {
+    margin-bottom: 10px;
+    font-size: clamp(1.9rem, 9vw, 2.55rem);
+  }
+
+  .services-page .roof-choice-board-copy p:not(.eyebrow) {
+    margin-bottom: 0;
+    font-size: 0.94rem;
+    line-height: 1.55;
+  }
+
+  .roof-choice-mobile-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 18px;
+  }
+
+  .roof-choice-mobile-list a {
+    display: flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    color: #f7f9ff;
+    background: rgba(255, 255, 255, 0.08);
+    font-weight: 950;
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  .services-page .roof-choice-grid {
+    display: none;
+  }
+
   .roof-choice-grid {
     grid-template-columns: 1fr;
   }
 
+  .services-page .service-panel:not(.service-panel-feature) .service-fit {
+    display: none;
+  }
+
   .service-photo-strip {
-    grid-template-columns: 1.45fr 1fr 1fr;
-    gap: 8px;
+    grid-template-columns: 1fr;
   }
 
   .service-photo-strip img {
-    height: clamp(118px, 34vw, 150px);
+    height: clamp(142px, 42vw, 168px);
     min-height: 0;
     border-radius: 14px;
+  }
+
+  .services-page .service-panel:not(.service-panel-feature) .service-photo-strip img:nth-child(n+2) {
+    display: none;
   }
 
   .service-cta-row {
