@@ -5044,8 +5044,8 @@ a.btn-secondary:hover,
   }
 
   .home-page .hero-issue-links a {
-    min-height: 40px;
-    padding: 7px 10px;
+    min-height: 44px;
+    padding: 8px 10px;
     font-size: 0.8rem;
   }
 
@@ -5081,8 +5081,8 @@ a.btn-secondary:hover,
   .footer-links a:last-child:nth-child(odd),
   .footer-contact a:last-child:nth-child(odd) {
     width: auto;
-    min-height: 32px;
-    padding: 2px 0;
+    min-height: 44px;
+    padding: 6px 0;
     border: 0;
     border-radius: 0;
     color: rgba(247, 249, 255, 0.72);
@@ -5201,10 +5201,11 @@ a.btn-secondary:hover,
   }
 
   .mobile-email-hero .text-link {
-    display: inline;
+    display: inline-flex;
+    align-items: center;
     width: auto;
-    min-height: 0;
-    padding: 0;
+    min-height: 44px;
+    padding: 6px 0;
     border: 0;
     border-radius: 0;
     color: #f7f9ff;

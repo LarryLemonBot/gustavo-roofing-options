@@ -23,6 +23,12 @@ const steps = [
     reportPrefix: null,
   },
   {
+    name: "rendered touch-target QA",
+    command: ["node", "qa/scripts/verify-rendered-touch-targets.mjs"],
+    reportPrefix: "rendered-touch-targets-",
+    reportFile: "rendered-touch-targets-report.json",
+  },
+  {
     name: "full-page screenshot QA",
     command: ["node", "qa/scripts/capture-fullpage-qa.mjs"],
     reportPrefix: "phase2-fullpage-",
