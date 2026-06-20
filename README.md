@@ -78,6 +78,8 @@ From this folder:
 .\scripts\verify-public-mirrors.ps1
 node qa/scripts/run-release-gate.mjs
 vercel deploy --prod --yes --scope orbitals-projects
+node qa/scripts/capture-live-custom-domain-final-qa.mjs
+node qa/scripts/triage-automation-outputs.mjs
 ```
 
 `sync-public-index.ps1` keeps its historical name, but it now syncs all seven `public/*.html` files to their root mirror files.
@@ -90,7 +92,7 @@ vercel build --prod --yes --scope orbitals-projects
 vercel deploy --prebuilt --prod --scope orbitals-projects
 ```
 
-Before deploy, also run a native Codex browser mobile pass at `390x844` for:
+Before deploy, also follow [qa/VISUAL-QA-WORKFLOW.md](qa/VISUAL-QA-WORKFLOW.md). At minimum, run a native Codex browser mobile pass at `390x844` for:
 
 - `/`
 - `/services#epdm-flat-roofing`
@@ -102,6 +104,8 @@ After deploy, verify:
 - `https://verasroofing.com/` returns the current site.
 - `https://www.verasroofing.com/` redirects to `https://verasroofing.com/`.
 - `https://vera-roofing-review-public.vercel.app/` redirects to `https://verasroofing.com/`.
+- `node qa/scripts/capture-live-custom-domain-final-qa.mjs` returns `issueCount: 0` on the live custom domain.
+- `node qa/scripts/triage-automation-outputs.mjs` returns `PASS` after the live custom-domain capture.
 
 Do not deploy if the mobile nav/logo feels oversized, first-viewport CTAs duplicate each other, text overlaps, image pills stretch wider than their text, unsupported license/insurance/FORTIFIED/review claims appear, or the homepage has grown past the intended seven sections.
 

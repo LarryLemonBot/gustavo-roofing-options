@@ -4605,6 +4605,12 @@ a.btn-secondary:hover,
   .footer-contact a:last-child:nth-child(odd) {
     width: 100%;
   }
+
+  .footer-contact a {
+    padding-inline: 8px;
+    font-size: clamp(0.68rem, 3.1vw, 0.82rem);
+    white-space: nowrap;
+  }
 }
 
 /* Homepage services: balanced six-card desktop layout. */

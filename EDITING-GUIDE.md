@@ -203,8 +203,10 @@ From this folder:
 ```powershell
 .\scripts\sync-public-index.ps1
 .\scripts\verify-public-mirrors.ps1
-node qa/scripts/verify-final-mobile-visual-guards.mjs
+node qa/scripts/run-release-gate.mjs
 vercel deploy --prod --yes --scope orbitals-projects
+node qa/scripts/capture-live-custom-domain-final-qa.mjs
+node qa/scripts/triage-automation-outputs.mjs
 ```
 
 The scoped CLI deploy is the default path. Do not rely on an unscoped GitHub-triggered Vercel deploy for this site; it can route through the wrong team membership and fail before production is updated.
@@ -222,6 +224,8 @@ Then open:
 ```text
 https://verasroofing.com/
 ```
+
+Use [qa/VISUAL-QA-WORKFLOW.md](qa/VISUAL-QA-WORKFLOW.md) as the canonical deploy QA checklist. A deploy is not clean until the release gate passes before deploy, the live custom-domain capture passes after deploy, and automation triage passes after that live capture.
 
 Check:
 

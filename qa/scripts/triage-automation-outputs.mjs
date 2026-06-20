@@ -59,6 +59,10 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function mtimeMs(filePath) {
+  return filePath && fs.existsSync(filePath) ? fs.statSync(filePath).mtimeMs : null;
+}
+
 function parseAutomationToml(text) {
   const pick = (key) => {
     const match = text.match(new RegExp(`^${key}\\s*=\\s*(.+)$`, "m"));
@@ -186,6 +190,15 @@ if (!latestLivePath) {
   addUnique(blockingIssues, `Latest live custom-domain visual report has ${latestLiveReport?.issueCount ?? "unknown"} issue(s): ${path.relative(root, latestLivePath)}`);
 }
 
+const latestReleaseGateMtime = mtimeMs(latestReleaseGatePath);
+const latestLiveMtime = mtimeMs(latestLivePath);
+if (latestReleaseGatePath && latestLivePath && latestLiveMtime < latestReleaseGateMtime) {
+  addUnique(
+    blockingIssues,
+    `Latest live custom-domain QA is older than the latest release gate; run node qa/scripts/capture-live-custom-domain-final-qa.mjs after deploy. Live: ${path.relative(root, latestLivePath)}; release: ${path.relative(root, latestReleaseGatePath)}`,
+  );
+}
+
 const liveProbes = [];
 for (const probe of [
   { url: "https://verasroofing.com/gutter-cleaning-guards", expectStatus: 200 },
@@ -254,6 +267,7 @@ const report = {
     latestLivePath,
     latestLiveIssueCount: latestLiveReport?.issueCount ?? null,
     latestLiveCaptureCount: latestLiveReport?.captures?.length ?? null,
+    latestLiveIsNewerThanReleaseGate: latestReleaseGatePath && latestLivePath ? latestLiveMtime >= latestReleaseGateMtime : null,
   },
   liveProbes,
   resolvedFindings,

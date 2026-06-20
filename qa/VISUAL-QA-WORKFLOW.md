@@ -26,6 +26,16 @@ This catches repeatable failures before browser review:
 
 Use the native Codex desktop browser at `390x844`.
 
+If the native Codex browser cannot attach or bootstrap, record that failure in the handoff or final QA note, then run the Edge/CDP fallback scripts:
+
+```powershell
+node qa/scripts/capture-live-custom-domain-final-qa.mjs
+node qa/scripts/capture-fullpage-qa.mjs
+node qa/scripts/verify-premium-cross-viewport.mjs
+```
+
+Inspect the saved screenshots under `qa/`. Do not call this a native-browser pass unless the native Codex browser was actually inspected.
+
 Inspect:
 
 - `/`

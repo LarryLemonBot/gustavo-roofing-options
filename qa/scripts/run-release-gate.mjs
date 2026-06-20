@@ -13,6 +13,11 @@ fs.mkdirSync(logDir, { recursive: true });
 
 const steps = [
   {
+    name: "public mirror verification",
+    command: ["powershell", "-ExecutionPolicy", "Bypass", "-File", "scripts/verify-public-mirrors.ps1"],
+    reportPrefix: null,
+  },
+  {
     name: "static visual guards",
     command: ["node", "qa/scripts/verify-final-mobile-visual-guards.mjs"],
     reportPrefix: null,

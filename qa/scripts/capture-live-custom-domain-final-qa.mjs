@@ -169,6 +169,8 @@ const reportExpression = `(() => {
     offenders,
     trustCopy: bodyTextLower.includes('family-owned and operated') && bodyTextLower.includes('owner-led final review'),
     badFortifiedCertified: bodyText.includes('FORTIFIED certified'),
+    requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Call to Request|Text to Request/i.test(a.textContent || '')).length,
+    forbiddenClaimHits: ['guaranteed insurance approval','best roofer','BBB','GAF certified','FORTIFIED certified','license number','insurance carrier','policy number'].filter(claim => bodyTextLower.includes(claim.toLowerCase())),
     brokenLoadedImages: images.filter(i => i.complete && (i.nw === 0 || i.nh === 0)),
     symmetryIssues,
     visibleHeadings: Array.from(document.querySelectorAll('h1,h2,h3')).filter(visible).slice(0, 12).map(h => ({tag:h.tagName.toLowerCase(), text:text(h), rect:rect(h)})),
@@ -297,6 +299,8 @@ try {
     if (item.anchorState.expectedHash && item.anchorState.actualHash !== item.anchorState.expectedHash) list.push(`hashMismatch:${item.anchorState.actualHash || 'none'}`);
     if (item.anchorState.expectedHash && item.anchorState.found === false) list.push('missingAnchorTarget');
     if (!report.trustCopy) list.push('missingTrustCopy');
+    if (report.requestCtaCount < 1) list.push('missingRequestCTA');
+    if (report.forbiddenClaimHits.length) list.push(`forbiddenClaims:${report.forbiddenClaimHits.join('|')}`);
     if (report.badFortifiedCertified) list.push('unsafeFortifiedCertifiedCopy');
     if (report.brokenLoadedImages.length) list.push(`brokenLoadedImages:${report.brokenLoadedImages.length}`);
     if (report.symmetryIssues.length) list.push(`symmetryIssues:${report.symmetryIssues.length}`);
@@ -323,6 +327,8 @@ try {
       missingPrimaryHeading: item.report.missingPrimaryHeading,
       trustCopy: item.report.trustCopy,
       badFortifiedCertified: item.report.badFortifiedCertified,
+      requestCtaCount: item.report.requestCtaCount,
+      forbiddenClaimHits: item.report.forbiddenClaimHits,
       brokenLoadedImages: item.report.brokenLoadedImages.length,
       symmetryIssues: item.report.symmetryIssues.length,
       h1: item.report.h1,
