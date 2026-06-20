@@ -81,7 +81,7 @@ async function waitReady(client) {
 }
 const expression = `(() => {
   const rect = (el) => { const r = el.getBoundingClientRect(); return { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom), width: Math.round(r.width), height: Math.round(r.height) }; };
-  const text = (el) => (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 140);
+  const text = (el) => (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 140);
   const visible = (el) => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
   const vw = window.innerWidth;
   const visibleEls = Array.from(document.querySelectorAll('body *')).filter(visible);

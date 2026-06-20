@@ -98,7 +98,7 @@ const reportExpression = `(() => {
     return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden';
   };
   const rect = (el) => { const r = el.getBoundingClientRect(); return {left:Math.round(r.left), right:Math.round(r.right), top:Math.round(r.top), bottom:Math.round(r.bottom), width:Math.round(r.width), height:Math.round(r.height)}; };
-  const text = (el) => (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 160);
+  const text = (el) => (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 160);
   const vw = innerWidth;
   const visibleEls = Array.from(document.querySelectorAll('body *')).filter(visible);
   const offenders = visibleEls.map(el => ({tag:el.tagName.toLowerCase(), cls:String(el.className||''), text:text(el), rect:rect(el)})).filter(x => x.rect.left < -1 || x.rect.right > vw + 1).slice(0, 30);

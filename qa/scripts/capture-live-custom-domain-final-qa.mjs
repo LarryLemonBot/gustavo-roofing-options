@@ -47,6 +47,22 @@ async function waitJson(url, timeoutMs = 12000) {
   throw lastError || new Error(`Timed out waiting for ${url}`);
 }
 
+async function fetchRouteStatus(url) {
+  const target = new URL(url);
+  target.hash = '';
+  try {
+    const response = await fetch(target, { redirect: 'manual' });
+    return {
+      url: target.href,
+      ok: response.ok,
+      status: response.status,
+      location: response.headers.get('location') || '',
+    };
+  } catch (error) {
+    return { url: target.href, ok: false, status: null, location: '', error: error.message };
+  }
+}
+
 function cdpClient(wsUrl) {
   return new Promise((resolve, reject) => {
     const ws = new WebSocket(wsUrl);
@@ -92,7 +108,7 @@ const reportExpression = `(() => {
     return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden';
   };
   const rect = (el) => { const r = el.getBoundingClientRect(); return {left:Math.round(r.left), right:Math.round(r.right), top:Math.round(r.top), bottom:Math.round(r.bottom), width:Math.round(r.width), height:Math.round(r.height)}; };
-  const text = (el) => (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 140);
+  const text = (el) => (el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 140);
   const vw = innerWidth;
   const bodyText = document.body.innerText || '';
   const bodyTextLower = bodyText.toLowerCase();
@@ -192,6 +208,7 @@ async function alignCapturePosition(client, url) {
 }
 
 async function capture(client, page) {
+  const routeStatus = await fetchRouteStatus(page.url);
   await client.send('Emulation.setDeviceMetricsOverride', {
     width: page.viewport.width,
     height: page.viewport.height,
@@ -216,7 +233,7 @@ async function capture(client, page) {
   const shot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
   const screenshot = path.join(outDir, `${page.label}.png`);
   await fs.writeFile(screenshot, Buffer.from(shot.data, 'base64'));
-  return { ...page, screenshot, anchorState, report: evalResult.result.value };
+  return { ...page, screenshot, routeStatus, anchorState, report: evalResult.result.value };
 }
 
 const debugPort = await freePort();
@@ -271,6 +288,8 @@ try {
   const issues = captures.flatMap((item) => {
     const report = item.report;
     const list = [];
+    if (item.routeStatus.error) list.push(`httpError:${item.routeStatus.error}`);
+    else if (item.routeStatus.status !== 200) list.push(`httpStatus:${item.routeStatus.status}`);
     if (report.notFoundTitle) list.push('notFoundTitle');
     if (report.missingPrimaryHeading) list.push('missingPrimaryHeading');
     if (report.horizontalOverflow) list.push('horizontalOverflow');
@@ -294,6 +313,7 @@ try {
       label: item.label,
       screenshot: item.screenshot,
       viewport: item.report.viewport,
+      routeStatus: item.routeStatus,
       scroll: item.report.scroll,
       hash: item.report.hash,
       anchorState: item.anchorState,

@@ -154,10 +154,9 @@ const automations = expectedAutomations.map((expected) => {
   } else if (!memory) {
     addUnique(warnings, `${expected.id}: no saved run output yet; acceptable until the first scheduled weekly competitor run completes`);
   } else if (memoryAgeHours > expected.staleAfterHours) {
-    addUnique(
-      warnings,
-      `${expected.id}: saved output is ${memoryAgeHours.toFixed(1)} hours old; inspect the Codex automation card if this exceeds the expected cadence`,
-    );
+    const staleMessage = `${expected.id}: saved output is ${memoryAgeHours.toFixed(1)} hours old; inspect the Codex automation card if this exceeds the expected cadence`;
+    if (expected.requiredMemory) addUnique(blockingIssues, staleMessage);
+    else addUnique(warnings, staleMessage);
   }
 
   return {
@@ -195,16 +194,29 @@ for (const probe of [
   { url: "https://verasroofing.com/.well-known/ai.txt", expectStatus: 200, bodyIncludes: "https://verasroofing.com/gutter-cleaning-guards", readBody: true },
 ]) {
   const result = await fetchProbe(probe.url, { readBody: probe.readBody });
-  liveProbes.push({ ...probe, ...result, body: result.body ? `${result.body.slice(0, 400)}${result.body.length > 400 ? "..." : ""}` : "" });
+  const statusMatches = result.status === probe.expectStatus;
+  const locationMatches = !probe.expectLocation || (result.location || "").includes(probe.expectLocation);
+  const bodyMatches = !probe.bodyIncludes || result.body.includes(probe.bodyIncludes);
+  const probePassed = statusMatches && locationMatches && bodyMatches;
+  liveProbes.push({
+    ...probe,
+    ...result,
+    httpOk: result.ok,
+    ok: probePassed,
+    statusMatches,
+    locationMatches,
+    bodyMatches,
+    body: result.body ? `${result.body.slice(0, 400)}${result.body.length > 400 ? "..." : ""}` : "",
+  });
 
-  if (result.status !== probe.expectStatus) {
+  if (!statusMatches) {
     addUnique(blockingIssues, `${probe.url}: expected ${probe.expectStatus}, got ${result.status || result.error}`);
     continue;
   }
-  if (probe.expectLocation && !(result.location || "").includes(probe.expectLocation)) {
+  if (!locationMatches) {
     addUnique(blockingIssues, `${probe.url}: expected redirect to include ${probe.expectLocation}, got ${result.location || "no location header"}`);
   }
-  if (probe.bodyIncludes && !result.body.includes(probe.bodyIncludes)) {
+  if (!bodyMatches) {
     addUnique(blockingIssues, `${probe.url}: response is missing ${probe.bodyIncludes}`);
   }
 }
