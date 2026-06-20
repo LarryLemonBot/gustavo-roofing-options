@@ -255,6 +255,8 @@ p { text-wrap: pretty; }
 .card-copy h2 { margin-bottom: 14px; font-size: 2.35rem; }
 .card-copy p:last-child { margin-bottom: 0; color: var(--muted); line-height: 1.65; }
 
+.mobile-hero-proof-photo { display: none; }
+
 .proof-strip {
   position: relative;
   z-index: 1;
@@ -5110,6 +5112,38 @@ a.btn-secondary:hover,
   }
 
   .contact-hero-actions .hero-email-button {
+    display: none;
+  }
+
+  .home-page .mobile-hero-proof-photo {
+    display: block;
+    overflow: hidden;
+    width: min(100%, 340px);
+    margin: 14px auto 0;
+    border: 1px solid rgba(247, 249, 255, 0.22);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
+  }
+
+  .home-page .mobile-hero-proof-photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .home-page .mobile-hero-proof-photo figcaption {
+    margin: 0;
+    padding: 10px 12px;
+    color: rgba(247, 249, 255, 0.88);
+    font-size: 0.78rem;
+    font-weight: 900;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .home-page .premium-hero .hero-card {
     display: none;
   }
 
