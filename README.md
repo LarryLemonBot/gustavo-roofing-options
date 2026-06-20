@@ -76,6 +76,7 @@ From this folder:
 ```powershell
 .\scripts\sync-public-index.ps1
 .\scripts\verify-public-mirrors.ps1
+git status --short --branch
 node qa/scripts/run-release-gate.mjs
 vercel deploy --prod --yes --scope orbitals-projects
 node qa/scripts/capture-live-custom-domain-final-qa.mjs
@@ -83,6 +84,7 @@ node qa/scripts/triage-automation-outputs.mjs
 ```
 
 `sync-public-index.ps1` keeps its historical name, but it now syncs all seven `public/*.html` files to their root mirror files.
+`run-release-gate.mjs` records the source commit and refuses to pass with uncommitted tracked changes. Use `ALLOW_DIRTY_RELEASE_GATE=1` only for local investigation, never for a production deploy gate.
 
 If you intentionally use the prebuilt path, verify the build output before uploading it:
 

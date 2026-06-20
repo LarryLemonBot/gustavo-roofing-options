@@ -4497,6 +4497,7 @@ a.btn-secondary:hover,
   }
 
   .hero-actions .btn:first-child,
+  .compact-actions .btn:first-child,
   .hero-contact-actions .btn:first-child,
   .contact-hero-actions .btn:first-child {
     grid-column: 1 / -1;

@@ -176,6 +176,7 @@ const automations = expectedAutomations.map((expected) => {
 
 const latestReleaseGatePath = newestReport("release-gate-", "release-gate-report.json");
 const latestReleaseGate = readJson(latestReleaseGatePath);
+const latestReleaseGateSourceCommit = latestReleaseGate?.sourceCommit || latestReleaseGate?.preflight?.sourceCommit || null;
 if (!latestReleaseGatePath) {
   addUnique(warnings, "No release-gate report exists yet.");
 } else if (latestReleaseGate?.allPassed !== true) {
@@ -184,6 +185,7 @@ if (!latestReleaseGatePath) {
 
 const latestLivePath = newestReport("live-custom-domain-final-", "live-custom-domain-final-report.json");
 const latestLiveReport = readJson(latestLivePath);
+const latestLiveSourceCommit = latestLiveReport?.sourceCommit || null;
 if (!latestLivePath) {
   addUnique(warnings, "No live custom-domain visual report exists yet.");
 } else if (latestLiveReport?.issueCount !== 0) {
@@ -196,6 +198,12 @@ if (latestReleaseGatePath && latestLivePath && latestLiveMtime < latestReleaseGa
   addUnique(
     blockingIssues,
     `Latest live custom-domain QA is older than the latest release gate; run node qa/scripts/capture-live-custom-domain-final-qa.mjs after deploy. Live: ${path.relative(root, latestLivePath)}; release: ${path.relative(root, latestReleaseGatePath)}`,
+  );
+}
+if (latestReleaseGateSourceCommit && latestLiveSourceCommit && latestReleaseGateSourceCommit !== latestLiveSourceCommit) {
+  addUnique(
+    blockingIssues,
+    `Latest live custom-domain QA commit does not match latest release gate commit. Live: ${latestLiveSourceCommit}; release: ${latestReleaseGateSourceCommit}`,
   );
 }
 
@@ -264,9 +272,15 @@ const report = {
   qaReports: {
     latestReleaseGatePath,
     latestReleaseGatePassed: latestReleaseGate?.allPassed ?? null,
+    latestReleaseGateSourceCommit,
     latestLivePath,
     latestLiveIssueCount: latestLiveReport?.issueCount ?? null,
     latestLiveCaptureCount: latestLiveReport?.captures?.length ?? null,
+    latestLiveSourceCommit,
+    sourceCommitMatches:
+      latestReleaseGateSourceCommit && latestLiveSourceCommit
+        ? latestReleaseGateSourceCommit === latestLiveSourceCommit
+        : null,
     latestLiveIsNewerThanReleaseGate: latestReleaseGatePath && latestLivePath ? latestLiveMtime >= latestReleaseGateMtime : null,
   },
   liveProbes,
@@ -321,4 +335,4 @@ for (const item of warnings) console.log(`- WARNING: ${item}`);
 for (const item of resolvedFindings) console.log(`- RESOLVED: ${item}`);
 for (const item of nonActions) console.log(`- NON-ACTION: ${item}`);
 
-process.exit(blockingIssues.length ? 1 : 0);
+process.exitCode = blockingIssues.length ? 1 : 0;

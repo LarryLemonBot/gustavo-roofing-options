@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -42,6 +42,32 @@ const steps = [
   },
 ];
 
+function runGit(args) {
+  const result = spawnSync("git", args, { cwd: root, encoding: "utf8" });
+  return {
+    command: `git ${args.join(" ")}`,
+    code: result.status,
+    stdout: (result.stdout || "").trim(),
+    stderr: (result.stderr || "").trim(),
+  };
+}
+
+const gitStatus = runGit(["status", "--short", "--branch"]);
+const sourceCommit = runGit(["rev-parse", "HEAD"]).stdout || null;
+const dirtyEntries = gitStatus.stdout
+  .split(/\r?\n/)
+  .map((line) => line.trimEnd())
+  .filter((line) => line && !line.startsWith("##"));
+const strictCleanTree = process.env.ALLOW_DIRTY_RELEASE_GATE !== "1";
+const preflight = {
+  sourceCommit,
+  gitStatus,
+  dirtyEntries,
+  strictCleanTree,
+  passed: gitStatus.code === 0 && (!strictCleanTree || dirtyEntries.length === 0),
+  allowDirtyReason: strictCleanTree ? null : "ALLOW_DIRTY_RELEASE_GATE=1",
+};
+
 function newestReport(prefix, fileName) {
   if (!prefix || !fileName) return null;
   const dirs = fs
@@ -70,7 +96,7 @@ function runStep(step) {
     const stderr = fs.createWriteStream(stderrPath);
     const child = spawn(step.command[0], step.command.slice(1), {
       cwd: root,
-      shell: process.platform === "win32",
+      shell: false,
       env: process.env,
     });
 
@@ -139,31 +165,43 @@ function summarizeStep(step) {
 }
 
 const completedSteps = [];
-for (const step of steps) {
-  completedSteps.push(await runStep(step));
+if (preflight.passed) {
+  for (const step of steps) {
+    completedSteps.push(await runStep(step));
+  }
 }
 
 const summarizedSteps = completedSteps.map(summarizeStep);
-const allPassed = summarizedSteps.every((step) => step.passed);
+const allPassed = preflight.passed && summarizedSteps.every((step) => step.passed);
 
 const actionItems = [];
-for (const step of summarizedSteps) {
-  if (step.code !== 0) {
-    actionItems.push(`${step.name}: command failed; inspect ${path.relative(root, step.stderrPath)}.`);
-  }
-  if (typeof step.issueCount === "number" && step.issueCount > 0) {
-    actionItems.push(`${step.name}: ${step.issueCount} issue(s); inspect ${path.relative(root, step.reportPath)}.`);
-  }
-  const budgets = step.contentBudgets;
-  if (budgets?.homeMobileHeight && budgets.homeMobileHeight > budgets.homeMobileMax) {
+if (!preflight.passed) {
+  if (gitStatus.code !== 0) {
+    actionItems.push(`Clean-worktree preflight could not read git status: ${gitStatus.stderr || "unknown git error"}.`);
+  } else {
     actionItems.push(
-      `home mobile height is ${budgets.homeMobileHeight}px; compress repeated proof, image cards, or vertical gaps before deploy.`,
+      `Clean-worktree preflight failed with ${dirtyEntries.length} tracked change(s). Commit/stash before deploy, or set ALLOW_DIRTY_RELEASE_GATE=1 only for local investigation.`,
     );
   }
-  if (budgets?.servicesMobileHeight && budgets.servicesMobileHeight > budgets.servicesMobileMax) {
-    actionItems.push(
-      `services mobile height is ${budgets.servicesMobileHeight}px; review service-page density and anchor repetition.`,
-    );
+} else {
+  for (const step of summarizedSteps) {
+    if (step.code !== 0) {
+      actionItems.push(`${step.name}: command failed; inspect ${path.relative(root, step.stderrPath)}.`);
+    }
+    if (typeof step.issueCount === "number" && step.issueCount > 0) {
+      actionItems.push(`${step.name}: ${step.issueCount} issue(s); inspect ${path.relative(root, step.reportPath)}.`);
+    }
+    const budgets = step.contentBudgets;
+    if (budgets?.homeMobileHeight && budgets.homeMobileHeight > budgets.homeMobileMax) {
+      actionItems.push(
+        `home mobile height is ${budgets.homeMobileHeight}px; compress repeated proof, image cards, or vertical gaps before deploy.`,
+      );
+    }
+    if (budgets?.servicesMobileHeight && budgets.servicesMobileHeight > budgets.servicesMobileMax) {
+      actionItems.push(
+        `services mobile height is ${budgets.servicesMobileHeight}px; review service-page density and anchor repetition.`,
+      );
+    }
   }
 }
 
@@ -177,6 +215,8 @@ const report = {
   outDir,
   allPassed,
   generatedAt: new Date().toISOString(),
+  preflight,
+  sourceCommit,
   steps: summarizedSteps,
   actionItems,
 };
@@ -188,6 +228,12 @@ const md = [
   `# Vera Roofing Release Gate ${runId}`,
   "",
   `Status: ${allPassed ? "PASS" : "FAIL"}`,
+  "",
+  "## Preflight",
+  `- source commit: ${sourceCommit || "unknown"}`,
+  `- clean worktree required: ${strictCleanTree ? "yes" : "no"}`,
+  `- git status: ${gitStatus.code === 0 ? "read" : "failed"}`,
+  ...(dirtyEntries.length ? dirtyEntries.map((item) => `  - ${item}`) : ["  - clean"]),
   "",
   "## Action Items",
   ...actionItems.map((item) => `- ${item}`),
@@ -220,4 +266,4 @@ console.log(`Release gate ${allPassed ? "PASS" : "FAIL"}`);
 console.log(path.relative(root, reportPath));
 for (const item of actionItems) console.log(`- ${item}`);
 
-process.exit(allPassed ? 0 : 1);
+process.exitCode = allPassed ? 0 : 1;

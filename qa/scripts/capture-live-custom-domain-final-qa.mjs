@@ -3,7 +3,7 @@ import fssync from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -11,6 +11,23 @@ const root = path.resolve(__dirname, '../..');
 const runId = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
 const outDir = path.join(root, 'qa', `live-custom-domain-final-${runId}`);
 await fs.mkdir(outDir, { recursive: true });
+const inspectionMode = 'edge-cdp-fallback';
+const nativeBrowserInspected = false;
+const fallbackReason = process.env.NATIVE_BROWSER_FALLBACK_REASON || 'Native Codex in-app browser control was not used for this automated capture.';
+const headless = true;
+
+function runGit(args) {
+  const result = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
+  return {
+    command: `git ${args.join(' ')}`,
+    code: result.status,
+    stdout: (result.stdout || '').trim(),
+    stderr: (result.stderr || '').trim(),
+  };
+}
+
+const sourceCommit = runGit(['rev-parse', 'HEAD']).stdout || null;
+const gitStatus = runGit(['status', '--short', '--branch']);
 
 async function freePort() {
   const server = net.createServer();
@@ -306,11 +323,32 @@ try {
     if (report.symmetryIssues.length) list.push(`symmetryIssues:${report.symmetryIssues.length}`);
     return list.length ? [{ label: item.label, url: item.url, screenshot: item.screenshot, issues: list, anchorState: item.anchorState, symmetryIssues: report.symmetryIssues }] : [];
   });
-  finalReport = { runId, outDir, browser: browserInfo.Browser, issueCount: issues.length, issues, captures };
+  finalReport = {
+    runId,
+    generatedAt: new Date().toISOString(),
+    outDir,
+    browser: browserInfo.Browser,
+    inspectionMode,
+    nativeBrowserInspected,
+    fallbackReason,
+    headless,
+    sourceCommit,
+    gitStatus,
+    productionDomain: 'https://verasroofing.com',
+    vercelDeploymentId: process.env.VERCEL_DEPLOYMENT_ID || null,
+    issueCount: issues.length,
+    issues,
+    captures,
+  };
   await fs.writeFile(path.join(outDir, 'live-custom-domain-final-report.json'), JSON.stringify(finalReport, null, 2));
   console.log(JSON.stringify({
     outDir,
     browser: browserInfo.Browser,
+    inspectionMode,
+    nativeBrowserInspected,
+    fallbackReason,
+    headless,
+    sourceCommit,
     issueCount: issues.length,
     issues,
     captures: captures.map((item) => ({

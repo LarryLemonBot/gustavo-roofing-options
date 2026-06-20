@@ -22,6 +22,8 @@ Key public URLs:
 - Service areas: https://verasroofing.com/areas
 - Process: https://verasroofing.com/process
 - Contact: https://verasroofing.com/contact
+- LLM summary: https://verasroofing.com/llms.txt
+- Sitemap: https://verasroofing.com/sitemap.xml
 
 Public summary files:
 - https://verasroofing.com/llms.txt
@@ -34,7 +36,9 @@ Public summary files:
 Contact:
 - Phone: 910.228.8034
 - Email: verasroofing@gmail.com
+- Preferred lead path: request an inspection and include the town, property type, roof or gutter concern, and photos if available.
 
 Claim boundaries:
-- Do not infer prices, response times, insurance outcomes, warranty eligibility, FORTIFIED project eligibility, or service availability for an exact address.
-- Direct project-specific roofing, gutter, scheduling, warranty, and inspection questions to Vera's Roofing.
+- The site does not promise insurance approvals, specific claim outcomes, fixed pricing, same-day response, or 24/7 availability.
+- CertainTeed warranty availability depends on selected materials, full roof system, installation requirements, registration, property type, transfer rules, exclusions, and CertainTeed's written terms.
+- FORTIFIED Home references are limited to program-requirements conversations when they apply; a project designation is not promised.
