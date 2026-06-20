@@ -134,6 +134,29 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function latestLiveInspectionSummary() {
+  const liveReportPath = newestReport("live-custom-domain-final-", "live-custom-domain-final-report.json");
+  const liveReport = readJson(liveReportPath);
+  if (!liveReport) {
+    return {
+      reportPath: null,
+      inspectionMode: null,
+      nativeBrowserInspected: false,
+      fallbackUsed: null,
+      issueCount: null,
+    };
+  }
+  return {
+    reportPath: liveReportPath,
+    generatedAt: liveReport.generatedAt || null,
+    inspectionMode: liveReport.inspectionMode || null,
+    nativeBrowserInspected: liveReport.nativeBrowserInspected === true,
+    fallbackUsed: liveReport.nativeBrowserInspected !== true,
+    headless: liveReport.headless === true,
+    issueCount: typeof liveReport.issueCount === "number" ? liveReport.issueCount : null,
+  };
+}
+
 function captureByLabel(report, label) {
   return report?.captures?.find((capture) => capture.label === label) || null;
 }
@@ -179,6 +202,9 @@ if (preflight.passed) {
 
 const summarizedSteps = completedSteps.map(summarizeStep);
 const allPassed = preflight.passed && summarizedSteps.every((step) => step.passed);
+const inspectionCoverage = {
+  latestLiveInspection: latestLiveInspectionSummary(),
+};
 
 const actionItems = [];
 if (!preflight.passed) {
@@ -222,6 +248,7 @@ const report = {
   allPassed,
   generatedAt: new Date().toISOString(),
   preflight,
+  inspectionCoverage,
   sourceCommit,
   steps: summarizedSteps,
   actionItems,
@@ -243,6 +270,16 @@ const md = [
   "",
   "## Action Items",
   ...actionItems.map((item) => `- ${item}`),
+  "",
+  "## Inspection Coverage",
+  `- latest live inspection report: ${
+    inspectionCoverage.latestLiveInspection.reportPath
+      ? path.relative(root, inspectionCoverage.latestLiveInspection.reportPath)
+      : "not found"
+  }`,
+  `- latest live inspection mode: ${inspectionCoverage.latestLiveInspection.inspectionMode || "unknown"}`,
+  `- native browser inspected: ${inspectionCoverage.latestLiveInspection.nativeBrowserInspected ? "yes" : "no"}`,
+  `- fallback used: ${inspectionCoverage.latestLiveInspection.fallbackUsed === null ? "unknown" : inspectionCoverage.latestLiveInspection.fallbackUsed ? "yes" : "no"}`,
   "",
   "## Step Results",
   ...summarizedSteps.map((step) => {

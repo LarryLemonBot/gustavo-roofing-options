@@ -34,6 +34,29 @@ function sha256(filePath) {
   return crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
 }
 
+function newestQaReport(prefix, fileName) {
+  if (!fs.existsSync(qaDir)) return null;
+  const dirs = fs
+    .readdirSync(qaDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith(prefix))
+    .map((entry) => {
+      const fullPath = path.join(qaDir, entry.name);
+      return { fullPath, mtimeMs: fs.statSync(fullPath).mtimeMs };
+    })
+    .sort((a, b) => b.mtimeMs - a.mtimeMs);
+
+  for (const dir of dirs) {
+    const reportPath = path.join(dir.fullPath, fileName);
+    if (fs.existsSync(reportPath)) return reportPath;
+  }
+  return null;
+}
+
+function readJson(filePath) {
+  if (!filePath || !fs.existsSync(filePath)) return null;
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
 const branchStatus = run("git", ["status", "--short", "--branch"]);
 const porcelain = run("git", ["status", "--porcelain=v1"]);
 const modifiedDeleted = run("git", ["ls-files", "--modified", "--deleted"]);
@@ -86,6 +109,11 @@ const runtimeExists = fs.existsSync(runtimeRoot);
 const nodeReplExists = nodeReplPath ? fs.existsSync(nodeReplPath) : false;
 const runtimeAcl = runtimeExists ? run("icacls", [runtimeRoot]) : null;
 const runtimeAclHasSandboxRx = Boolean(runtimeAcl?.stdout.match(/CodexSandboxUsers:.*\(RX\)/i));
+const browserClientHashTrusted = browserClientHash ? trustedHashes.includes(browserClientHash.toLowerCase()) : false;
+const latestLiveReportPath = newestQaReport("live-custom-domain-final-", "live-custom-domain-final-report.json");
+const latestLiveReport = readJson(latestLiveReportPath);
+const browserBridgePrerequisitesPass =
+  nodeReplExists && runtimeAclHasSandboxRx && browserClientHashTrusted;
 
 const report = {
   generatedAt: new Date().toISOString(),
@@ -105,6 +133,7 @@ const report = {
     note: "Ignored entries are generated/local artifacts. They are not deploy blockers unless a specific retention or artifact cleanup task is approved.",
   },
   browserBridgePrerequisites: {
+    passed: browserBridgePrerequisitesPass,
     configPath,
     configExists: Boolean(configText),
     nodeReplPath,
@@ -115,9 +144,30 @@ const report = {
     browserClientPath,
     browserClientExists,
     browserClientHash,
-    browserClientHashTrusted: browserClientHash ? trustedHashes.includes(browserClientHash.toLowerCase()) : false,
-    mcpTransportStatus: "not verified by this script; use the native node_repl tool after prerequisites pass",
+    browserClientHashTrusted,
   },
+  nativeBrowserTransport: {
+    status: "not verified by this script",
+    note:
+      "Prerequisites passing only means local files, ACLs, and trusted hashes look correct. It does not prove the native in-app Browser transport can attach.",
+  },
+  latestVisualInspectionMode: latestLiveReport
+    ? {
+        reportPath: latestLiveReportPath,
+        generatedAt: latestLiveReport.generatedAt || null,
+        inspectionMode: latestLiveReport.inspectionMode || null,
+        nativeBrowserInspected: latestLiveReport.nativeBrowserInspected === true,
+        fallbackUsed: latestLiveReport.nativeBrowserInspected !== true,
+        headless: latestLiveReport.headless === true,
+        issueCount: typeof latestLiveReport.issueCount === "number" ? latestLiveReport.issueCount : null,
+      }
+    : {
+        reportPath: null,
+        inspectionMode: null,
+        nativeBrowserInspected: false,
+        fallbackUsed: null,
+        issueCount: null,
+      },
 };
 
 const reportPath = path.join(outDir, "local-state-report.json");
@@ -134,13 +184,11 @@ fs.writeFileSync(
     `- tracked clean: ${report.trackedClean ? "yes" : "no"}`,
     `- visible untracked clean: ${report.visibleUntrackedClean ? "yes" : "no"}`,
     `- ignored generated/local artifacts: ${report.ignoredArtifactSummary.count}`,
-    `- browser bridge prerequisites: ${
-      report.browserBridgePrerequisites.nodeReplExists &&
-      report.browserBridgePrerequisites.runtimeAclHasSandboxRx &&
-      report.browserBridgePrerequisites.browserClientHashTrusted
-        ? "pass"
-        : "check required"
-    }`,
+    `- browser bridge prerequisites: ${report.browserBridgePrerequisites.passed ? "pass" : "check required"}`,
+    `- native browser transport: ${report.nativeBrowserTransport.status}`,
+    `- latest visual inspection mode: ${
+      report.latestVisualInspectionMode.inspectionMode || "unknown"
+    }; native browser inspected: ${report.latestVisualInspectionMode.nativeBrowserInspected ? "yes" : "no"}`,
     "",
     "Ignored QA/output artifacts are not release blockers. Do not run broad cleanup commands such as `git clean -xdf` from this repo.",
     "",
@@ -151,13 +199,13 @@ console.log(`Local state report: ${reportPath}`);
 console.log(`Release clean: ${report.releaseClean ? "yes" : "no"}`);
 console.log(`Ignored generated/local artifacts: ${ignoredEntries.length}`);
 console.log(
-  `Browser bridge prerequisites: ${
-    report.browserBridgePrerequisites.nodeReplExists &&
-    report.browserBridgePrerequisites.runtimeAclHasSandboxRx &&
-    report.browserBridgePrerequisites.browserClientHashTrusted
-      ? "pass"
-      : "check required"
-  }`,
+  `Browser bridge prerequisites: ${report.browserBridgePrerequisites.passed ? "pass" : "check required"}`,
+);
+console.log(`Native browser transport: ${report.nativeBrowserTransport.status}`);
+console.log(
+  `Latest visual inspection mode: ${
+    report.latestVisualInspectionMode.inspectionMode || "unknown"
+  }; native browser inspected: ${report.latestVisualInspectionMode.nativeBrowserInspected ? "yes" : "no"}`,
 );
 
 process.exitCode = report.releaseClean ? 0 : 1;

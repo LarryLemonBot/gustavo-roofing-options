@@ -3739,8 +3739,8 @@ body {
   .photo-page .mobile-photo-hero-card {
     position: relative;
     display: block;
-    min-height: 132px;
-    height: min(34vw, 180px);
+    min-height: 188px;
+    height: min(52vw, 220px);
     margin: 16px 0 18px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.22);
@@ -3752,18 +3752,19 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 52%;
+    object-position: center 62%;
   }
 
   .photo-page .mobile-photo-hero-card figcaption {
     position: absolute;
     left: 12px;
     bottom: 12px;
-    max-width: calc(100% - 24px);
-    padding: 10px 13px;
-    border-radius: 999px;
+    max-width: min(78%, 270px);
+    padding: 9px 12px;
+    border-radius: 18px;
     color: var(--white);
-    background: rgba(16, 14, 27, 0.78);
+    background: rgba(16, 14, 27, 0.82);
+    font-size: 0.84rem;
     font-weight: 900;
     line-height: 1.12;
   }
@@ -5015,12 +5016,31 @@ a.btn-secondary:hover,
     padding-top: 42px;
   }
 
+  .home-page .hero-copy,
+  .interior-page .page-hero-grid > div:first-child,
+  .photo-page .photo-hero-grid > div:first-child {
+    max-width: 740px;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .interior-page .page-hero-grid > img,
+  .photo-page .photo-hero-card {
+    justify-self: center;
+  }
+
   .home-page .hero-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     width: min(100%, 520px);
     max-width: 520px;
-    margin-inline: 0;
+    margin-inline: auto;
     gap: 10px;
+  }
+
+  .interior-page .hero-actions,
+  .photo-page .hero-actions {
+    justify-content: center;
+    margin-inline: auto;
   }
 
   .home-page .hero-actions .btn-primary {
@@ -5039,7 +5059,7 @@ a.btn-secondary:hover,
     grid-template-columns: repeat(2, minmax(0, 1fr));
     width: min(100%, 520px);
     max-width: 520px;
-    margin-inline: 0;
+    margin-inline: auto;
     gap: 8px;
   }
 
@@ -5055,7 +5075,7 @@ a.btn-secondary:hover,
 
   .home-page .hero-proof-pills {
     max-width: 620px;
-    margin-inline: 0;
+    margin-inline: auto;
     gap: 8px;
   }
 
