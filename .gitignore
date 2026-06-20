@@ -11,6 +11,7 @@ research/
 photo-audit/
 mcps/
 terminals/
+HANDOFF-CODEX-DESKTOP-*.md
 
 # Heavy QA capture evidence. Keep QA docs/scripts explicitly trackable below.
 qa/**

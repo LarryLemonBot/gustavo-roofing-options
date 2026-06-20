@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
 $root = Split-Path -Parent $PSScriptRoot
-$pages = @('index', 'services', 'photos', 'areas', 'process', 'contact')
+$pages = @('index', 'services', 'gutter-cleaning-guards', 'photos', 'areas', 'process', 'contact')
 
 foreach ($page in $pages) {
   $source = Join-Path $root "public\$page.html"

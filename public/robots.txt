@@ -2,3 +2,8 @@ User-agent: *
 Allow: /
 
 Sitemap: https://verasroofing.com/sitemap.xml
+LLMs: https://verasroofing.com/llms.txt
+AI: https://verasroofing.com/ai.txt
+Agents: https://verasroofing.com/agents.txt
+AI-Well-Known: https://verasroofing.com/.well-known/ai.txt
+Agents-Well-Known: https://verasroofing.com/.well-known/agents.json

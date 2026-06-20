@@ -191,10 +191,10 @@ function expressionForPageReport(pageName) {
     const max = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
     const step = Math.max(320, Math.floor(window.innerHeight * 0.72));
     for (let y = 0; y <= max; y += step) {
-      window.scrollTo(0, y);
+      window.scrollTo({ top: y, left: 0, behavior: 'auto' });
       await sleep(180);
     }
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     await sleep(450);
     const imageData = Array.from(document.images).map((img, i) => {
       const r = img.getBoundingClientRect();
@@ -231,7 +231,8 @@ function expressionForPageReport(pageName) {
       h1: h1 ? h1.textContent.trim().replace(/\s+/g, ' ') : null,
       navText: nav ? nav.textContent.trim().replace(/\s+/g, ' ').slice(0, 300) : null,
       imageCount: imageData.length,
-      brokenImages: imageData.filter(img => !img.complete || img.naturalWidth === 0 || img.naturalHeight === 0),
+      brokenImages: imageData.filter(img => img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)),
+      notCompleteImages: imageData.filter(img => !img.complete).length,
       emptyAltImages: imageData.filter(img => !img.alt && !(img.src || '').includes('favicon')),
       phoneLinks: links.filter(l => l.href.startsWith('tel:')),
       mailLinks: links.filter(l => l.href.startsWith('mailto:')),
@@ -258,6 +259,10 @@ async function capturePage({ client, url, label, viewport }) {
   await waitForDocumentReady(client, 20000);
   console.error(`[phase2] ${label}: document ready`);
   await new Promise((r) => setTimeout(r, 650));
+  await client.send('Runtime.evaluate', {
+    expression: 'document.documentElement.style.scrollBehavior = "auto"; document.body.style.scrollBehavior = "auto";',
+    returnByValue: true,
+  });
   console.error(`[phase2] ${label}: collecting DOM report`);
   const reportEval = await client.send('Runtime.evaluate', {
     expression: expressionForPageReport(label),
@@ -284,30 +289,94 @@ async function capturePage({ client, url, label, viewport }) {
 
   const metrics = await client.send('Page.getLayoutMetrics');
   const contentSize = metrics.contentSize || metrics.cssContentSize;
-  const clip = {
-    x: 0,
-    y: 0,
-    width: Math.ceil(contentSize.width),
-    height: Math.ceil(contentSize.height),
-    scale: 1,
-  };
-  const shot = await client.send('Page.captureScreenshot', {
-    format: 'png',
-    captureBeyondViewport: true,
-    fromSurface: true,
-    clip,
-  });
-  const fileName = `${label}-${viewport.width}x${viewport.height}-full.png`;
-  const outPath = path.join(outDir, fileName);
-  console.error(`[phase2] ${label}: capturing screenshot ${Math.ceil(contentSize.width)}x${Math.ceil(contentSize.height)}`);
-  await fs.writeFile(outPath, Buffer.from(shot.data, 'base64'));
-  console.error(`[phase2] ${label}: wrote ${outPath}`);
+  const captureMode = (process.env.VERA_CAPTURE_MODE || 'scan').toLowerCase();
+  const screenshots = [];
+  if (captureMode === 'full') {
+    const clip = {
+      x: 0,
+      y: 0,
+      width: Math.ceil(contentSize.width),
+      height: Math.ceil(contentSize.height),
+      scale: 1,
+    };
+    console.error(`[phase2] ${label}: capturing full screenshot ${clip.width}x${clip.height}`);
+    const shot = await client.send('Page.captureScreenshot', {
+      format: 'png',
+      captureBeyondViewport: true,
+      fromSurface: true,
+      clip,
+    });
+    const outPath = path.join(outDir, `${label}-${viewport.width}x${viewport.height}-full.png`);
+    await fs.writeFile(outPath, Buffer.from(shot.data, 'base64'));
+    screenshots.push({ position: 'full', y: 0, path: outPath });
+  } else {
+    const maxY = Math.max(0, Math.ceil(contentSize.height) - viewport.height);
+    const anchorEval = await client.send('Runtime.evaluate', {
+      expression: `(() => {
+        if (!location.hash) return null;
+        const id = decodeURIComponent(location.hash.slice(1));
+        const target = document.getElementById(id);
+        if (!target) return null;
+        const top = target.getBoundingClientRect().top + window.scrollY;
+        return Math.max(0, Math.round(top - 24));
+      })()`,
+      returnByValue: true,
+    });
+    const anchorY = Number.isFinite(anchorEval.result?.value) ? anchorEval.result.value : null;
+    const rawPositions = anchorY === null
+      ? [
+        ['top', 0],
+        ['middle', Math.round(maxY / 2)],
+        ['bottom', maxY],
+      ]
+      : [
+        ['anchor', anchorY],
+        ['anchor-next', Math.min(maxY, anchorY + Math.round(viewport.height * 0.82))],
+        ['anchor-follow', Math.min(maxY, anchorY + Math.round(viewport.height * 1.64))],
+      ];
+    const seenY = new Set();
+    const positions = rawPositions.map(([name, y]) => [name, Math.max(0, y)])
+      .filter(([, y]) => {
+        if (seenY.has(y)) return false;
+        seenY.add(y);
+        return true;
+      });
+    for (const [position, y] of positions) {
+      await client.send('Runtime.evaluate', {
+        expression: `window.scrollTo({ top: ${JSON.stringify(y)}, left: 0, behavior: 'auto' }); window.scrollY`,
+        returnByValue: true,
+      });
+      await new Promise((r) => setTimeout(r, 180));
+      const scrollResult = await client.send('Runtime.evaluate', {
+        expression: 'window.scrollY',
+        returnByValue: true,
+      });
+      const actualY = Math.round(scrollResult.result?.value || 0);
+      const shot = await client.send('Page.captureScreenshot', {
+        format: 'png',
+        fromSurface: true,
+      });
+      const outPath = path.join(outDir, `${label}-${viewport.width}x${viewport.height}-${position}.png`);
+      console.error(`[phase2] ${label}: wrote ${position} viewport screenshot at y=${actualY}`);
+      await fs.writeFile(outPath, Buffer.from(shot.data, 'base64'));
+      screenshots.push({ position, y: actualY, requestedY: y, path: outPath });
+    }
+    await client.send('Runtime.evaluate', {
+      expression: 'window.scrollTo({ top: 0, left: 0, behavior: "auto" })',
+      returnByValue: true,
+    });
+  }
+  console.error(`[phase2] ${label}: wrote ${screenshots.length} screenshot(s)`);
   return {
     label,
     url,
     viewport,
-    screenshot: outPath,
-    contentSize: clip,
+    screenshot: screenshots[0]?.path,
+    screenshots,
+    contentSize: {
+      width: Math.ceil(contentSize.width),
+      height: Math.ceil(contentSize.height),
+    },
     consoleMessages: consoleMessages.filter((m) => m.type !== 'log'),
     report: pageReport,
   };
@@ -316,7 +385,7 @@ async function capturePage({ client, url, label, viewport }) {
 console.error(`[phase2] writing screenshots to ${outDir}`);
 const { server, requests, port: serverPort } = await startServer();
 console.error(`[phase2] local server http://127.0.0.1:${serverPort}`);
-const debugPort = 9224;
+const debugPort = Number(process.env.VERA_DEBUG_PORT || await getFreePort());
 const profile = await fs.mkdtemp(path.join(os.tmpdir(), 'vera-phase2-edge-'));
 console.error(`[phase2] launching Edge debug port ${debugPort}`);
 const edge = spawn(edgePath(), [
@@ -356,12 +425,48 @@ try {
   await client.send('Log.enable');
 
   const base = `http://127.0.0.1:${serverPort}`;
-  const pages = [
-    { path: '/', label: 'home-desktop', viewport: { width: 1905, height: 1176, mobile: false, deviceScaleFactor: 1 } },
-    { path: '/photos.html', label: 'photos-desktop', viewport: { width: 1905, height: 1176, mobile: false, deviceScaleFactor: 1 } },
-    { path: '/', label: 'home-mobile', viewport: { width: 390, height: 844, mobile: true, deviceScaleFactor: 1 } },
-    { path: '/photos.html', label: 'photos-mobile', viewport: { width: 390, height: 844, mobile: true, deviceScaleFactor: 1 } },
-  ];
+  const wantedRoutes = new Set((process.env.VERA_PAGE_FILTER || '')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean));
+  const wantedViewports = new Set((process.env.VERA_VIEWPORT_FILTER || '')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean));
+  const extraRoutes = (process.env.VERA_EXTRA_ROUTES || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [label, ...pathParts] = entry.split('=');
+      const routePath = pathParts.join('=');
+      if (!label || !routePath) throw new Error(`Invalid VERA_EXTRA_ROUTES entry: ${entry}`);
+      return [label.trim().toLowerCase(), routePath.trim()];
+    });
+  const routes = [
+    ['home', '/'],
+    ['services', '/services.html'],
+    ['gutter-cleaning-guards', '/gutter-cleaning-guards.html'],
+    ['photos', '/photos.html'],
+    ['areas', '/areas.html'],
+    ['process', '/process.html'],
+    ['contact', '/contact.html'],
+    ...extraRoutes,
+  ].filter(([label]) => wantedRoutes.size === 0 || wantedRoutes.has(label));
+  const viewports = [
+    ['desktop', { width: 1366, height: 900, mobile: false, deviceScaleFactor: 1 }],
+    ['tablet', { width: 768, height: 1024, mobile: true, deviceScaleFactor: 1 }],
+    ['mobile', { width: 390, height: 844, mobile: true, deviceScaleFactor: 1 }],
+  ].filter(([label]) => wantedViewports.size === 0 || wantedViewports.has(label));
+  if (!routes.length) throw new Error(`No routes selected by VERA_PAGE_FILTER=${process.env.VERA_PAGE_FILTER || ''}`);
+  if (!viewports.length) throw new Error(`No viewports selected by VERA_VIEWPORT_FILTER=${process.env.VERA_VIEWPORT_FILTER || ''}`);
+  const pages = viewports.flatMap(([viewportLabel, viewport]) =>
+    routes.map(([routeLabel, routePath]) => ({
+      path: routePath,
+      label: `${routeLabel}-${viewportLabel}`,
+      viewport,
+    })),
+  );
   const captures = [];
   for (const page of pages) {
     console.error(`[phase2] capture ${page.label} ${page.viewport.width}x${page.viewport.height}`);
@@ -374,6 +479,22 @@ try {
     console.error(`[phase2] captured ${page.label}`);
   }
   client.close();
+  const issues = captures.flatMap((capture) => {
+    const report = capture.report || {};
+    const list = [];
+    if (report.scroll?.width > capture.viewport.width + 1) list.push('horizontalOverflow');
+    if (report.brokenImages?.length) list.push(`brokenImages:${report.brokenImages.length}`);
+    if (report.emptyAltImages?.length) list.push(`emptyAltImages:${report.emptyAltImages.length}`);
+    if (report.forbiddenClaimHits?.length) list.push(`forbiddenClaims:${report.forbiddenClaimHits.join('|')}`);
+    if (report.homeHeroOverlap?.overlap) list.push('homeHeroOverlap');
+    if (report.photosHeroOverlap?.overlap) list.push('photosHeroOverlap');
+    return list.length ? [{
+      label: capture.label,
+      viewport: `${capture.viewport.width}x${capture.viewport.height}`,
+      issues: list,
+      screenshots: capture.screenshots,
+    }] : [];
+  });
   finalReport = {
     runId,
     root,
@@ -381,11 +502,33 @@ try {
     outDir,
     serverBase: base,
     browser: browserInfo.Browser,
+    issueCount: issues.length,
+    issues,
     captures,
     requests,
   };
   await fs.writeFile(path.join(outDir, 'phase2-fullpage-report.json'), JSON.stringify(finalReport, null, 2));
-  console.log(JSON.stringify({ outDir, browser: browserInfo.Browser, captures: captures.map(c => ({ label: c.label, screenshot: c.screenshot, contentSize: c.contentSize, consoleCount: c.consoleMessages.length, brokenImages: c.report.brokenImages.length, emptyAltImages: c.report.emptyAltImages.length, forbiddenClaimHits: c.report.forbiddenClaimHits, homeHeroOverlap: c.report.homeHeroOverlap, photosHeroOverlap: c.report.photosHeroOverlap })) }, null, 2));
+  console.log(JSON.stringify({
+    outDir,
+    browser: browserInfo.Browser,
+    issueCount: issues.length,
+    issues,
+    captures: captures.map(c => ({
+      label: c.label,
+      screenshot: c.screenshot,
+      screenshots: c.screenshots,
+      contentSize: c.contentSize,
+      consoleCount: c.consoleMessages.length,
+      brokenImages: c.report.brokenImages.length,
+      emptyAltImages: c.report.emptyAltImages.length,
+      forbiddenClaimHits: c.report.forbiddenClaimHits,
+      homeHeroOverlap: c.report.homeHeroOverlap,
+      photosHeroOverlap: c.report.photosHeroOverlap,
+    })),
+  }, null, 2));
+  if (issues.length) {
+    process.exitCode = 1;
+  }
 } finally {
   server.close();
   edge.kill('SIGTERM');

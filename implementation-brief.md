@@ -1,5 +1,5 @@
 # Implementation Brief: Vera's Roofing LLC Website Enhancements
-**Context:** Local static site review (public/index.html + root mirror, public/assets/css/site.css, public/assets/images/). Real Gustavo photos from archive/preview-choice-board-2026-06-02/gustavo-roofing-options/ (hero-photos/, album-photos/). Service source-of-truth: Roofing, FORTIFIED roofs, EPDM, Hyperstock, cedar shake, storm damage, insurance claims support, all hand nailed and inspected by owner, manufacturer 50-year warranties with installation and labor, copper flashing, works with copper, plus more.  
+**Context:** Local static site review (public/index.html + root mirror, public/assets/css/site.css, public/assets/images/). Real Gustavo photos from archive/preview-choice-board-2026-06-02/gustavo-roofing-options/ (hero-photos/, album-photos/). Current safe service positioning: roofing, EPDM, storm documentation, gutter cleaning, gutter guard installation, copper flashing, metal and specialty details, hand-nailed shingle work only when included in the agreed scope, owner-led final review, CertainTeed roof-system warranty questions for eligible projects, and FORTIFIED Home program-requirement conversations when applicable.
 **Constraints honored:** Static/plain HTML+CSS only (handoff-friendly, use existing CLIENT-EDIT comment pattern). ONLY real Gustavo photos (curated descriptive from archive first; no stock/AI). NO unsupported claims (no "FORTIFIED certified", no "insurance guaranteed/approved", no "best roofer", no unverified "50 year warranty" without manufacturer backing + labor phrasing, no specific founding year). Phone-first conversion. Conservative Brunswick County coastal tone (practical, trustworthy, premium details without fluff). Self-contained in public/assets. Review of EDITING-GUIDE.md, README.md, research/brunswick-roofing-market-brief.md, and full site + multiple images completed via tools before drafting. No existing files edited.
 
 ## Highest-impact content sections (ranked 1-5)
@@ -7,13 +7,13 @@ Ranked by conversion/owner-craft proof impact for local coastal service. Exact s
 
 1. **Specialty Roofing & Details** (new or augmented after current services grid; id="specialties" or integrate as additional .service cards in existing .service-grid if keeping 3-col on desktop)
    - Placement: Immediately after `</div>` closing the current services .service-grid (after #services section), before #storm "Storm Ready". Highest impact: surfaces full Gustavo offerings early, after proof-strip and basic 3 services, before storm focus.
-   - Maps to: copper flashing, works with copper, EPDM, Hyperstock, cedar shake, FORTIFIED roofs, hand-nailed/owner-inspected, 50yr warranties + "plus more".
+   - Maps to: copper flashing, works with copper, EPDM, Hyperstock, cedar shake, FORTIFIED Home program questions, hand-nailed shingle work when in scope, owner-led final review, CertainTeed roof-system questions, gutter cleaning, gutter guards, and "plus more".
    - Key safe copy bullets (4-5 cards total; extend current 01-03 lightly, add 04-05; use existing .service HTML pattern for handoff):
      - Retain/adjust 01 Tear-offs & replacements (map core roofing/storm damage).
      - Retain/adjust 02 New construction roofing (map new builds + framing).
      - Retain/adjust 03 Repairs & storm work (map storm damage + inspections).
      - 04 Copper flashing & specialty details: Precision copper flashing, custom transitions, and work with premium systems including metal, EPDM membranes, and cedar shake. Details finished for salt air and wind exposure.
-     - 05 Owner-inspected hand-nailing & warranties: Every installation is hand-nailed and personally inspected by the owner before sign-off. Manufacturer 50-year warranties on select materials, backed by our professional installation and labor.
+     - 05 Hand-nailing & roof-system questions: When hand-nailing is included in the agreed shingle scope, it gives the crew deliberate control over nail placement and depth. Eligible CertainTeed roof systems may qualify for manufacturer warranty options depending on current written terms, products, installation requirements, registration, transfer rules, and property type.
    - Why #1: Directly covers source-of-truth without fluff; phone CTA can link here or to contact. On mobile stacks cleanly.
 
 2. **Storm Ready & Documentation** (update existing #storm section; minor title tweak or subhead)
@@ -25,17 +25,17 @@ Ranked by conversion/owner-craft proof impact for local coastal service. Exact s
        - Roof inspections and visible damage documentation
        - Metal and shingle roof options
        - Repair recommendations explained in plain language
-       - Questions about FORTIFIED-style upgrades welcomed
+       - Questions about FORTIFIED Home program requirements welcomed when applicable
        - Detailed photo documentation to support your insurance claim process (homeowner contacts insurer first)
-     - Add/keep text-link: "Schedule a roof inspection" (tel).
+     - Add/keep text-link: "Request a roof inspection" (tel).
    - Why #2: Builds trust for storm-prone Brunswick market per research; conservative insurance language only.
 
 3. **Craft & Warranties** (new lightweight section or heavy enhancement to existing dark .why "Why" section; reuse .why-grid / .why-items / .quote-card patterns)
    - Placement: Keep/replace current #why location (after #work "Our Work", before #areas). Or insert a compact "Owner craft" row between Our Work and current Why if splitting. Highest for proof of "hand nailed and inspected by owner".
-   - Maps to: hand nailed inspected by owner, 50yr warranties with install/labor, clean sites, photo doc, written estimates, local coastal.
+   - Maps to: hand-nailed shingle work when in scope, owner-led final review, CertainTeed roof-system questions for eligible systems, clean sites, photo documentation, written scopes, and local coastal experience.
    - Key safe copy bullets (reorder/add why-items; keep quote-card copper image for visual tie-in):
-     - "Owner hand-inspected on every job": Every roof is hand-nailed and personally inspected by the owner. No shortcuts.
-     - "Manufacturer-backed warranties": Select roofs carry manufacturer 50-year material warranties backed by our installation and labor.
+     - "Owner-led final review": The owner reviews finished-work photos and key details before the project is considered complete.
+     - "Manufacturer warranty questions": Eligible CertainTeed systems may qualify for manufacturer warranty options when products, installation, registration, property type, transfer rules, and written terms are satisfied.
      - Retain/adjust: Written estimates, Photo documentation, Clean job sites, Local coastal focus.
      - Optional quote update: "Clear expectations, clean work areas, owner inspection, and enough documentation for the homeowner."
    - Why #3: Elevates Gustavo differentiator (owner involvement) without hype; dark premium fits existing visual.
@@ -63,7 +63,7 @@ Use ONLY real Gustavo photos. Curated descriptive names from archive first. Copy
   - roof-shingle-inspection.jpeg (services 03; damage close-up proof for repairs/storm).
   - roof-copper-flashing-tight.jpeg, roof-copper-flashing-polished.jpeg, roof-copper-flashing-long.jpeg (gallery + why; premium copper details).
   - roof-blue-metal-panorama.jpeg (gallery wide + contact bg).
-  - roof-silver-metal-neighborhood.jpeg, roof-bright-metal-detail.jpeg (gallery).
+  - roof-silver-metal-neighborhood.jpeg and remaining metal-roof gallery images.
   - roof-clean-shingle-detail.jpeg (storm split).
   - vera-roofing-logo-approved.jpg (header + hero-card; approved version only).
 
@@ -131,35 +131,35 @@ Minimal only. Preserve existing clean patterns, responsive grid, colors (plum/pu
 4. **Services 05 new card:**
    `<span>05</span>`
    `<h3>Owner-inspected hand-nailing &amp; warranties</h3>`
-   `<p>Every installation is hand-nailed and personally inspected by the owner before sign-off. Manufacturer 50-year warranties on select materials, backed by our professional installation and labor.</p>`
+   `<p>When hand-nailing is included in the agreed shingle scope, the crew can slow down and control nail placement and nail depth. Eligible CertainTeed roof systems may qualify for manufacturer warranty options depending on the selected materials, installation requirements, registration, property type, transfer rules, and current written terms.</p>`
 
 5. **Storm Ready check-list addition (append to existing ul.check-list):**
    `<li>Detailed photo documentation to support your insurance claim process</li>`
-   `<li>Questions about FORTIFIED-style upgrades welcomed</li>`
+   `<li>Questions about FORTIFIED Home program requirements welcomed when applicable</li>`
 
 6. **Storm Ready safe insurance para (update existing p in .split-copy or add):**
    `Brunswick County roofs take a steady beating from humidity, sun, wind, and storm season. Vera's Roofing focuses on the details that prevent avoidable callbacks: clean flashing transitions, secure roof edges, tidy penetrations, and documentation when storm damage needs review. We provide photo documentation and written scopes to help with your insurance claim process after you contact your insurer.`
 
 7. **Why / Craft item (new or first .why-item):**
    `<article class="why-item">`
-   `<h3>Owner hand-inspected on every job</h3>`
-   `<p>Every roof is hand-nailed and personally inspected by the owner. No shortcuts on coastal work.</p>`
+   `<h3>Owner-led final review</h3>`
+   `<p>The owner reviews finished-work photos and key details at the end of the job so the final walkthrough is clear.</p>`
    `</article>`
    `<article class="why-item">`
    `<h3>Manufacturer-backed warranties</h3>`
-   `<p>Select roofs include manufacturer 50-year material warranties backed by our installation and labor.</p>`
+   `<p>Eligible CertainTeed roof systems may qualify for manufacturer warranty options depending on the selected materials, installation requirements, registration, property type, transfer rules, and current written terms.</p>`
    `</article>`
 
 8. **Copper / specialty call (in services, new strip, or Why quote update):**
    `Copper flashing provides long-term corrosion resistance ideal for the Brunswick County coast.`
 
 9. **Contact / areas refinement (in .contact-card p or areas head):**
-   `Send a few photos, describe the leak or project, or call to schedule an inspection. You'll get a practical next step, written scope, and photo-backed documentation - not pressure. Copper, metal, EPDM, cedar, and FORTIFIED-style work across Southport, Oak Island, Leland, Shallotte, Supply, Holden Beach, Ocean Isle Beach, Sunset Beach, Calabash, Bolivia, St. James, and nearby coastal NC.`
+   `Request an inspection, describe the roof or gutter concern, and share photos if they help. You'll get a practical next step, written scope, and photo-backed documentation when appropriate - not pressure. Copper, metal, EPDM, cedar, gutters, guards, and FORTIFIED Home program-requirement conversations when applicable across Southport, Oak Island, Leland, Shallotte, Supply, Holden Beach, Ocean Isle Beach, Sunset Beach, Calabash, Bolivia, St. James, and nearby coastal NC.`
 
 10. **Proof-strip or footer-adjacent safe line (optional 4th item or swap):**
     `Owner-inspected | Copper &amp; metal details | Written scopes for claims | Free estimate`
 
-**Additional guidance:** Keep direct/local ("Brunswick County", town lists, "salt air", "wind and rain"). All examples avoid guarantees, certifications, "best", specific years, or unbacked warranty/insurance claims. FORTIFIED always "style" or "questions about... welcomed". Insurance always "support your... process" + "homeowner contacts insurer". Update phone/email only via existing patterns (tel:+19102288034, verasroofing@gmail.com). After HTML edits, verify images load, phones work, no console errors, then deploy per README.md (`vercel deploy --prod --yes --scope orbitals-projects`).
+**Additional guidance:** Keep direct/local ("Brunswick County", town lists, "salt air", "wind and rain"). All examples avoid guarantees, certifications, "best", specific years, or unbacked warranty/insurance claims. FORTIFIED public copy should stay limited to "FORTIFIED Home program requirements" or "FORTIFIED Home program questions" with project-specific qualifiers. Insurance always "support your... process" + "homeowner contacts insurer". Update phone/email only via existing patterns (tel:+19102288034, verasroofing@gmail.com). After HTML edits, verify images load, phones work, no console errors, then deploy per README.md (`vercel deploy --prod --yes --scope orbitals-projects`).
 
 This brief is self-contained, actionable for handoff, and prioritizes safety + impact while covering Gustavo offerings fully and conservatively. Review with Gustavo before implementation.
 

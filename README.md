@@ -76,11 +76,11 @@ From this folder:
 ```powershell
 .\scripts\sync-public-index.ps1
 .\scripts\verify-public-mirrors.ps1
-node qa/scripts/verify-final-mobile-visual-guards.mjs
+node qa/scripts/run-release-gate.mjs
 vercel deploy --prod --yes --scope orbitals-projects
 ```
 
-`sync-public-index.ps1` keeps its historical name, but it now syncs all six `public/*.html` files to their root mirror files.
+`sync-public-index.ps1` keeps its historical name, but it now syncs all seven `public/*.html` files to their root mirror files.
 
 If you intentionally use the prebuilt path, verify the build output before uploading it:
 

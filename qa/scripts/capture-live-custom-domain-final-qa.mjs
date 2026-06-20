@@ -95,25 +95,101 @@ const reportExpression = `(() => {
   const text = (el) => (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 140);
   const vw = innerWidth;
   const bodyText = document.body.innerText || '';
+  const bodyTextLower = bodyText.toLowerCase();
   const visibleEls = Array.from(document.querySelectorAll('body *')).filter(visible);
   const offenders = visibleEls.map(el => ({tag:el.tagName.toLowerCase(), cls:String(el.className||''), text:text(el), rect:rect(el)})).filter(x => x.rect.left < -1 || x.rect.right > vw + 1).slice(0, 20);
   const images = Array.from(document.images).map((img) => ({src:img.currentSrc || img.src, alt:img.alt || '', complete:img.complete, nw:img.naturalWidth, nh:img.naturalHeight, rect:rect(img)}));
+  const symmetryGroups = Array.from(document.querySelectorAll('.navlinks, .hero-actions, .contact-actions, .contact-hero-actions, .compact-actions, .home-area-actions, .footer-links, .footer-contact, .footer-trust-logos, .hero-issue-links, .hero-proof-pills, .gallery-nav, .area-list')).filter(visible);
+  const symmetryIssues = [];
+  for (const group of symmetryGroups) {
+    const gr = rect(group);
+    const groupName = String(group.className || group.tagName || '').replace(/\\s+/g, '.').slice(0, 90);
+    const children = Array.from(group.children).filter(visible).map((child) => ({ text: text(child), rect: rect(child) }));
+    if (children.length < 2) continue;
+    const rows = [];
+    for (const child of children) {
+      const center = (child.rect.top + child.rect.bottom) / 2;
+      const row = rows.find((candidate) => Math.abs(center - candidate.center) <= Math.max(14, Math.min(28, Math.min(candidate.height, child.rect.height) * 0.55)));
+      if (row) {
+        row.items.push(child);
+        row.center = row.items.reduce((sum, item) => sum + ((item.rect.top + item.rect.bottom) / 2), 0) / row.items.length;
+        row.height = Math.max(row.height, child.rect.height);
+      } else {
+        rows.push({ center, height: child.rect.height, items: [child] });
+      }
+    }
+    for (const row of rows) {
+      const rowItems = row.items;
+      if (rowItems.length < 2) continue;
+      rowItems.sort((a, b) => a.rect.left - b.rect.left);
+      const rowTop = Math.round(Math.min(...rowItems.map((item) => item.rect.top)));
+      const rowLeft = rowItems[0].rect.left;
+      const rowRight = rowItems[rowItems.length - 1].rect.right;
+      const leftPad = Math.round(rowLeft - gr.left);
+      const rightPad = Math.round(gr.right - rowRight);
+      const edgeDelta = Math.abs(leftPad - rightPad);
+      const widths = rowItems.map((item) => item.rect.width);
+      const widthDelta = Math.max(...widths) - Math.min(...widths);
+      const strictWidthGroup = group.matches('.navlinks, .hero-actions, .contact-actions, .contact-hero-actions, .compact-actions, .footer-links, .footer-contact');
+      if (innerWidth <= 760 && strictWidthGroup && widthDelta > 18) {
+        symmetryIssues.push({ group: groupName, rowTop, type: 'uneven-row-widths', widthDelta, items: rowItems.map((item) => item.text) });
+      }
+      if (innerWidth <= 1020 && edgeDelta > 30 && gr.width <= innerWidth - 24) {
+        symmetryIssues.push({ group: groupName, rowTop, type: 'off-center-row', edgeDelta, leftPad, rightPad, items: rowItems.map((item) => item.text) });
+      }
+    }
+  }
   return {
     href: location.href,
+    hash: location.hash || '',
     title: document.title,
     h1: document.querySelector('h1')?.innerText || '',
+    missingPrimaryHeading: !document.querySelector('h1'),
+    notFoundTitle: /404/i.test(document.title),
     viewport: {width: innerWidth, height: innerHeight, dpr: devicePixelRatio},
     scroll: {documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, maxWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth), height: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)},
     horizontalOverflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) > innerWidth + 1,
     offenderCount: offenders.length,
     offenders,
-    trustCopy: bodyText.includes('Family-owned and operated') && bodyText.includes('Owner-led final review'),
+    trustCopy: bodyTextLower.includes('family-owned and operated') && bodyTextLower.includes('owner-led final review'),
     badFortifiedCertified: bodyText.includes('FORTIFIED certified'),
     brokenLoadedImages: images.filter(i => i.complete && (i.nw === 0 || i.nh === 0)),
+    symmetryIssues,
     visibleHeadings: Array.from(document.querySelectorAll('h1,h2,h3')).filter(visible).slice(0, 12).map(h => ({tag:h.tagName.toLowerCase(), text:text(h), rect:rect(h)})),
     ctas: Array.from(document.querySelectorAll('a')).filter(visible).filter(a => /call|text|photo|work|service|contact/i.test(a.textContent || '')).slice(0, 20).map(a => ({text:text(a), href:a.href, rect:rect(a)})),
   };
 })()`;
+
+async function alignCapturePosition(client, url) {
+  const { hash } = new URL(url);
+  if (!hash) {
+    await client.send('Runtime.evaluate', { expression: 'window.scrollTo(0,0)', returnByValue: true });
+    return { expectedHash: '', actualHash: '', found: null };
+  }
+  const anchorResult = await client.send('Runtime.evaluate', {
+    expression: `(() => {
+      const expectedHash = ${JSON.stringify(hash)};
+      const id = decodeURIComponent(expectedHash.slice(1));
+      const target = document.getElementById(id);
+      if (!target) {
+        return { expectedHash, actualHash: location.hash || '', found: false };
+      }
+      target.scrollIntoView({ block: 'start', inline: 'nearest', behavior: 'auto' });
+      const rect = target.getBoundingClientRect();
+      return {
+        expectedHash,
+        actualHash: location.hash || '',
+        found: true,
+        id,
+        top: Math.round(rect.top),
+        bottom: Math.round(rect.bottom),
+        text: (target.innerText || target.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 180),
+      };
+    })()`,
+    returnByValue: true,
+  });
+  return anchorResult.result?.value || { expectedHash: hash, actualHash: '', found: false };
+}
 
 async function capture(client, page) {
   await client.send('Emulation.setDeviceMetricsOverride', {
@@ -134,13 +210,13 @@ async function capture(client, page) {
   await client.send('Page.navigate', { url: page.url });
   await waitReady(client);
   await new Promise((resolve) => setTimeout(resolve, 1200));
-  await client.send('Runtime.evaluate', { expression: 'window.scrollTo(0,0)', returnByValue: true });
+  const anchorState = await alignCapturePosition(client, page.url);
   await new Promise((resolve) => setTimeout(resolve, 250));
   const evalResult = await client.send('Runtime.evaluate', { expression: reportExpression, returnByValue: true });
   const shot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
   const screenshot = path.join(outDir, `${page.label}.png`);
   await fs.writeFile(screenshot, Buffer.from(shot.data, 'base64'));
-  return { ...page, screenshot, report: evalResult.result.value };
+  return { ...page, screenshot, anchorState, report: evalResult.result.value };
 }
 
 const debugPort = await freePort();
@@ -171,13 +247,19 @@ try {
   const routes = [
     ['home', 'https://verasroofing.com/'],
     ['services', 'https://verasroofing.com/services'],
+    ['gutter-cleaning-guards', 'https://verasroofing.com/gutter-cleaning-guards'],
+    ['services-gutter', 'https://verasroofing.com/services#gutter-cleaning-guards'],
+    ['services-certainteed', 'https://verasroofing.com/services#certainteed-roof-system'],
+    ['services-epdm', 'https://verasroofing.com/services#epdm-flat-roofing'],
     ['photos', 'https://verasroofing.com/photos'],
+    ['photos-epdm', 'https://verasroofing.com/photos#epdm-carolina-beach'],
     ['areas', 'https://verasroofing.com/areas'],
     ['process', 'https://verasroofing.com/process'],
     ['contact', 'https://verasroofing.com/contact'],
   ];
   const pages = routes.flatMap(([name, url]) => [
     { label: `${name}-desktop`, url, viewport: { width: 1366, height: 900, mobile: false, dpr: 1 } },
+    { label: `${name}-tablet`, url, viewport: { width: 768, height: 1024, mobile: true, dpr: 2 } },
     { label: `${name}-mobile`, url, viewport: { width: 390, height: 844, mobile: true, dpr: 2 } },
   ]);
   const captures = [];
@@ -186,24 +268,47 @@ try {
     captures.push(await capture(client, page));
   }
   client.close();
-  finalReport = { runId, outDir, browser: browserInfo.Browser, captures };
+  const issues = captures.flatMap((item) => {
+    const report = item.report;
+    const list = [];
+    if (report.notFoundTitle) list.push('notFoundTitle');
+    if (report.missingPrimaryHeading) list.push('missingPrimaryHeading');
+    if (report.horizontalOverflow) list.push('horizontalOverflow');
+    if (report.offenderCount) list.push(`offenders:${report.offenderCount}`);
+    if (item.anchorState.expectedHash && item.anchorState.actualHash !== item.anchorState.expectedHash) list.push(`hashMismatch:${item.anchorState.actualHash || 'none'}`);
+    if (item.anchorState.expectedHash && item.anchorState.found === false) list.push('missingAnchorTarget');
+    if (!report.trustCopy) list.push('missingTrustCopy');
+    if (report.badFortifiedCertified) list.push('unsafeFortifiedCertifiedCopy');
+    if (report.brokenLoadedImages.length) list.push(`brokenLoadedImages:${report.brokenLoadedImages.length}`);
+    if (report.symmetryIssues.length) list.push(`symmetryIssues:${report.symmetryIssues.length}`);
+    return list.length ? [{ label: item.label, url: item.url, screenshot: item.screenshot, issues: list, anchorState: item.anchorState, symmetryIssues: report.symmetryIssues }] : [];
+  });
+  finalReport = { runId, outDir, browser: browserInfo.Browser, issueCount: issues.length, issues, captures };
   await fs.writeFile(path.join(outDir, 'live-custom-domain-final-report.json'), JSON.stringify(finalReport, null, 2));
   console.log(JSON.stringify({
     outDir,
     browser: browserInfo.Browser,
+    issueCount: issues.length,
+    issues,
     captures: captures.map((item) => ({
       label: item.label,
       screenshot: item.screenshot,
       viewport: item.report.viewport,
       scroll: item.report.scroll,
+      hash: item.report.hash,
+      anchorState: item.anchorState,
       horizontalOverflow: item.report.horizontalOverflow,
       offenderCount: item.report.offenderCount,
+      notFoundTitle: item.report.notFoundTitle,
+      missingPrimaryHeading: item.report.missingPrimaryHeading,
       trustCopy: item.report.trustCopy,
       badFortifiedCertified: item.report.badFortifiedCertified,
       brokenLoadedImages: item.report.brokenLoadedImages.length,
+      symmetryIssues: item.report.symmetryIssues.length,
       h1: item.report.h1,
     })),
   }, null, 2));
+  if (issues.length) process.exitCode = 1;
 } finally {
   try { edge.kill('SIGTERM'); } catch {}
   await fs.rm(profile, { recursive: true, force: true }).catch(() => {});

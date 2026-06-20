@@ -16,6 +16,7 @@ if (!(Test-Path -LiteralPath $configPath)) {
 $required = [ordered]@{
   'index.html' = 'public\index.html'
   'services.html' = 'public\services.html'
+  'gutter-cleaning-guards.html' = 'public\gutter-cleaning-guards.html'
   'photos.html' = 'public\photos.html'
   'areas.html' = 'public\areas.html'
   'process.html' = 'public\process.html'
@@ -24,6 +25,10 @@ $required = [ordered]@{
   'sitemap.xml' = 'public\sitemap.xml'
   'robots.txt' = 'public\robots.txt'
   'llms.txt' = 'public\llms.txt'
+  'ai.txt' = 'public\ai.txt'
+  'agents.txt' = 'public\agents.txt'
+  '.well-known/ai.txt' = 'public\.well-known\ai.txt'
+  '.well-known/agents.json' = 'public\.well-known\agents.json'
 }
 
 foreach ($relative in $required.Keys) {

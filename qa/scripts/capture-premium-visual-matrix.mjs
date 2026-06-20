@@ -16,6 +16,7 @@ const base = process.env.VERA_BASE_URL || 'http://127.0.0.1:8136';
 const allPages = [
   ['home', '/'],
   ['services', '/services.html'],
+  ['gutter-cleaning-guards', '/gutter-cleaning-guards.html'],
   ['photos', '/photos.html'],
   ['areas', '/areas.html'],
   ['process', '/process.html'],
@@ -102,7 +103,48 @@ const reportExpression = `(() => {
   const visibleEls = Array.from(document.querySelectorAll('body *')).filter(visible);
   const offenders = visibleEls.map(el => ({tag:el.tagName.toLowerCase(), cls:String(el.className||''), text:text(el), rect:rect(el)})).filter(x => x.rect.left < -1 || x.rect.right > vw + 1).slice(0, 30);
   const images = Array.from(document.images).map((img) => ({src:img.currentSrc || img.src, alt:img.alt || '', complete:img.complete, nw:img.naturalWidth, nh:img.naturalHeight, rect:rect(img)}));
+  const symmetryGroups = Array.from(document.querySelectorAll('.navlinks, .hero-actions, .contact-actions, .contact-hero-actions, .compact-actions, .home-area-actions, .footer-links, .footer-contact, .footer-trust-logos, .hero-issue-links, .hero-proof-pills, .gallery-nav, .area-list')).filter(visible);
+  const symmetryIssues = [];
+  for (const group of symmetryGroups) {
+    const gr = rect(group);
+    const groupName = String(group.className || group.tagName || '').replace(/\\s+/g, '.').slice(0, 90);
+    const children = Array.from(group.children).filter(visible).map((child) => ({ text: text(child), rect: rect(child) }));
+    if (children.length < 2) continue;
+    const rows = [];
+    for (const child of children) {
+      const center = (child.rect.top + child.rect.bottom) / 2;
+      const row = rows.find((candidate) => Math.abs(center - candidate.center) <= Math.max(14, Math.min(28, Math.min(candidate.height, child.rect.height) * 0.55)));
+      if (row) {
+        row.items.push(child);
+        row.center = row.items.reduce((sum, item) => sum + ((item.rect.top + item.rect.bottom) / 2), 0) / row.items.length;
+        row.height = Math.max(row.height, child.rect.height);
+      } else {
+        rows.push({ center, height: child.rect.height, items: [child] });
+      }
+    }
+    for (const row of rows) {
+      const rowItems = row.items;
+      if (rowItems.length < 2) continue;
+      rowItems.sort((a, b) => a.rect.left - b.rect.left);
+      const rowTop = Math.round(Math.min(...rowItems.map((item) => item.rect.top)));
+      const rowLeft = rowItems[0].rect.left;
+      const rowRight = rowItems[rowItems.length - 1].rect.right;
+      const leftPad = Math.round(rowLeft - gr.left);
+      const rightPad = Math.round(gr.right - rowRight);
+      const edgeDelta = Math.abs(leftPad - rightPad);
+      const widths = rowItems.map((item) => item.rect.width);
+      const widthDelta = Math.max(...widths) - Math.min(...widths);
+      const strictWidthGroup = group.matches('.navlinks, .hero-actions, .contact-actions, .contact-hero-actions, .compact-actions, .footer-links, .footer-contact');
+      if (innerWidth <= 760 && strictWidthGroup && widthDelta > 18) {
+        symmetryIssues.push({ group: groupName, rowTop, type: 'uneven-row-widths', widthDelta, items: rowItems.map((item) => item.text) });
+      }
+      if (innerWidth <= 1020 && edgeDelta > 30 && gr.width <= innerWidth - 24) {
+        symmetryIssues.push({ group: groupName, rowTop, type: 'off-center-row', edgeDelta, leftPad, rightPad, items: rowItems.map((item) => item.text) });
+      }
+    }
+  }
   const bodyText = document.body.innerText || '';
+  const bodyTextLower = bodyText.toLowerCase();
   return {
     href: location.href,
     title: document.title,
@@ -116,9 +158,10 @@ const reportExpression = `(() => {
     notCompleteImages: images.filter(i => !i.complete).length,
     footerCount: document.querySelectorAll('footer.site-footer').length,
     headerCount: document.querySelectorAll('header.site-header').length,
-    textUsCount: Array.from(document.querySelectorAll('a')).filter(a => /Text Us Your Photos/.test(a.textContent || '')).length,
-    hasTrustCopy: bodyText.includes('Family-owned and operated') && bodyText.includes('Owner-led final review'),
+    requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Call to Request|Text to Request/i.test(a.textContent || '')).length,
+    hasTrustCopy: bodyTextLower.includes('family-owned and operated') && bodyTextLower.includes('owner-led final review'),
     badClaimHits: ['FORTIFIED certified','license number','insurance carrier','policy number','BBB','GAF','guaranteed insurance','guaranteed claim'].filter(s => bodyText.includes(s)),
+    symmetryIssues,
     navRect: document.querySelector('.topbar') ? rect(document.querySelector('.topbar')) : null,
     heroRect: document.querySelector('h1') ? rect(document.querySelector('h1')) : null,
   };
@@ -176,14 +219,16 @@ try {
     if (r.brokenLoadedImages.length) list.push(`brokenImages:${r.brokenLoadedImages.length}`);
     if (r.footerCount !== 1) list.push(`footerCount:${r.footerCount}`);
     if (r.headerCount !== 1) list.push(`headerCount:${r.headerCount}`);
-    if (r.textUsCount < 1) list.push('missingTextUsCTA');
+    if (r.requestCtaCount < 1) list.push('missingRequestCTA');
     if (!r.hasTrustCopy) list.push('missingTrustCopy');
     if (r.badClaimHits.length) list.push(`badClaims:${r.badClaimHits.join('|')}`);
-    return list.length ? [{ page: c.page, viewport: c.viewport, issues: list, screenshot: c.screenshot }] : [];
+    if (r.symmetryIssues.length) list.push(`symmetryIssues:${r.symmetryIssues.length}`);
+    return list.length ? [{ page: c.page, viewport: c.viewport, issues: list, screenshot: c.screenshot, symmetryIssues: r.symmetryIssues.slice(0, 12) }] : [];
   });
-  const summary = { outDir, base, browser: browserInfo.Browser, totalCaptures: captures.length, issueCount: issues.length, issues, captures: captures.map(c => ({page:c.page, viewport:c.viewport, screenshot:c.screenshot, h1:c.report.h1, horizontalOverflow:c.report.horizontalOverflow, offenderCount:c.report.offenderCount, brokenLoadedImages:c.report.brokenLoadedImages.length, notCompleteImages:c.report.notCompleteImages, textUsCount:c.report.textUsCount, hasTrustCopy:c.report.hasTrustCopy, badClaimHits:c.report.badClaimHits})) };
+  const summary = { outDir, base, browser: browserInfo.Browser, totalCaptures: captures.length, issueCount: issues.length, issues, captures: captures.map(c => ({page:c.page, viewport:c.viewport, screenshot:c.screenshot, h1:c.report.h1, horizontalOverflow:c.report.horizontalOverflow, offenderCount:c.report.offenderCount, brokenLoadedImages:c.report.brokenLoadedImages.length, notCompleteImages:c.report.notCompleteImages, requestCtaCount:c.report.requestCtaCount, hasTrustCopy:c.report.hasTrustCopy, badClaimHits:c.report.badClaimHits, symmetryIssues:c.report.symmetryIssues.length, symmetryIssueDetails:c.report.symmetryIssues.slice(0, 12)})) };
   await fs.writeFile(path.join(outDir, 'premium-visual-matrix-report.json'), JSON.stringify(summary, null, 2));
   console.log(JSON.stringify(summary, null, 2));
+  if (issues.length) process.exitCode = 1;
 } finally {
   try { edge.kill('SIGTERM'); } catch {}
   await fs.rm(profile, { recursive: true, force: true }).catch(() => {});

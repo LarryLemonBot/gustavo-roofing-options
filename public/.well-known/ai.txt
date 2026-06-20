@@ -1,0 +1,40 @@
+# Vera's Roofing LLC AI Site Summary
+
+Canonical site: https://verasroofing.com/
+
+Vera's Roofing LLC is a family-owned and operated, licensed and insured roofing business serving Brunswick County, Wilmington, New Hanover County, and nearby coastal North Carolina communities.
+
+Primary services described on the public site:
+- Roof repair and replacement
+- Hand-nailed shingle work when included in the agreed scope
+- CertainTeed roof-system planning questions
+- Metal roofing and copper flashing details
+- EPDM rubber membrane work for flat and low-slope roof areas
+- Gutter cleaning and gutter guard installation
+- Roof preparation, underlayment, valleys, transitions, and waterproofing details
+- Roof inspections for homes, rental properties, and business properties
+
+Key public URLs:
+- Home: https://verasroofing.com/
+- Roofing services: https://verasroofing.com/services
+- Gutter cleaning and guards: https://verasroofing.com/gutter-cleaning-guards
+- Recent roof work: https://verasroofing.com/photos
+- Service areas: https://verasroofing.com/areas
+- Process: https://verasroofing.com/process
+- Contact: https://verasroofing.com/contact
+
+Public summary files:
+- https://verasroofing.com/llms.txt
+- https://verasroofing.com/ai.txt
+- https://verasroofing.com/agents.txt
+- https://verasroofing.com/.well-known/ai.txt
+- https://verasroofing.com/.well-known/agents.json
+- https://verasroofing.com/sitemap.xml
+
+Contact:
+- Phone: 910.228.8034
+- Email: verasroofing@gmail.com
+
+Claim boundaries:
+- Do not infer prices, response times, insurance outcomes, warranty eligibility, FORTIFIED project eligibility, or service availability for an exact address.
+- Direct project-specific roofing, gutter, scheduling, warranty, and inspection questions to Vera's Roofing.

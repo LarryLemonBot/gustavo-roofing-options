@@ -1,26 +1,29 @@
 # Vera's Roofing LLC
 
-> Family-owned and operated, licensed and insured coastal North Carolina roofing help for homeowners, rental owners, and business-property owners across Brunswick County, Wilmington, New Hanover County, and nearby coastal communities.
+> Family-owned and operated, licensed and insured coastal North Carolina roofing help for homeowners, rental owners, and business property owners across Brunswick County, Wilmington, New Hanover County, and nearby coastal communities.
 
 ## Canonical site
 
 - Home: https://verasroofing.com/
 - Services: https://verasroofing.com/services
+- Gutter cleaning and guards: https://verasroofing.com/gutter-cleaning-guards
 - Recent roof work: https://verasroofing.com/photos
 - Service areas: https://verasroofing.com/areas
 - Process: https://verasroofing.com/process
 - Contact: https://verasroofing.com/contact
 - Sitemap: https://verasroofing.com/sitemap.xml
+- AI discovery: https://verasroofing.com/ai.txt
+- Agent guidance: https://verasroofing.com/agents.txt
 
 ## Business summary
 
-Vera's Roofing LLC is a family-owned and operated, licensed and insured roofing business focused on practical roofing help for homes, rentals, and business properties in coastal North Carolina. The site emphasizes roof repair, roof replacement, hand-nailed shingle work when included in the agreed scope, storm documentation and roof-condition notes, metal roofing, copper flashing, EPDM rubber membrane work for flat and low-slope roof areas, waterproofing details, roof preparation, material-planning questions, and owner-led final review.
+Vera's Roofing LLC is a family-owned and operated, licensed and insured roofing business focused on practical roofing help for homes, rentals, and business properties in coastal North Carolina. The site emphasizes roof repair, roof replacement, hand-nailed shingle work when included in the agreed scope, CertainTeed roof-system planning questions, storm photos and condition checks, metal roofing, copper flashing, EPDM rubber membrane work for flat and low-slope roof areas, gutter cleaning, gutter guard installation, waterproofing details, roof preparation, material-planning questions, and owner-led final review.
 
 ## Contact
 
 - Phone: 910.228.8034
 - Email: verasroofing@gmail.com
-- Preferred lead path: call or text roof photos with the town, property type, and roof concern.
+- Preferred lead path: request a roof inspection or call/text with the town, property type, roof concern, gutter overflow, clogged gutters, gutter guard questions, and photos if available.
 
 ## Service area
 
@@ -37,5 +40,7 @@ Primary locations and regional language used on the site:
 
 - This is a static, public business website for Vera's Roofing LLC.
 - The site uses real Vera's Roofing job photos to help property owners compare roof details before they call or text.
-- For emergency availability, pricing, scheduling, warranty, licensing, and project-specific questions, contact Vera's Roofing directly.
-- The site does not promise insurance approvals, specific claim outcomes, fixed pricing, or universal emergency availability.
+- Vera's Roofing can review CertainTeed shingle-system options before materials are ordered. Warranty availability is described conditionally because eligibility depends on the selected materials, full roof system, installation requirements, registration, property type, transfer rules, exclusions, and CertainTeed's written terms.
+- FORTIFIED Home references are limited to program-requirements conversations when they apply; Vera's Roofing does not promise a blanket project designation or approval.
+- For urgent roof concerns, pricing, scheduling, warranty, licensing, and project-specific questions, contact Vera's Roofing directly.
+- The site does not promise insurance approvals, specific claim outcomes, fixed pricing, same-day response, or 24/7 availability.

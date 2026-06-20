@@ -50,6 +50,101 @@ function extractSrcsetSources(html) {
 
 const allHtml = [...htmlByPage.values()].join("\n");
 
+const requiredDiscoveryFiles = [
+  "robots.txt",
+  "sitemap.xml",
+  "llms.txt",
+  "ai.txt",
+  "agents.txt",
+  path.join(".well-known", "ai.txt"),
+  path.join(".well-known", "agents.json"),
+];
+
+for (const file of requiredDiscoveryFiles) {
+  if (!existsSync(path.join(publicDir, file))) fail(`missing AI/search discovery file: public/${file.replace(/\\/g, "/")}`);
+}
+
+if (existsSync(path.join(publicDir, "robots.txt"))) {
+  const robots = readFileSync(path.join(publicDir, "robots.txt"), "utf8");
+  for (const marker of ["Sitemap: https://verasroofing.com/sitemap.xml", "LLMs: https://verasroofing.com/llms.txt", "AI: https://verasroofing.com/ai.txt", "Agents: https://verasroofing.com/agents.txt"]) {
+    if (!robots.includes(marker)) fail(`robots.txt missing discovery marker: ${marker}`);
+  }
+}
+
+if (existsSync(path.join(publicDir, ".well-known", "agents.json"))) {
+  try {
+    const agents = JSON.parse(readFileSync(path.join(publicDir, ".well-known", "agents.json"), "utf8"));
+    if (!agents.publicPages?.includes("https://verasroofing.com/gutter-cleaning-guards")) {
+      fail("agents.json must include the gutter cleaning and guards page");
+    }
+  } catch (error) {
+    fail(`agents.json is not valid JSON: ${error.message}`);
+  }
+}
+
+if (existsSync(path.join(publicDir, ".well-known", "ai.txt"))) {
+  const wellKnownAi = readFileSync(path.join(publicDir, ".well-known", "ai.txt"), "utf8");
+  if (!wellKnownAi.includes("https://verasroofing.com/gutter-cleaning-guards")) {
+    fail(".well-known/ai.txt must include the gutter cleaning and guards page");
+  }
+}
+
+if (!htmlByPage.has("gutter-cleaning-guards.html")) {
+  fail("public/gutter-cleaning-guards.html is missing");
+}
+
+const liveCaptureScriptPath = path.join(root, "qa", "scripts", "capture-live-custom-domain-final-qa.mjs");
+if (existsSync(liveCaptureScriptPath)) {
+  const liveCaptureScript = readFileSync(liveCaptureScriptPath, "utf8");
+  for (const url of [
+    "https://verasroofing.com/gutter-cleaning-guards",
+    "https://verasroofing.com/services#gutter-cleaning-guards",
+  ]) {
+    if (!liveCaptureScript.includes(url)) fail(`live custom-domain visual QA must capture ${url}`);
+  }
+}
+
+const crossViewportScriptPath = path.join(root, "qa", "scripts", "verify-premium-cross-viewport.mjs");
+if (existsSync(crossViewportScriptPath)) {
+  const crossViewportScript = readFileSync(crossViewportScriptPath, "utf8");
+  if (!crossViewportScript.includes("tablet-landscape-1024")) {
+    fail("cross-viewport QA must include the 1024px tablet landscape header case");
+  }
+}
+
+const vercelConfigPath = path.join(root, "vercel.json");
+if (existsSync(vercelConfigPath)) {
+  try {
+    const vercel = JSON.parse(readFileSync(vercelConfigPath, "utf8"));
+    const redirects = new Map((vercel.redirects || []).map((item) => [item.source, item.destination]));
+    for (const [source, destination] of [
+      ["/gutter-cleaning-guards/", "/gutter-cleaning-guards"],
+      ["/gutter-cleaning", "/gutter-cleaning-guards"],
+      ["/gutter-cleaning/", "/gutter-cleaning-guards"],
+      ["/gutter-guards", "/gutter-cleaning-guards"],
+      ["/gutter-guards/", "/gutter-cleaning-guards"],
+      ["/roof-work", "/photos"],
+      ["/roof-work/", "/photos"],
+      ["/areas-served", "/areas"],
+      ["/areas-served/", "/areas"],
+    ]) {
+      if (redirects.get(source) !== destination) fail(`vercel.json missing redirect ${source} -> ${destination}`);
+    }
+  } catch (error) {
+    fail(`vercel.json is not valid JSON: ${error.message}`);
+  }
+}
+
+for (const stale of [
+  "assets/images/roof-bright-metal-slope.jpeg",
+  "assets/images/responsive/roof-bright-metal-slope-480w.jpeg",
+  "assets/images/responsive/roof-bright-metal-slope-768w.jpeg",
+  "assets/images/responsive/roof-bright-metal-slope-1024w.jpeg",
+  "assets/images/responsive/roof-bright-metal-slope-1400w.jpeg",
+]) {
+  if (existsSync(path.join(publicDir, stale))) fail(`stale duplicate metal photo should stay removed: public/${stale}`);
+}
+
 for (const [file, html] of htmlByPage.entries()) {
   for (const src of extractImageSources(html)) {
     if (!assetExists(src)) fail(`${file}: missing image/script asset ${src}`);
@@ -156,17 +251,39 @@ const highContrastLight = "(?:#fffaf2|#f7f9ff)";
 if (/mobile-call|mobile-cta-ready/.test(allHtml) || /mobile-call|mobile-cta-ready/.test(css)) {
   fail("sticky mobile CTA component should stay removed to avoid duplicate first-viewport call buttons");
 }
-if (/vera-roofing-20260618v(?:1[89]|20|21|22)/.test(allHtml)) {
-  fail("public HTML still references an older v18/v19/v20/v21/v22 CSS cache token");
+const stylesheetRefs = [...allHtml.matchAll(/<link\b[^>]*rel=["']stylesheet["'][^>]*href=["']([^"']+)["'][^>]*>/gi)].map((match) => match[1]);
+const stylesheetText = stylesheetRefs.join("\n");
+if (/vera-roofing-20260618v(?:1[89]|2[0-8])/.test(stylesheetText)) {
+  fail("public HTML still references an older v18-v28 CSS cache token");
 }
-if (!allHtml.includes("vera-roofing-20260618v23")) {
-  fail("public HTML does not reference the current v23 CSS cache token");
+const cssTokenBaseline = { date: 20260620, version: 3, label: "20260620v3" };
+const stylesheetTokens = stylesheetRefs.map((href) => {
+  const match = href.match(/vera-roofing-(\d{8})v(\d+)/);
+  return match ? { raw: match[0], date: Number(match[1]), version: Number(match[2]) } : null;
+});
+const uniqueStylesheetTokens = new Set(stylesheetTokens.filter(Boolean).map((token) => token.raw));
+if (!stylesheetRefs.length || stylesheetTokens.some((token) => !token)) {
+  fail("public HTML stylesheet refs must include a versioned Vera CSS cache token");
 }
-if (!/Final v23 cohesion polish/i.test(css)) {
-  fail("final v23 CSS cohesion block is missing");
+if (uniqueStylesheetTokens.size > 1) {
+  fail(`public HTML references inconsistent CSS cache tokens: ${[...uniqueStylesheetTokens].join(", ")}`);
+}
+const activeStylesheetToken = stylesheetTokens.find(Boolean);
+if (
+  activeStylesheetToken &&
+  (activeStylesheetToken.date < cssTokenBaseline.date ||
+    (activeStylesheetToken.date === cssTokenBaseline.date && activeStylesheetToken.version < cssTokenBaseline.version))
+) {
+  fail(`public HTML references a CSS cache token older than the release-gate baseline ${cssTokenBaseline.label}`);
+}
+if (!/Site cohesion: local reassurance, credential proof, Photos CTA layout, hand-nailed shingles, footer, and header behavior/i.test(css)) {
+  fail("site cohesion CSS block is missing");
 }
 if (!/@media\s*\(max-width:\s*760px\)\s*\{[\s\S]*?\.navlinks\s+a\s*\{[^}]*min-height:\s*44px/i.test(css)) {
   fail("mobile nav tap targets should stay at least 44px high");
+}
+if (!/@media\s*\(max-width:\s*760px\)\s*\{[\s\S]*?\.home-page\s+\.compact-service-grid\s+\.service\s+\.text-link\s*\{[^}]*min-height:\s*44px/i.test(css)) {
+  fail("mobile homepage service text links must stay at least 44px high");
 }
 if (!/@media\s*\(min-width:\s*761px\)\s+and\s+\(max-width:\s*1020px\)\s*\{[\s\S]*?\.navlinks\s+\.call-number\s*\{[^}]*display:\s*none/i.test(css)) {
   fail("tablet nav must hide the phone number to prevent CTA wrapping");
@@ -208,6 +325,21 @@ if (!/\.home-page\s+\.home-work-preview\s*\{[^}]*display:\s*grid;[^}]*grid-templ
 if (!/@media\s*\(max-width:\s*760px\)\s*\{[\s\S]*?\.btn,[\s\S]*?\.hero-actions\s+\.btn,[\s\S]*?\.contact-actions\s+\.btn,[\s\S]*?\.final-cta\s+\.contact-actions\s+\.btn\s*\{[^}]*width:\s*fit-content;[^}]*max-width:\s*100%/i.test(css)) {
   fail("mobile CTA buttons must remain compact fit-content pills, not full-width bars");
 }
+if (!/\.hero-issue-links\s+a\s*\{[^}]*background:\s*rgba\(255,\s*255,\s*255,\s*0\.08\)/i.test(css)) {
+  fail("homepage concern pills must keep the quieter grey treatment, not the purple CTA gradient");
+}
+if (!/\.service-panel\.credential-panel\s*\{[\s\S]*?color:\s*var\(--ink\)/i.test(css)) {
+  fail("CertainTeed credential panel must set a readable dark text color on its light surface");
+}
+if (!/\.service-panel\.credential-panel\s+\.service-panel-copy\s+\.eyebrow,[\s\S]*?\.service-panel\.credential-panel\s+h2,[\s\S]*?\.service-panel\.credential-panel\s+strong,[\s\S]*?\.service-panel\.credential-panel\s+\.service-proof-card\s*>\s*strong\s*\{[\s\S]*?color:\s*var\(--ink\)[\s\S]*?text-shadow:\s*none/i.test(css)) {
+  fail("CertainTeed credential headings/strong text must not inherit white feature-panel styling");
+}
+if (!/\.service-panel\.credential-panel\s+p,[\s\S]*?\.service-panel\.credential-panel\s+\.service-fit,[\s\S]*?\.service-panel\.credential-panel\s+\.service-value,[\s\S]*?\.service-panel\.credential-panel\s+\.service-solve,[\s\S]*?\.service-panel\.credential-panel\s+\.service-proof-card\s+p\s*\{[\s\S]*?color:\s*#4f5963/i.test(css)) {
+  fail("CertainTeed credential body and value-card text must stay readable on the light panel");
+}
+if (!/\.service-panel\.credential-panel\s+\.service-proof-card\s+span\s*\{[\s\S]*?color:\s*var\(--ink\)[\s\S]*?background:\s*rgba\(239,\s*243,\s*247,\s*0\.88\)/i.test(css)) {
+  fail("CertainTeed proof chips must use muted grey styling, not low-contrast white text");
+}
 if (!/\.photo-category\s+\.eyebrow\s*\{[\s\S]*?color:\s*var\(--purple\)/i.test(css) && !/\.section:not\(\.dark\)\s+\.eyebrow,[\s\S]*?\.photo-category\s+\.eyebrow\s*\{[\s\S]*?color:\s*var\(--purple\)/i.test(css)) {
   fail("light photo-category eyebrow labels must use the readable dark token");
 }
@@ -222,18 +354,18 @@ if (!new RegExp(`\\.section\\.area-strip\\s+\\.eyebrow,[\\s\\S]*?color:\\s*${hig
 }
 const normalizedCss = css.replace(/\r\n/g, "\n");
 const genericEyebrowIdx = normalizedCss.indexOf(".section:not(.dark) .eyebrow");
-const finalContrastIdx = normalizedCss.lastIndexOf("Final contrast guard for small labels on dark image/CTA surfaces");
+const finalContrastIdx = normalizedCss.lastIndexOf("Dark image and CTA label contrast");
 if (genericEyebrowIdx < 0 || finalContrastIdx < genericEyebrowIdx) {
   fail("high-contrast dark-surface eyebrow override must come after the generic section eyebrow rule");
 }
-if (normalizedCss.lastIndexOf("Final contrast guard for small labels on dark image/CTA surfaces") < normalizedCss.indexOf(".photo-hero .eyebrow,\n.photo-contact .eyebrow")) {
+if (normalizedCss.lastIndexOf("Dark image and CTA label contrast") < normalizedCss.indexOf(".photo-hero .eyebrow,\n.photo-contact .eyebrow")) {
   fail("final dark-surface eyebrow contrast guard must remain after page-specific photo eyebrow rules");
 }
 
-note("Manual native-browser visual pass is still required after this script:");
-note("- mobile 390x844: homepage first viewport, services #epdm-flat-roofing, photos #epdm-carolina-beach, contact");
-note("- desktop 1366x900: homepage and process/about page");
-note("- inspect for text overlap, duplicate CTAs, oversized logo/nav, cramped buttons, full-width pills, unsafe claims, and section creep");
+note("Manual native-browser visual pass is still required after every deployment:");
+note("- inspect every public page at desktop and mobile: home, services, gutter cleaning and guards, photos, areas, process, contact");
+note("- include services #certainteed-roof-system, services #epdm-flat-roofing, photos #epdm-carolina-beach, and homepage first viewport");
+note("- inspect for text overlap, low contrast, duplicate CTAs, asymmetry, oversized logo/nav, cramped buttons, full-width pills, image/caption mismatch, unsafe claims, and section creep");
 note("- save screenshots and results JSON under qa/");
 
 if (failures.length) {
