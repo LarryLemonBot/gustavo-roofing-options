@@ -5205,10 +5205,6 @@ a.btn-secondary:hover,
     scroll-margin-top: 18px;
   }
 
-  .contact-hero-actions .hero-email-button {
-    display: none;
-  }
-
   .home-page .mobile-hero-proof-photo {
     display: block;
     overflow: hidden;
@@ -5241,35 +5237,8 @@ a.btn-secondary:hover,
     display: none;
   }
 
-  .mobile-email-hero {
-    display: block;
-    margin: 8px 0 0;
-  }
-
-  .mobile-email-hero .text-link {
-    display: inline-flex;
-    align-items: center;
-    width: auto;
-    min-height: 44px;
-    padding: 6px 0;
-    border: 0;
-    border-radius: 0;
-    color: #f7f9ff;
-    background: transparent;
-    box-shadow: none;
-    font-size: 0.98rem;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
   .service-edge-note-card img {
     max-height: 210px;
-  }
-}
-
-@media (min-width: 761px) {
-  .mobile-email-hero {
-    display: none;
   }
 }
 

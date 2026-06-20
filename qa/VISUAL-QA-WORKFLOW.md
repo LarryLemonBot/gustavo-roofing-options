@@ -2,6 +2,15 @@
 
 Use this workflow before every deploy that changes layout, copy density, mobile nav, CTAs, images, or page structure.
 
+Each visual pass must be prompted by the previous result. Start from the newest browser comment, Gustavo note, release-gate report, live custom-domain report, or automation finding. Name the exact issue being judged, inspect the smallest affected surface first, then expand to mobile, tablet, and desktop only to verify that the fix did not break symmetry, CTA hierarchy, readability, or image rhythm elsewhere.
+
+Do not repeat screenshots as a ritual. A pass is productive only when it creates one of these outcomes:
+
+- a narrow patch to a visible public-site issue
+- a confirmed non-action with the reason written down
+- a blocked item that names the missing proof, access, asset, or owner decision
+- a clean deploy-ready result that includes screenshots and machine-readable reports
+
 ## 1. Static Guard
 
 Run:
