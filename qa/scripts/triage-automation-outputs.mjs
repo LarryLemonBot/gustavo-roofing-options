@@ -209,10 +209,34 @@ function deployDiffBetween(fromCommit, toCommit) {
   };
 }
 
+function currentDirtyFiles() {
+  const status = runGit(["status", "--short"]);
+  const files = status.stdout
+    ? status.stdout
+        .split(/\r?\n/)
+        .map((line) => line.slice(3).trim())
+        .filter(Boolean)
+    : [];
+  return {
+    status,
+    files,
+    deployRelevantFiles: files.filter((file) => !isDeployExcluded(file)),
+    deployExcludedFiles: files.filter((file) => isDeployExcluded(file)),
+  };
+}
+
 const blockingIssues = [];
 const warnings = [];
 const resolvedFindings = [];
 const nonActions = [];
+
+const dirty = currentDirtyFiles();
+if (dirty.deployRelevantFiles.length) {
+  addUnique(blockingIssues, `Current worktree has deploy-relevant uncommitted changes: ${dirty.deployRelevantFiles.join(", ")}`);
+}
+if (dirty.deployExcludedFiles.length) {
+  addUnique(nonActions, `Current uncommitted changes are deploy-excluded only: ${dirty.deployExcludedFiles.join(", ")}`);
+}
 
 const automations = expectedAutomations.map((expected) => {
   const dir = path.join(automationBase, expected.id);
@@ -363,6 +387,7 @@ const report = {
   root,
   automationBase,
   automations,
+  dirty,
   qaReports: {
     latestReleaseGatePath,
     latestReleaseGatePassed: latestReleaseGate?.allPassed ?? null,

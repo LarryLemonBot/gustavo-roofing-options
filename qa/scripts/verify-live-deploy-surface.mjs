@@ -35,6 +35,18 @@ const discoveryRoutes = [
   { route: "/d87505eee9cf47a09d6c9d9065c53b7d.txt", file: "d87505eee9cf47a09d6c9d9065c53b7d.txt" },
 ];
 
+const criticalAssetRoutes = [
+  { route: "/assets/css/site.css", file: "assets/css/site.css" },
+  { route: "/assets/js/site-config.js", file: "assets/js/site-config.js" },
+  { route: "/assets/images/vera-roofing-logo-header-black-banner.jpg", file: "assets/images/vera-roofing-logo-header-black-banner.jpg" },
+  { route: "/assets/images/certainteed-shinglemaster-credentialed-badge-footer.png", file: "assets/images/certainteed-shinglemaster-credentialed-badge-footer.png" },
+  { route: "/assets/images/fortified-home-logo.png", file: "assets/images/fortified-home-logo.png" },
+  { route: "/assets/images/social-card.jpg", file: "assets/images/social-card.jpg" },
+  { route: "/assets/images/hero-metal-roof-coastal.jpeg", file: "assets/images/hero-metal-roof-coastal.jpeg" },
+  { route: "/favicon.ico", file: "favicon.ico" },
+  { route: "/apple-touch-icon.png", file: "apple-touch-icon.png" },
+];
+
 function runGit(args) {
   const result = spawnSync("git", args, { cwd: root, encoding: "utf8" });
   return {
@@ -51,6 +63,10 @@ function sha256(text) {
 
 function localText(file) {
   return fs.readFileSync(path.join(publicDir, file), "utf8").replace(/^\uFEFF/, "");
+}
+
+function localBytes(file) {
+  return fs.readFileSync(path.join(publicDir, file));
 }
 
 async function fetchText(route) {
@@ -72,6 +88,26 @@ async function fetchText(route) {
   };
 }
 
+async function fetchBytes(route) {
+  const url = new URL(route, origin).href;
+  const response = await fetch(url, {
+    headers: {
+      "cache-control": "no-cache",
+      pragma: "no-cache",
+    },
+  });
+  const bytes = Buffer.from(await response.arrayBuffer());
+  return {
+    url,
+    status: response.status,
+    ok: response.ok,
+    contentType: response.headers.get("content-type") || "",
+    cacheControl: response.headers.get("cache-control") || "",
+    etag: response.headers.get("etag") || "",
+    bytes,
+  };
+}
+
 function parseJsonLd(html) {
   const scripts = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
   return scripts.map((match, index) => {
@@ -84,6 +120,45 @@ function parseJsonLd(html) {
     }
   });
 }
+
+function normalizeLocalAssetUrl(value) {
+  if (!value) return null;
+  let raw = value.trim();
+  if (!raw || raw.startsWith("data:") || raw.startsWith("#")) return null;
+  if (raw.startsWith(origin)) raw = raw.slice(origin.length);
+  if (!raw.startsWith("/")) return null;
+  const clean = raw.split("#")[0].split("?")[0];
+  if (clean.startsWith("/assets/") || clean === "/favicon.ico" || clean === "/apple-touch-icon.png") return clean;
+  return null;
+}
+
+function collectReferencedAssets() {
+  const assets = new Map();
+  for (const entry of criticalAssetRoutes) assets.set(entry.route, entry);
+
+  for (const route of htmlRoutes) {
+    const html = localText(route.file);
+    const attrMatches = html.matchAll(/\b(?:src|href|content)=["']([^"']+)["']/gi);
+    for (const match of attrMatches) {
+      const localRoute = normalizeLocalAssetUrl(match[1]);
+      if (!localRoute) continue;
+      assets.set(localRoute, { route: localRoute, file: localRoute.replace(/^\//, "") });
+    }
+
+    const srcsetMatches = html.matchAll(/\bsrcset=["']([^"']+)["']/gi);
+    for (const match of srcsetMatches) {
+      for (const candidate of match[1].split(",")) {
+        const localRoute = normalizeLocalAssetUrl(candidate.trim().split(/\s+/)[0]);
+        if (!localRoute) continue;
+        assets.set(localRoute, { route: localRoute, file: localRoute.replace(/^\//, "") });
+      }
+    }
+  }
+
+  return [...assets.values()].sort((a, b) => a.route.localeCompare(b.route));
+}
+
+const assetRoutes = collectReferencedAssets();
 
 async function compareRoute(entry, kind) {
   const local = localText(entry.file);
@@ -111,13 +186,39 @@ async function compareRoute(entry, kind) {
   };
 }
 
+async function compareAsset(entry) {
+  const local = localBytes(entry.file);
+  const live = await fetchBytes(entry.route);
+  const localHash = crypto.createHash("sha256").update(local).digest("hex");
+  const liveHash = crypto.createHash("sha256").update(live.bytes).digest("hex");
+  return {
+    kind: "asset",
+    route: entry.route,
+    file: entry.file,
+    url: live.url,
+    status: live.status,
+    ok: live.ok,
+    contentType: live.contentType,
+    cacheControl: live.cacheControl,
+    etag: live.etag,
+    localBytes: local.length,
+    liveBytes: live.bytes.length,
+    localHash,
+    liveHash,
+    matchesLocal: localHash === liveHash,
+  };
+}
+
 const htmlChecks = [];
 for (const entry of htmlRoutes) htmlChecks.push(await compareRoute(entry, "html"));
 
 const discoveryChecks = [];
 for (const entry of discoveryRoutes) discoveryChecks.push(await compareRoute(entry, "discovery"));
 
-const checks = [...htmlChecks, ...discoveryChecks];
+const assetChecks = [];
+for (const entry of assetRoutes) assetChecks.push(await compareAsset(entry));
+
+const checks = [...htmlChecks, ...discoveryChecks, ...assetChecks];
 const issues = [];
 
 for (const check of checks) {
@@ -136,6 +237,7 @@ const report = {
   issues,
   htmlChecks,
   discoveryChecks,
+  assetChecks,
 };
 
 const jsonPath = path.join(outDir, "live-deploy-surface-report.json");
@@ -162,6 +264,12 @@ const md = [
   "",
   "## Discovery Files",
   ...discoveryChecks.map(
+    (check) =>
+      `- ${check.route}: ${check.status}, matches local: ${check.matchesLocal ? "yes" : "no"}, hash: ${check.liveHash.slice(0, 12)}`,
+  ),
+  "",
+  "## Referenced Assets",
+  ...assetChecks.map(
     (check) =>
       `- ${check.route}: ${check.status}, matches local: ${check.matchesLocal ? "yes" : "no"}, hash: ${check.liveHash.slice(0, 12)}`,
   ),
