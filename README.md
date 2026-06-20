@@ -76,6 +76,7 @@ From this folder:
 ```powershell
 .\scripts\sync-public-index.ps1
 .\scripts\verify-public-mirrors.ps1
+node qa/scripts/report-local-state.mjs
 git status --short --branch
 node qa/scripts/run-release-gate.mjs
 vercel deploy --prod --yes --scope orbitals-projects
@@ -84,7 +85,10 @@ node qa/scripts/triage-automation-outputs.mjs
 ```
 
 `sync-public-index.ps1` keeps its historical name, but it now syncs all seven `public/*.html` files to their root mirror files.
+`report-local-state.mjs` separates release-blocking tracked or visible untracked changes from ignored generated QA/output artifacts. Do not use broad cleanup commands such as `git clean -xdf` to make ignored artifacts disappear.
 `run-release-gate.mjs` records the source commit and refuses to pass with uncommitted tracked changes. Use `ALLOW_DIRTY_RELEASE_GATE=1` only for local investigation, never for a production deploy gate.
+
+If native Codex Browser control fails while `report-local-state.mjs` shows browser bridge prerequisites passing, the remaining safe repair is to restart Codex Desktop or its app-server, then retry the Browser tool. Do not change or redeploy the website to fix a local Browser bridge failure.
 
 If you intentionally use the prebuilt path, verify the build output before uploading it:
 

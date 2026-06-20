@@ -29,12 +29,13 @@ Use the native Codex desktop browser at `390x844`.
 If the native Codex browser cannot attach or bootstrap, record that failure in the handoff or final QA note, then run the Edge/CDP fallback scripts:
 
 ```powershell
+node qa/scripts/report-local-state.mjs
 node qa/scripts/capture-live-custom-domain-final-qa.mjs
 node qa/scripts/capture-fullpage-qa.mjs
 node qa/scripts/verify-premium-cross-viewport.mjs
 ```
 
-Inspect the saved screenshots under `qa/`. Do not call this a native-browser pass unless the native Codex browser was actually inspected.
+Inspect the saved screenshots under `qa/`. Do not call this a native-browser pass unless the native Codex browser was actually inspected. If `report-local-state.mjs` shows the Browser bridge prerequisites passing but the Browser tool still returns a transport failure, restart Codex Desktop or its app-server before retrying; do not change website files to fix a local Browser bridge issue.
 
 Inspect:
 

@@ -203,6 +203,7 @@ From this folder:
 ```powershell
 .\scripts\sync-public-index.ps1
 .\scripts\verify-public-mirrors.ps1
+node qa/scripts/report-local-state.mjs
 git status --short --branch
 node qa/scripts/run-release-gate.mjs
 vercel deploy --prod --yes --scope orbitals-projects
@@ -211,7 +212,10 @@ node qa/scripts/triage-automation-outputs.mjs
 ```
 
 The scoped CLI deploy is the default path. Do not rely on an unscoped GitHub-triggered Vercel deploy for this site; it can route through the wrong team membership and fail before production is updated.
+Use `report-local-state.mjs` before calling a worktree unsafe. A release-blocking dirty tree means tracked changes or visible untracked files, not ignored generated QA evidence under `qa/`.
 The release gate records the source commit and fails on uncommitted tracked changes by default. If you need to run it during local investigation, set `ALLOW_DIRTY_RELEASE_GATE=1` temporarily, then rerun without that override before any production deploy.
+
+If native Codex Browser control is unavailable but the local-state report says the Browser bridge prerequisites pass, treat it as a local Codex app-server issue. Restart Codex Desktop or the app-server, then retry native browser control; do not change public site files for a local browser bridge failure.
 
 If you intentionally use the prebuilt path, verify the generated output before uploading it:
 
