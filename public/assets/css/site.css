@@ -5125,6 +5125,36 @@ a.btn-secondary:hover,
   .navlinks .phone {
     padding-inline: 20px;
   }
+
+  .home-page .hero {
+    padding-top: 66px;
+  }
+
+  .home-page .hero-grid {
+    gap: 44px;
+  }
+
+  .home-page .hero-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 420px);
+    gap: 10px;
+  }
+
+  .home-page .hero-actions .btn {
+    width: 100%;
+  }
+
+  .home-page .hero-actions .btn-primary {
+    grid-column: 1 / -1;
+  }
+
+  .home-page .hero-actions .hero-work-link {
+    color: rgba(247, 249, 255, 0.9);
+    border-color: rgba(247, 249, 255, 0.24);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
 }
 
 /* Focused inspector pass: preserve tap targets while tightening mobile header and anchor landings. */
@@ -5231,5 +5261,39 @@ a.btn-secondary:hover,
   .brand img.brand-lockup {
     width: min(100%, 122px);
     max-height: 55px;
+  }
+}
+
+/* Mobile interior-pass: keep six nav links intact while giving subpage headlines and CTAs earlier screen space. */
+@media (max-width: 760px) {
+  .interior-page .site-header .wrap.topbar,
+  .interior-page .topbar {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .interior-page .brand img.brand-lockup {
+    width: min(100%, 118px);
+    max-height: 52px;
+  }
+
+  .interior-page .navlinks {
+    gap: 4px;
+    font-size: 0.68rem;
+  }
+
+  .interior-page .navlinks a {
+    min-height: 44px;
+    padding: 4px;
+    line-height: 1.05;
+  }
+
+  .interior-page .page-hero {
+    padding-top: clamp(16px, 5vw, 24px);
+    padding-bottom: clamp(34px, 9vw, 46px);
+  }
+
+  .interior-page .page-hero .eyebrow {
+    margin-bottom: 10px;
   }
 }
