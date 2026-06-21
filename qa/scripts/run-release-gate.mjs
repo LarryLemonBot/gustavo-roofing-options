@@ -170,6 +170,8 @@ function nativeSidepanelSignoffSummary(latestLiveInspection) {
   const requiredRoutes = [
     "/",
     "/services.html",
+    "/gutter-cleaning-guards",
+    "/services.html#gutter-cleaning-guards",
     "/services.html#certainteed-roof-system",
     "/services.html#epdm-flat-roofing",
     "/photos.html",
