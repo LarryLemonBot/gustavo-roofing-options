@@ -146,6 +146,7 @@ function isDeployExcluded(filePath) {
   const normalized = filePath.replace(/\\/g, "/");
   if (
     [
+      ".gitignore",
       "README.md",
       "EDITING-GUIDE.md",
       "implementation-brief.md",
@@ -210,13 +211,25 @@ function deployDiffBetween(fromCommit, toCommit) {
 }
 
 function currentDirtyFiles() {
-  const status = runGit(["status", "--short"]);
-  const files = status.stdout
-    ? status.stdout
+  const result = spawnSync("git", ["status", "--porcelain=v1"], {
+    cwd: root,
+    encoding: "utf8",
+    shell: false,
+  });
+  const rawStdout = (result.stdout || "").replace(/\s+$/, "");
+  const rawStderr = (result.stderr || "").trim();
+  const files = rawStdout
+    ? rawStdout
         .split(/\r?\n/)
         .map((line) => line.slice(3).trim())
         .filter(Boolean)
     : [];
+  const status = {
+    command: "git status --porcelain=v1",
+    code: result.status,
+    stdout: rawStdout,
+    stderr: rawStderr,
+  };
   return {
     status,
     files,
