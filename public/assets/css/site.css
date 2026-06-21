@@ -1685,6 +1685,16 @@ p { text-wrap: pretty; }
   background: rgba(239, 243, 247, 0.88);
 }
 
+.service-panel[id],
+.photo-category[id],
+.section[id],
+#certainteed-roof-system,
+#gutter-cleaning-guards,
+#epdm-flat-roofing,
+#epdm-carolina-beach {
+  scroll-margin-top: clamp(84px, 7vw, 122px);
+}
+
 .service-panel.service-panel-feature:not(.credential-panel) .service-panel-copy .eyebrow {
   color: #f7f9ff;
   text-shadow: 0 1px 14px rgba(0, 0, 0, 0.42);
