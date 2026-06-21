@@ -95,7 +95,7 @@ function edgePath() {
   throw new Error(`Microsoft Edge not found. Tried: ${candidates.join(', ')}`);
 }
 
-async function waitForJson(url, timeoutMs = 12000) {
+async function waitForJson(url, timeoutMs = Number.parseInt(process.env.VERA_CDP_WAIT_MS || '45000', 10)) {
   const start = Date.now();
   let lastErr;
   while (Date.now() - start < timeoutMs) {

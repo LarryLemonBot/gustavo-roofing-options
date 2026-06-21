@@ -51,7 +51,7 @@ function browserPath() {
   if (!found) throw new Error(`Browser not found. Tried: ${candidates.join(', ')}`);
   return found;
 }
-async function waitJson(url, timeoutMs = 12000) {
+async function waitJson(url, timeoutMs = Number.parseInt(process.env.VERA_CDP_WAIT_MS || '45000', 10)) {
   const start = Date.now(); let lastError;
   while (Date.now() - start < timeoutMs) {
     try { const response = await fetch(url); if (response.ok) return await response.json(); lastError = new Error(`${response.status} ${response.statusText}`); }

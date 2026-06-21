@@ -96,7 +96,7 @@ function browserPath() {
   return found;
 }
 
-async function waitJson(url, timeoutMs = 12000) {
+async function waitJson(url, timeoutMs = Number.parseInt(process.env.VERA_CDP_WAIT_MS || '45000', 10)) {
   const start = Date.now();
   let lastError;
   while (Date.now() - start < timeoutMs) {
