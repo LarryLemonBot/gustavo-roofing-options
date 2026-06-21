@@ -6,7 +6,7 @@ Internal source of truth for agents and maintainers. This file is intentionally 
 
 The verified X post from Voxyz_ai said vague feedback such as "the colors look off," "the font is ugly," or "the spacing is weird" leads agents to ship defaults and then chase subjective nitpicks. For Vera's Roofing, every improvement loop must start from a concrete design system, a homeowner conversion goal, and current evidence from the live site or repo.
 
-Replies to that X post were not accessible in the current session without sign-in. Do not invent reply themes. The related verified Voxyz_ai follow-up recommended a `DESIGN.md` containing color tokens, type scale, spacing rhythm, component patterns, and mood guidance. This file is Vera's project-specific version of that idea.
+The signed-in X thread reinforced the same point: a premium build needs explicit tokens, component rules, acceptance checks, and exact references before subjective critique. This file is Vera's project-specific version of that idea.
 
 ## Decision Rule
 
