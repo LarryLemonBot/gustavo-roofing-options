@@ -57,6 +57,14 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function parseJsonFile(filePath) {
+  try {
+    return { ok: true, value: readJson(filePath), error: null };
+  } catch (error) {
+    return { ok: false, value: null, error: error.message };
+  }
+}
+
 const branchStatus = run("git", ["status", "--short", "--branch"]);
 const porcelain = run("git", ["status", "--porcelain=v1"]);
 const modifiedDeleted = run("git", ["ls-files", "--modified", "--deleted"]);
@@ -112,6 +120,30 @@ const runtimeAclHasSandboxRx = Boolean(runtimeAcl?.stdout.match(/CodexSandboxUse
 const browserClientHashTrusted = browserClientHash ? trustedHashes.includes(browserClientHash.toLowerCase()) : false;
 const latestLiveReportPath = newestQaReport("live-custom-domain-final-", "live-custom-domain-final-report.json");
 const latestLiveReport = readJson(latestLiveReportPath);
+const nativeSignoffPath = path.join(qaDir, "native-sidepanel-signoff.json");
+const nativeSignoffExists = fs.existsSync(nativeSignoffPath);
+const nativeSignoffParsed = nativeSignoffExists
+  ? parseJsonFile(nativeSignoffPath)
+  : { ok: false, value: null, error: "missing" };
+const nativeSignoff = nativeSignoffParsed.value || {};
+const nativeSignoffSignedAtMs = nativeSignoff.signedAt ? Date.parse(nativeSignoff.signedAt) : NaN;
+const latestLiveMs = latestLiveReport?.generatedAt ? Date.parse(latestLiveReport.generatedAt) : NaN;
+const nativeSignoffIssues = [];
+if (!nativeSignoffExists) nativeSignoffIssues.push("qa/native-sidepanel-signoff.json is missing.");
+if (nativeSignoffExists && !nativeSignoffParsed.ok) {
+  nativeSignoffIssues.push(`qa/native-sidepanel-signoff.json is invalid JSON: ${nativeSignoffParsed.error}.`);
+}
+if (nativeSignoffParsed.ok) {
+  if (nativeSignoff.result !== "pass") nativeSignoffIssues.push('result must be "pass".');
+  if (nativeSignoff.sourceCommit !== sourceCommit.stdout) nativeSignoffIssues.push("sourceCommit does not match current HEAD.");
+  if (nativeSignoff.liveDomain !== "https://verasroofing.com") {
+    nativeSignoffIssues.push('liveDomain must be "https://verasroofing.com".');
+  }
+  if (!Number.isFinite(nativeSignoffSignedAtMs)) nativeSignoffIssues.push("signedAt is not a valid ISO timestamp.");
+  if (Number.isFinite(latestLiveMs) && nativeSignoffSignedAtMs < latestLiveMs) {
+    nativeSignoffIssues.push("signedAt is older than the latest live custom-domain capture.");
+  }
+}
 const nativePipeMatch = configText.match(/SKY_CUA_NATIVE_PIPE_DIRECTORY\s*=\s*['"]([^'"]+)['"]/);
 const nativePipeConfigured = nativePipeMatch ? nativePipeMatch[1] : null;
 const nativePipeList = run("powershell", [
@@ -183,6 +215,17 @@ const report = {
         fallbackUsed: null,
         issueCount: null,
       },
+  nativeSidepanelSignoff: {
+    path: nativeSignoffPath,
+    exists: nativeSignoffExists,
+    valid: nativeSignoffIssues.length === 0,
+    issues: nativeSignoffIssues,
+    result: nativeSignoff.result || null,
+    reviewer: nativeSignoff.reviewer || null,
+    signedAt: nativeSignoff.signedAt || null,
+    sourceCommit: nativeSignoff.sourceCommit || null,
+    liveDomain: nativeSignoff.liveDomain || null,
+  },
 };
 
 const reportPath = path.join(outDir, "local-state-report.json");
@@ -205,6 +248,7 @@ fs.writeFileSync(
     `- latest visual inspection mode: ${
       report.latestVisualInspectionMode.inspectionMode || "unknown"
     }; native browser inspected: ${report.latestVisualInspectionMode.nativeBrowserInspected ? "yes" : "no"}`,
+    `- manual native side-panel signoff: ${report.nativeSidepanelSignoff.valid ? "valid" : "not valid"}`,
     "",
     "Ignored QA/output artifacts are not release blockers. Do not run broad cleanup commands such as `git clean -xdf` from this repo.",
     "",
@@ -223,5 +267,6 @@ console.log(
     report.latestVisualInspectionMode.inspectionMode || "unknown"
   }; native browser inspected: ${report.latestVisualInspectionMode.nativeBrowserInspected ? "yes" : "no"}`,
 );
+console.log(`Manual native side-panel signoff: ${report.nativeSidepanelSignoff.valid ? "valid" : "not valid"}`);
 
 process.exitCode = report.releaseClean ? 0 : 1;

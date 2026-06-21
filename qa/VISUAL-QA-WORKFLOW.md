@@ -46,6 +46,8 @@ node qa/scripts/verify-premium-cross-viewport.mjs
 
 Inspect the saved screenshots under `qa/`. Do not call this a native-browser pass unless the native Codex browser was actually inspected. If `report-local-state.mjs` shows the Browser bridge prerequisites passing but the Browser tool still returns a transport failure, restart Codex Desktop or its app-server before retrying; do not change website files to fix a local Browser bridge issue.
 
+If the browser can be inspected manually in the Codex Desktop side panel but the automation bridge cannot control it, create `qa/native-sidepanel-signoff.json` from `qa/native-sidepanel-signoff.template.json` after the manual pass. The signoff must match the current `git rev-parse HEAD`, use `https://verasroofing.com`, include every required route and viewport, and be newer than the latest live custom-domain capture. `REQUIRE_NATIVE_BROWSER=1 node qa/scripts/run-release-gate.mjs` accepts either an automated native-browser report or this valid manual native side-panel signoff.
+
 Inspect:
 
 - `/`

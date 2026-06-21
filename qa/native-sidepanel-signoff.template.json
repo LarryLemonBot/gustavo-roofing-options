@@ -1,0 +1,20 @@
+{
+  "result": "pass",
+  "reviewer": "Name of person who inspected the native Codex Desktop side-panel browser",
+  "signedAt": "2026-06-21T00:00:00.000Z",
+  "sourceCommit": "replace-with-current-git-head",
+  "liveDomain": "https://verasroofing.com",
+  "viewports": ["390x844", "768x1024", "1366x900"],
+  "routes": [
+    "/",
+    "/services.html",
+    "/services.html#certainteed-roof-system",
+    "/services.html#epdm-flat-roofing",
+    "/photos.html",
+    "/photos.html#epdm-carolina-beach",
+    "/areas.html",
+    "/process.html",
+    "/contact.html"
+  ],
+  "notes": "Confirm mobile, tablet, and desktop symmetry; CTA hierarchy; readable text on light and dark backgrounds; image crops; footer balance; trust-logo layout; and absence of unsupported claims."
+}

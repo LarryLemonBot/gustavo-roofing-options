@@ -51,6 +51,8 @@ Act on the output this way:
 - `PASS` with action items: inspect the referenced screenshots manually before deploy.
 - `PASS` with no machine blockers: still do a human mobile, tablet, and desktop review before deploy.
 
+For final approval, run the gate with `REQUIRE_NATIVE_BROWSER=1`. That mode is allowed to pass only when the latest live inspection used the native Codex browser or when `qa/native-sidepanel-signoff.json` records a manual native side-panel pass for the current commit after the latest live custom-domain capture.
+
 Human review must judge:
 
 - homepage first-screen clarity

@@ -134,6 +134,14 @@ function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function parseJsonFile(filePath) {
+  try {
+    return { ok: true, value: readJson(filePath), error: null };
+  } catch (error) {
+    return { ok: false, value: null, error: error.message };
+  }
+}
+
 function latestLiveInspectionSummary() {
   const liveReportPath = newestReport("live-custom-domain-final-", "live-custom-domain-final-report.json");
   const liveReport = readJson(liveReportPath);
@@ -154,6 +162,68 @@ function latestLiveInspectionSummary() {
     fallbackUsed: liveReport.nativeBrowserInspected !== true,
     headless: liveReport.headless === true,
     issueCount: typeof liveReport.issueCount === "number" ? liveReport.issueCount : null,
+  };
+}
+
+function nativeSidepanelSignoffSummary(latestLiveInspection) {
+  const signoffPath = path.join(qaDir, "native-sidepanel-signoff.json");
+  const requiredRoutes = [
+    "/",
+    "/services.html",
+    "/services.html#certainteed-roof-system",
+    "/services.html#epdm-flat-roofing",
+    "/photos.html",
+    "/photos.html#epdm-carolina-beach",
+    "/areas.html",
+    "/process.html",
+    "/contact.html",
+  ];
+  const requiredViewports = ["390x844", "768x1024", "1366x900"];
+  const exists = fs.existsSync(signoffPath);
+  const parsed = exists ? parseJsonFile(signoffPath) : { ok: false, value: null, error: "missing" };
+  const signoff = parsed.value || {};
+  const routes = Array.isArray(signoff.routes) ? signoff.routes : [];
+  const viewports = Array.isArray(signoff.viewports) ? signoff.viewports : [];
+  const missingRoutes = requiredRoutes.filter((route) => !routes.includes(route));
+  const missingViewports = requiredViewports.filter((viewport) => !viewports.includes(viewport));
+  const signedAtMs = signoff.signedAt ? Date.parse(signoff.signedAt) : NaN;
+  const latestLiveMs = latestLiveInspection?.generatedAt ? Date.parse(latestLiveInspection.generatedAt) : NaN;
+  const signedAfterLatestLive =
+    Number.isFinite(signedAtMs) && (!Number.isFinite(latestLiveMs) || signedAtMs >= latestLiveMs);
+  const issues = [];
+
+  if (!exists) issues.push("qa/native-sidepanel-signoff.json is missing.");
+  if (exists && !parsed.ok) issues.push(`qa/native-sidepanel-signoff.json is invalid JSON: ${parsed.error}.`);
+  if (parsed.ok) {
+    if (signoff.result !== "pass") issues.push('native side-panel signoff result must be "pass".');
+    if (signoff.sourceCommit !== sourceCommit) {
+      issues.push(`native side-panel signoff sourceCommit must match current HEAD ${sourceCommit}.`);
+    }
+    if (signoff.liveDomain !== "https://verasroofing.com") {
+      issues.push('native side-panel signoff liveDomain must be "https://verasroofing.com".');
+    }
+    if (!Number.isFinite(signedAtMs)) issues.push("native side-panel signoff signedAt must be a valid ISO timestamp.");
+    if (!signedAfterLatestLive) {
+      issues.push("native side-panel signoff must be newer than the latest live custom-domain capture.");
+    }
+    if (missingRoutes.length) issues.push(`native side-panel signoff is missing route(s): ${missingRoutes.join(", ")}.`);
+    if (missingViewports.length) {
+      issues.push(`native side-panel signoff is missing viewport(s): ${missingViewports.join(", ")}.`);
+    }
+  }
+
+  return {
+    path: signoffPath,
+    exists,
+    valid: issues.length === 0,
+    issues,
+    result: signoff.result || null,
+    reviewer: signoff.reviewer || null,
+    signedAt: signoff.signedAt || null,
+    sourceCommit: signoff.sourceCommit || null,
+    liveDomain: signoff.liveDomain || null,
+    routes,
+    viewports,
   };
 }
 
@@ -201,10 +271,16 @@ if (preflight.passed) {
 }
 
 const summarizedSteps = completedSteps.map(summarizeStep);
-const allPassed = preflight.passed && summarizedSteps.every((step) => step.passed);
+let allPassed = preflight.passed && summarizedSteps.every((step) => step.passed);
 const inspectionCoverage = {
   latestLiveInspection: latestLiveInspectionSummary(),
 };
+inspectionCoverage.nativeSidepanelSignoff = nativeSidepanelSignoffSummary(
+  inspectionCoverage.latestLiveInspection,
+);
+inspectionCoverage.nativeApprovalSatisfied =
+  inspectionCoverage.latestLiveInspection.nativeBrowserInspected === true ||
+  inspectionCoverage.nativeSidepanelSignoff.valid === true;
 const requireNativeBrowser = process.env.REQUIRE_NATIVE_BROWSER === "1";
 
 const actionItems = [];
@@ -238,10 +314,14 @@ if (!preflight.passed) {
   }
 }
 
-if (requireNativeBrowser && inspectionCoverage.latestLiveInspection.nativeBrowserInspected !== true) {
+if (requireNativeBrowser && inspectionCoverage.nativeApprovalSatisfied !== true) {
+  allPassed = false;
   actionItems.push(
-    "REQUIRE_NATIVE_BROWSER=1 is set but the latest live inspection did not use the native Codex in-app browser.",
+    "REQUIRE_NATIVE_BROWSER=1 is set but the latest live inspection did not use the native Codex in-app browser and no valid manual native side-panel signoff exists.",
   );
+  for (const issue of inspectionCoverage.nativeSidepanelSignoff.issues) {
+    actionItems.push(`Native side-panel signoff: ${issue}`);
+  }
 }
 
 if (actionItems.length === 0) {
@@ -289,6 +369,8 @@ const md = [
   `- native browser inspected: ${inspectionCoverage.latestLiveInspection.nativeBrowserInspected ? "yes" : "no"}`,
   `- fallback used: ${inspectionCoverage.latestLiveInspection.fallbackUsed === null ? "unknown" : inspectionCoverage.latestLiveInspection.fallbackUsed ? "yes" : "no"}`,
   `- native browser required: ${requireNativeBrowser ? "yes" : "no"}`,
+  `- manual native side-panel signoff: ${inspectionCoverage.nativeSidepanelSignoff.valid ? "valid" : "not valid"}`,
+  `- manual native side-panel signoff file: ${path.relative(root, inspectionCoverage.nativeSidepanelSignoff.path)}`,
   "",
   "## Step Results",
   ...summarizedSteps.map((step) => {
