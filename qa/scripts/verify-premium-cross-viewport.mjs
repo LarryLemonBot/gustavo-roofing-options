@@ -11,7 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '../..');
 const publicDir = path.join(root, 'public');
 const browserName = process.env.VERA_BROWSER_NAME || 'edge';
-const runId = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+const runId = `${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z')}-${process.pid}`;
 const outDir = path.join(root, 'qa', `premium-cross-viewport-${browserName}-${runId}`);
 await fs.mkdir(outDir, { recursive: true });
 
@@ -134,6 +134,7 @@ const expression = `(() => {
     title: document.title,
     h1: h1?.innerText || '',
     h1Rect: h1 ? rect(h1) : null,
+    scrollY: Math.round(window.scrollY),
     viewport: { width: window.innerWidth, height: window.innerHeight, dpr: window.devicePixelRatio },
     scroll: { documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, maxWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth), height: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight) },
     horizontalOverflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) > window.innerWidth + 1,
@@ -145,7 +146,7 @@ const expression = `(() => {
     footerCount: document.querySelectorAll('footer.site-footer').length,
     headerCount: document.querySelectorAll('header.site-header').length,
     requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Request Gutter Help|Call to Request|Text to Request/i.test(a.textContent || '')).length,
-    hasTrustCopy: bodyTextLower.includes('family-owned and operated') && bodyTextLower.includes('owner-led final review'),
+    hasTrustCopy: bodyTextLower.includes('family-owned and operated') && (bodyTextLower.includes('owner-led final review') || bodyTextLower.includes("vera's roofing owner review")),
     forbiddenClaimHits: ['guaranteed insurance approval','best roofer','BBB','GAF certified','FORTIFIED certified','license number','insurance carrier','policy number'].filter(claim => bodyTextLower.includes(claim.toLowerCase())),
     symmetryIssues,
     navRect: document.querySelector('.topbar') ? rect(document.querySelector('.topbar')) : null,
@@ -172,7 +173,7 @@ async function capture(client, base, page, vp) {
   await client.send('Page.navigate', { url: `${base}${page[1]}` });
   await waitReady(client);
   await new Promise(r => setTimeout(r, 500));
-  await client.send('Runtime.evaluate', { expression: `(async()=>{const sleep=ms=>new Promise(r=>setTimeout(r,ms)); const max=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight); const step=Math.max(420,Math.floor(innerHeight*.9)); for(let y=0;y<=max;y+=step){scrollTo(0,y); await sleep(45);} scrollTo(0,0); await sleep(260);})()`, awaitPromise: true });
+  await client.send('Runtime.evaluate', { expression: `(async()=>{const sleep=ms=>new Promise(r=>setTimeout(r,ms)); history.scrollRestoration='manual'; document.documentElement.style.scrollBehavior='auto'; document.documentElement.style.overflowAnchor='none'; document.body.style.overflowAnchor='none'; const reset=()=>{scrollTo({top:0,left:0,behavior:'instant'}); (document.scrollingElement||document.documentElement).scrollTop=0; document.documentElement.scrollTop=0; document.body.scrollTop=0;}; const max=Math.max(document.documentElement.scrollHeight,document.body.scrollHeight); const step=Math.max(420,Math.floor(innerHeight*.9)); for(let y=0;y<=max;y+=step){scrollTo(0,y); await sleep(45);} for(let i=0;i<18;i++){reset(); await sleep(70); if(Math.abs(scrollY)<=2) break;} reset(); await sleep(220);})()`, awaitPromise: true });
   const report = (await client.send('Runtime.evaluate', { expression, returnByValue: true })).result.value;
   const shot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
   const screenshot = path.join(outDir, `${vp.label}-${page[0]}.png`);
@@ -199,6 +200,7 @@ try {
   const issues = captures.flatMap(c => {
     const r = c.report; const arr = [];
     if (r.horizontalOverflow) arr.push('horizontalOverflow');
+    if (r.scrollY > 2) arr.push(`notAtTop:${r.scrollY}`);
     if (r.offenderCount) arr.push(`offenders:${r.offenderCount}`);
     if (r.brokenLoadedImages.length) arr.push(`brokenImages:${r.brokenLoadedImages.length}`);
     if (r.emptyAltImages) arr.push(`emptyAltImages:${r.emptyAltImages}`);
@@ -210,7 +212,7 @@ try {
     if (r.symmetryIssues.length) arr.push(`symmetryIssues:${r.symmetryIssues.length}`);
     return arr.length ? [{ page:c.page, viewport:c.viewport, issues:arr, screenshot:c.screenshot, symmetryIssues:r.symmetryIssues.slice(0, 12) }] : [];
   });
-  const summary = { outDir, browserName, browser: version.Browser, base, totalCaptures: captures.length, issueCount: issues.length, issues, captures: captures.map(c => ({ page:c.page, viewport:c.viewport, screenshot:c.screenshot, h1:c.report.h1, h1Rect:c.report.h1Rect, horizontalOverflow:c.report.horizontalOverflow, offenderCount:c.report.offenderCount, brokenLoadedImages:c.report.brokenLoadedImages.length, unloadedImages:c.report.unloadedImages, emptyAltImages:c.report.emptyAltImages, requestCtaCount:c.report.requestCtaCount, hasTrustCopy:c.report.hasTrustCopy, forbiddenClaimHits:c.report.forbiddenClaimHits, symmetryIssues:c.report.symmetryIssues.length, symmetryIssueDetails:c.report.symmetryIssues.slice(0, 12) })) };
+  const summary = { outDir, browserName, browser: version.Browser, base, totalCaptures: captures.length, issueCount: issues.length, issues, captures: captures.map(c => ({ page:c.page, viewport:c.viewport, screenshot:c.screenshot, h1:c.report.h1, h1Rect:c.report.h1Rect, scrollY:c.report.scrollY, horizontalOverflow:c.report.horizontalOverflow, offenderCount:c.report.offenderCount, brokenLoadedImages:c.report.brokenLoadedImages.length, unloadedImages:c.report.unloadedImages, emptyAltImages:c.report.emptyAltImages, requestCtaCount:c.report.requestCtaCount, hasTrustCopy:c.report.hasTrustCopy, forbiddenClaimHits:c.report.forbiddenClaimHits, symmetryIssues:c.report.symmetryIssues.length, symmetryIssueDetails:c.report.symmetryIssues.slice(0, 12) })) };
   await fs.writeFile(path.join(outDir, 'premium-cross-viewport-report.json'), JSON.stringify(summary, null, 2));
   console.log(JSON.stringify(summary, null, 2));
   if (issues.length) process.exitCode = 1;

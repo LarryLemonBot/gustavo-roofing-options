@@ -184,7 +184,7 @@ const reportExpression = `(() => {
     horizontalOverflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) > innerWidth + 1,
     offenderCount: offenders.length,
     offenders,
-    trustCopy: bodyTextLower.includes('family-owned and operated') && bodyTextLower.includes('owner-led final review'),
+    trustCopy: bodyTextLower.includes('family-owned and operated') && (bodyTextLower.includes('owner-led final review') || bodyTextLower.includes("vera's roofing owner review")),
     badFortifiedCertified: bodyText.includes('FORTIFIED certified'),
     requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Request Gutter Help|Call to Request|Text to Request/i.test(a.textContent || '')).length,
     forbiddenClaimHits: ['guaranteed insurance approval','best roofer','BBB','GAF certified','FORTIFIED certified','license number','insurance carrier','policy number'].filter(claim => bodyTextLower.includes(claim.toLowerCase())),

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '../..');
-const runId = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+const runId = `${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z')}-${process.pid}`;
 const outDir = path.join(root, 'qa', `premium-visual-matrix-${runId}`);
 await fs.mkdir(outDir, { recursive: true });
 
@@ -149,6 +149,7 @@ const reportExpression = `(() => {
     href: location.href,
     title: document.title,
     h1: document.querySelector('h1')?.innerText || '',
+    scrollY: Math.round(window.scrollY),
     viewport: {width: innerWidth, height: innerHeight, dpr: devicePixelRatio},
     scroll: {documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, maxWidth: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth), height: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight)},
     horizontalOverflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) > innerWidth + 1,
@@ -159,7 +160,7 @@ const reportExpression = `(() => {
     footerCount: document.querySelectorAll('footer.site-footer').length,
     headerCount: document.querySelectorAll('header.site-header').length,
     requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Call to Request|Text to Request/i.test(a.textContent || '')).length,
-    hasTrustCopy: bodyTextLower.includes('family-owned and operated') && bodyTextLower.includes('owner-led final review'),
+    hasTrustCopy: bodyTextLower.includes('family-owned and operated') && (bodyTextLower.includes('owner-led final review') || bodyTextLower.includes("vera's roofing owner review")),
     badClaimHits: ['FORTIFIED certified','license number','insurance carrier','policy number','BBB','GAF','guaranteed insurance','guaranteed claim'].filter(s => bodyText.includes(s)),
     symmetryIssues,
     navRect: document.querySelector('.topbar') ? rect(document.querySelector('.topbar')) : null,
@@ -174,8 +175,7 @@ async function capture(client, pageLabel, pagePath, vp) {
   await client.send('Page.navigate', { url });
   await waitReady(client);
   await new Promise((resolve) => setTimeout(resolve, 950));
-  await client.send('Runtime.evaluate', { expression: 'window.scrollTo(0,0)', returnByValue: true });
-  await new Promise((resolve) => setTimeout(resolve, 150));
+  await client.send('Runtime.evaluate', { expression: "(async()=>{const sleep=ms=>new Promise(r=>setTimeout(r,ms)); history.scrollRestoration='manual'; document.documentElement.style.scrollBehavior='auto'; document.documentElement.style.overflowAnchor='none'; document.body.style.overflowAnchor='none'; const reset=()=>{scrollTo({top:0,left:0,behavior:'instant'}); (document.scrollingElement||document.documentElement).scrollTop=0; document.documentElement.scrollTop=0; document.body.scrollTop=0;}; for(let i=0;i<18;i++){reset(); await sleep(70); if(Math.abs(scrollY)<=2) break;} reset(); await sleep(220);})()", awaitPromise: true });
   const evalResult = await client.send('Runtime.evaluate', { expression: reportExpression, returnByValue: true });
   const shot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
   const file = path.join(outDir, `${vp.label}-${pageLabel}.png`);
@@ -215,6 +215,7 @@ try {
   const issues = captures.flatMap((c) => {
     const r = c.report; const list = [];
     if (r.horizontalOverflow) list.push('horizontalOverflow');
+    if (r.scrollY > 2) list.push(`notAtTop:${r.scrollY}`);
     if (r.offenderCount) list.push(`offenders:${r.offenderCount}`);
     if (r.brokenLoadedImages.length) list.push(`brokenImages:${r.brokenLoadedImages.length}`);
     if (r.footerCount !== 1) list.push(`footerCount:${r.footerCount}`);
@@ -225,7 +226,7 @@ try {
     if (r.symmetryIssues.length) list.push(`symmetryIssues:${r.symmetryIssues.length}`);
     return list.length ? [{ page: c.page, viewport: c.viewport, issues: list, screenshot: c.screenshot, symmetryIssues: r.symmetryIssues.slice(0, 12) }] : [];
   });
-  const summary = { outDir, base, browser: browserInfo.Browser, totalCaptures: captures.length, issueCount: issues.length, issues, captures: captures.map(c => ({page:c.page, viewport:c.viewport, screenshot:c.screenshot, h1:c.report.h1, horizontalOverflow:c.report.horizontalOverflow, offenderCount:c.report.offenderCount, brokenLoadedImages:c.report.brokenLoadedImages.length, notCompleteImages:c.report.notCompleteImages, requestCtaCount:c.report.requestCtaCount, hasTrustCopy:c.report.hasTrustCopy, badClaimHits:c.report.badClaimHits, symmetryIssues:c.report.symmetryIssues.length, symmetryIssueDetails:c.report.symmetryIssues.slice(0, 12)})) };
+  const summary = { outDir, base, browser: browserInfo.Browser, totalCaptures: captures.length, issueCount: issues.length, issues, captures: captures.map(c => ({page:c.page, viewport:c.viewport, screenshot:c.screenshot, h1:c.report.h1, scrollY:c.report.scrollY, horizontalOverflow:c.report.horizontalOverflow, offenderCount:c.report.offenderCount, brokenLoadedImages:c.report.brokenLoadedImages.length, notCompleteImages:c.report.notCompleteImages, requestCtaCount:c.report.requestCtaCount, hasTrustCopy:c.report.hasTrustCopy, badClaimHits:c.report.badClaimHits, symmetryIssues:c.report.symmetryIssues.length, symmetryIssueDetails:c.report.symmetryIssues.slice(0, 12)})) };
   await fs.writeFile(path.join(outDir, 'premium-visual-matrix-report.json'), JSON.stringify(summary, null, 2));
   console.log(JSON.stringify(summary, null, 2));
   if (issues.length) process.exitCode = 1;
