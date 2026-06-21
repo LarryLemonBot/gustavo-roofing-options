@@ -71,13 +71,59 @@ function cdpClient(wsUrl) {
     ws.onerror = reject;
   });
 }
+async function getVisualReadySnapshot(client) {
+  const result = await client.send('Runtime.evaluate', {
+    expression: `(() => {
+      const root = document.documentElement;
+      const body = document.body;
+      const pendingCriticalImages = Array.from(document.images).filter((img) => {
+        if (img.complete) return false;
+        const loading = (img.getAttribute('loading') || '').toLowerCase();
+        if (loading === 'lazy') return false;
+        const rect = img.getBoundingClientRect();
+        return rect.bottom > -20 && rect.top < (window.innerHeight * 1.5);
+      }).length;
+      return {
+        state: document.readyState,
+        hasBody: !!body,
+        hasMainContent: !!document.querySelector('main, h1'),
+        scrollHeight: Math.max(root?.scrollHeight || 0, body?.scrollHeight || 0),
+        pendingCriticalImages,
+      };
+    })()`,
+    returnByValue: true,
+  });
+  return result.result?.value || null;
+}
+
 async function waitReady(client) {
+  let lastSnapshot = null;
+  let stableInteractiveCount = 0;
   for (let i = 0; i < 140; i += 1) {
-    const state = await client.send('Runtime.evaluate', { expression: 'document.readyState', returnByValue: true }).catch(() => null);
-    if (state?.result?.value === 'complete') return;
+    const snapshot = await getVisualReadySnapshot(client).catch(() => null);
+    lastSnapshot = snapshot || lastSnapshot;
+    const state = snapshot?.state || 'unknown';
+    const interactiveReady = state === 'interactive'
+      && snapshot?.hasBody
+      && snapshot?.hasMainContent
+      && snapshot?.scrollHeight > 0
+      && snapshot?.pendingCriticalImages === 0;
+    if (state === 'complete') return;
+    if (interactiveReady) {
+      stableInteractiveCount += 1;
+      if (stableInteractiveCount >= 4) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+        return;
+      }
+    } else {
+      stableInteractiveCount = 0;
+    }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  throw new Error('Timed out waiting for complete');
+  const summary = lastSnapshot
+    ? `state=${lastSnapshot.state}; hasBody=${lastSnapshot.hasBody}; hasMainContent=${lastSnapshot.hasMainContent}; pendingCriticalImages=${lastSnapshot.pendingCriticalImages}; scrollHeight=${lastSnapshot.scrollHeight}`
+    : 'state=unknown';
+  throw new Error(`Timed out waiting for visual readiness; last snapshot ${summary}`);
 }
 const expression = `(() => {
   const rect = (el) => { const r = el.getBoundingClientRect(); return { left: Math.round(r.left), right: Math.round(r.right), top: Math.round(r.top), bottom: Math.round(r.bottom), width: Math.round(r.width), height: Math.round(r.height) }; };

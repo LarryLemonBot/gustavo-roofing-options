@@ -141,23 +141,64 @@ function cdpClient(wsUrl) {
   });
 }
 
+async function getVisualReadySnapshot(client) {
+  const result = await client.send('Runtime.evaluate', {
+    expression: `(() => {
+      const root = document.documentElement;
+      const body = document.body;
+      const pendingCriticalImages = Array.from(document.images).filter((img) => {
+        if (img.complete) return false;
+        const loading = (img.getAttribute('loading') || '').toLowerCase();
+        if (loading === 'lazy') return false;
+        const rect = img.getBoundingClientRect();
+        return rect.bottom > -20 && rect.top < (window.innerHeight * 1.5);
+      }).length;
+      return {
+        state: document.readyState,
+        hasBody: !!body,
+        hasMainContent: !!document.querySelector('main, h1'),
+        scrollHeight: Math.max(root?.scrollHeight || 0, body?.scrollHeight || 0),
+        pendingCriticalImages,
+      };
+    })()`,
+    returnByValue: true,
+  });
+  return result.result?.value || null;
+}
+
 async function waitForDocumentReady(client, timeoutMs = 15000) {
   const start = Date.now();
-  let lastState = 'unknown';
+  let lastSnapshot = null;
+  let stableInteractiveCount = 0;
   while (Date.now() - start < timeoutMs) {
     try {
-      const result = await client.send('Runtime.evaluate', {
-        expression: 'document.readyState',
-        returnByValue: true,
-      });
-      lastState = result.result?.value || lastState;
-      if (lastState === 'complete') return lastState;
+      const snapshot = await getVisualReadySnapshot(client);
+      lastSnapshot = snapshot || lastSnapshot;
+      const state = snapshot?.state || 'unknown';
+      const interactiveReady = state === 'interactive'
+        && snapshot?.hasBody
+        && snapshot?.hasMainContent
+        && snapshot?.scrollHeight > 0
+        && snapshot?.pendingCriticalImages === 0;
+      if (state === 'complete') return state;
+      if (interactiveReady) {
+        stableInteractiveCount += 1;
+        if (stableInteractiveCount >= 4) {
+          await new Promise((r) => setTimeout(r, 250));
+          return 'interactive-stable';
+        }
+      } else {
+        stableInteractiveCount = 0;
+      }
     } catch {
       // The execution context can briefly disappear during navigation.
     }
     await new Promise((r) => setTimeout(r, 100));
   }
-  throw new Error(`Timed out waiting for document.readyState=complete; last state=${lastState}`);
+  const summary = lastSnapshot
+    ? `state=${lastSnapshot.state}; hasBody=${lastSnapshot.hasBody}; hasMainContent=${lastSnapshot.hasMainContent}; pendingCriticalImages=${lastSnapshot.pendingCriticalImages}; scrollHeight=${lastSnapshot.scrollHeight}`
+    : 'state=unknown';
+  throw new Error(`Timed out waiting for visual readiness; last snapshot ${summary}`);
 }
 
 function expressionForPageReport(pageName) {

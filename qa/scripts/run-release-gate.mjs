@@ -131,7 +131,8 @@ function runStep(step) {
 
 function readJson(filePath) {
   if (!filePath || !fs.existsSync(filePath)) return null;
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  const raw = fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/, "");
+  return JSON.parse(raw);
 }
 
 function parseJsonFile(filePath) {
