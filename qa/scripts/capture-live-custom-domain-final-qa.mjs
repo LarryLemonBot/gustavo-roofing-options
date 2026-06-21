@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '../..');
-const runId = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+const runId = `${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z')}-${process.pid}`;
 const outDir = path.join(root, 'qa', `live-custom-domain-final-${runId}`);
 await fs.mkdir(outDir, { recursive: true });
 const inspectionMode = 'edge-cdp-fallback';
@@ -298,7 +298,7 @@ try {
   const client = await cdpClient(target.webSocketDebuggerUrl);
   await client.send('Page.enable');
   await client.send('Runtime.enable');
-  const routes = [
+  const allRoutes = [
     ['home', 'https://verasroofing.com/'],
     ['services', 'https://verasroofing.com/services'],
     ['gutter-cleaning-guards', 'https://verasroofing.com/gutter-cleaning-guards'],
@@ -311,11 +311,20 @@ try {
     ['process', 'https://verasroofing.com/process'],
     ['contact', 'https://verasroofing.com/contact'],
   ];
-  const pages = routes.flatMap(([name, url]) => [
-    { label: `${name}-desktop`, url, viewport: { width: 1366, height: 900, mobile: false, dpr: 1 } },
-    { label: `${name}-tablet`, url, viewport: { width: 768, height: 1024, mobile: true, dpr: 2 } },
-    { label: `${name}-mobile`, url, viewport: { width: 390, height: 844, mobile: true, dpr: 2 } },
-  ]);
+  const allViewports = [
+    ['desktop', { width: 1366, height: 900, mobile: false, dpr: 1 }],
+    ['tablet', { width: 768, height: 1024, mobile: true, dpr: 2 }],
+    ['mobile', { width: 390, height: 844, mobile: true, dpr: 2 }],
+  ];
+  const routeFilter = (process.env.VERA_LIVE_ROUTE_FILTER || process.env.VERA_PAGE_FILTER || '').split(',').map((item) => item.trim()).filter(Boolean);
+  const viewportFilter = (process.env.VERA_VIEWPORT_FILTER || '').split(',').map((item) => item.trim()).filter(Boolean);
+  const routes = routeFilter.length ? allRoutes.filter(([name]) => routeFilter.includes(name)) : allRoutes;
+  const viewports = viewportFilter.length ? allViewports.filter(([name]) => viewportFilter.includes(name)) : allViewports;
+  const pages = routes.flatMap(([name, url]) => viewports.map(([viewportName, viewport]) => ({
+    label: `${name}-${viewportName}`,
+    url,
+    viewport,
+  })));
   const captures = [];
   for (const page of pages) {
     console.error('[capture]', page.label, page.url);
