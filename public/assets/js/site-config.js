@@ -59,11 +59,22 @@
 
   const scheduleHashScroll = () => {
     window.requestAnimationFrame(scrollToCurrentHash);
-    window.setTimeout(scrollToCurrentHash, 180);
+    [180, 520, 1100, 2100].forEach((delay) => {
+      window.setTimeout(scrollToCurrentHash, delay);
+    });
   };
 
   window.addEventListener("load", scheduleHashScroll);
   window.addEventListener("hashchange", scheduleHashScroll);
+
+  if (document.fonts?.ready) {
+    document.fonts.ready.then(scheduleHashScroll).catch(() => {});
+  }
+
+  document.querySelectorAll("img").forEach((img) => {
+    if (img.complete) return;
+    img.addEventListener("load", scheduleHashScroll, { once: true });
+  });
 
   document.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target : event.target?.parentElement;
