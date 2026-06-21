@@ -192,7 +192,7 @@ const expression = `(() => {
     footerCount: document.querySelectorAll('footer.site-footer').length,
     headerCount: document.querySelectorAll('header.site-header').length,
     requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Request Gutter Help|Call to Request|Text to Request/i.test(a.textContent || '')).length,
-    hasTrustCopy: bodyTextLower.includes('family-owned and operated') && (bodyTextLower.includes('owner-led final review') || bodyTextLower.includes("vera's roofing owner review")),
+    hasTrustCopy: (bodyTextLower.includes('family-owned roofing contractor') || bodyTextLower.includes('family-owned and operated')) && (bodyTextLower.includes('owner-led final review') || bodyTextLower.includes("vera's roofing owner review")),
     forbiddenClaimHits: ['guaranteed insurance approval','best roofer','BBB','GAF certified','FORTIFIED certified','license number','insurance carrier','policy number'].filter(claim => bodyTextLower.includes(claim.toLowerCase())),
     symmetryIssues,
     navRect: document.querySelector('.topbar') ? rect(document.querySelector('.topbar')) : null,

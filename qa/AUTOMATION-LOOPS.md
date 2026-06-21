@@ -6,6 +6,8 @@ These loops exist to keep the public site sharp after launch. They should produc
 
 Every loop must move the site forward from the previous result. Do not start a broad "improve everything" pass without first naming the evidence that triggered it.
 
+Before visual, copy, CTA, image, or form work, read `DESIGN.md` and identify which rule is being tested. Vague feedback is not actionable; convert it into a named rule, reference, or acceptance check before patching.
+
 Before acting, write or identify:
 
 - `Trigger`: the exact prior report, browser comment, live screenshot, automation memory, customer feedback, or owner note that created the loop.
@@ -62,6 +64,15 @@ Human review must judge:
 - photo choice and crop quality
 - trust proof without unsupported claims
 - blank space that feels clean, not empty
+- keyboard/focus and readable-contrast basics on the main call, inspection, gallery, and contact paths
+
+When the finding is broad, split it into these separate review lanes instead of one catch-all pass:
+
+- `Design system`: tokens, components, CTA hierarchy, grey informational pills, proof-logo treatment.
+- `Accessibility and devices`: desktop, tablet, mobile, contrast, focus states, keyboard actions, semantic image/button/form labels.
+- `UX audit`: weak hierarchy, friction, missing feedback, empty/error states, and confusing next steps.
+- `Conversion page`: one-line value proposition, single primary action, proof, FAQ, CTA repetition, and mobile-first clarity.
+- `Form/contact usability`: clear field labels, sensible defaults, inline errors, success/failure state, autofill and keyboard behavior.
 
 ## Loop 2: Post-Deploy Live Site Watch
 

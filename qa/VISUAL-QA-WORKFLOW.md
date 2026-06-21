@@ -2,6 +2,8 @@
 
 Use this workflow before every deploy that changes layout, copy density, mobile nav, CTAs, images, or page structure.
 
+Before editing or judging screenshots, read [DESIGN.md](../DESIGN.md). Each pass should name the specific design-system rule being tested, such as CTA hierarchy, gray informational pills, mobile symmetry, proof-safe copy, image relevance, or readable contrast. Do not let vague feedback like "colors look off" or "spacing is weird" become a broad patch.
+
 Each visual pass must be prompted by the previous result. Start from the newest browser comment, Gustavo note, release-gate report, live custom-domain report, or automation finding. Name the exact issue being judged, inspect the smallest affected surface first, then expand to mobile, tablet, and desktop only to verify that the fix did not break symmetry, CTA hierarchy, readability, or image rhythm elsewhere.
 
 Do not repeat screenshots as a ritual. A pass is productive only when it creates one of these outcomes:
@@ -39,10 +41,13 @@ If the native Codex browser cannot attach or bootstrap, record that failure in t
 
 ```powershell
 node qa/scripts/report-local-state.mjs
+node qa/scripts/cleanup-qa-processes.mjs --kill --prune-temp --older-than-minutes 120 --max-temp-removals 80
 node qa/scripts/capture-live-custom-domain-final-qa.mjs
 node qa/scripts/capture-fullpage-qa.mjs
 node qa/scripts/verify-premium-cross-viewport.mjs
 ```
+
+The cleanup step replaces obsolete `wmic` process checks. It is scoped to this repo's QA Node scripts and Vera-specific temporary Edge profiles, and it can be previewed first with `node qa/scripts/cleanup-qa-processes.mjs --json`.
 
 Inspect the saved screenshots under `qa/`. Do not call this a native-browser pass unless the native Codex browser was actually inspected. If `report-local-state.mjs` shows the Browser bridge prerequisites passing but the Browser tool still returns a transport failure, restart Codex Desktop or its app-server before retrying; do not change website files to fix a local Browser bridge issue.
 

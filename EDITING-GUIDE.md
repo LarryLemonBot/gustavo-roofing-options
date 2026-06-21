@@ -173,6 +173,8 @@ Add another tag:
 
 Use direct, human, local language.
 
+Before changing visual hierarchy, CTA colors, button labels, image captions, section spacing, trust-proof placement, or mobile layout, read `DESIGN.md`. Future feedback should name the concrete issue and desired outcome, not only say that colors, fonts, or spacing feel wrong.
+
 Good:
 
 ```text

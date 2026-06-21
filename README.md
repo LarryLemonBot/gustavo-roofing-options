@@ -34,6 +34,7 @@ Old preview-board URLs under `/gustavo-roofing-options/*` redirect to `/`.
 - `index.html` - mirror copy for static host compatibility.
 - `public/assets/css/site.css` - all styling.
 - `public/assets/images/` - approved logo and live website photos.
+- `DESIGN.md` - internal design-system rules for visual, copy, CTA, image, and QA decisions; excluded from deploy.
 - `EDITING-GUIDE.md` - plain-English edit instructions.
 - `research/brunswick-roofing-market-brief.md` - research notes used for the first draft; excluded from deploy.
 - `archive/preview-choice-board-2026-06-02/` - old preview/logo-choice material; excluded from deploy.
@@ -130,4 +131,4 @@ Do not deploy if `scripts/verify-public-mirrors.ps1` reports any mismatch. The `
 
 ## Handoff principle
 
-Future edits should usually be simple text or photo swaps. Keep the site static and portable unless the business later asks for a blog, online quote form, CRM, or CMS.
+Future edits should usually be simple text or photo swaps. Read `DESIGN.md` before visual, CTA, copy-density, or image-placement changes so the site keeps one consistent standard instead of drifting from subjective feedback. Keep the site static and portable unless the business later asks for a blog, online quote form, CRM, or CMS.

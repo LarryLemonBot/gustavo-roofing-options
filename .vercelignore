@@ -11,6 +11,7 @@ qa/**
 .env
 .env.*
 README.md
+DESIGN.md
 EDITING-GUIDE.md
 implementation-brief.md
 POLISH-PASS-RECOMMENDATION.md
