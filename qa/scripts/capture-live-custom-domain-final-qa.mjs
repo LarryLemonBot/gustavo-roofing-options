@@ -249,10 +249,28 @@ async function capture(client, page) {
   const anchorState = await alignCapturePosition(client, page.url);
   await new Promise((resolve) => setTimeout(resolve, 250));
   const evalResult = await client.send('Runtime.evaluate', { expression: reportExpression, returnByValue: true });
-  const shot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
-  const screenshot = path.join(outDir, `${page.label}.png`);
-  await fs.writeFile(screenshot, Buffer.from(shot.data, 'base64'));
-  return { ...page, screenshot, routeStatus, anchorState, report: evalResult.result.value };
+  const screenshots = [];
+  const primaryYResult = await client.send('Runtime.evaluate', {
+    expression: 'Math.round(window.scrollY || 0)',
+    returnByValue: true,
+  });
+  const primaryShot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+  const primaryScreenshot = path.join(outDir, `${page.label}.png`);
+  await fs.writeFile(primaryScreenshot, Buffer.from(primaryShot.data, 'base64'));
+  screenshots.push({ position: 'primary', y: primaryYResult.result?.value || 0, path: primaryScreenshot });
+
+  const bottomYResult = await client.send('Runtime.evaluate', {
+    expression:
+      '(() => { const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight); const y = Math.max(0, h - window.innerHeight); window.scrollTo(0, y); return Math.round(y); })()',
+    returnByValue: true,
+  });
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  const bottomShot = await client.send('Page.captureScreenshot', { format: 'png', fromSurface: true });
+  const bottomScreenshot = path.join(outDir, `${page.label}-bottom.png`);
+  await fs.writeFile(bottomScreenshot, Buffer.from(bottomShot.data, 'base64'));
+  screenshots.push({ position: 'bottom', y: bottomYResult.result?.value || 0, path: bottomScreenshot });
+
+  return { ...page, screenshot: primaryScreenshot, screenshots, routeStatus, anchorState, report: evalResult.result.value };
 }
 
 const debugPort = await freePort();
@@ -354,6 +372,7 @@ try {
     captures: captures.map((item) => ({
       label: item.label,
       screenshot: item.screenshot,
+      screenshots: item.screenshots,
       viewport: item.report.viewport,
       routeStatus: item.routeStatus,
       scroll: item.report.scroll,

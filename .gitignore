@@ -18,6 +18,7 @@ qa/**
 !qa/
 !qa/scripts/
 !qa/scripts/**
+!qa/AUTOMATION-LOOPS.md
 !qa/VISUAL-QA-WORKFLOW.md
 !qa/FINAL-QA-VERA-2026-06-11.md
 !qa/FINAL-EXPERT-SCORECARD-VERA-2026-06-11.md

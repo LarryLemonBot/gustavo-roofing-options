@@ -8,6 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "../..");
 const publicDir = path.join(root, "public");
 const qaDir = path.join(root, "qa");
+const vercelConfigPath = path.join(root, "vercel.json");
 const runId = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
 const outDir = path.join(qaDir, `live-deploy-surface-${runId}`);
 fs.mkdirSync(outDir, { recursive: true });
@@ -46,6 +47,8 @@ const criticalAssetRoutes = [
   { route: "/favicon.ico", file: "favicon.ico" },
   { route: "/apple-touch-icon.png", file: "apple-touch-icon.png" },
 ];
+
+const permanentRedirectStatuses = new Set([301, 308]);
 
 function runGit(args) {
   const result = spawnSync("git", args, { cwd: root, encoding: "utf8" });
@@ -108,6 +111,34 @@ async function fetchBytes(route) {
   };
 }
 
+async function fetchRedirect(url) {
+  const response = await fetch(url, {
+    redirect: "manual",
+    headers: {
+      "cache-control": "no-cache",
+      pragma: "no-cache",
+    },
+  });
+  return {
+    url,
+    status: response.status,
+    location: response.headers.get("location") || "",
+  };
+}
+
+async function fetchRedirectChain(url, maxHops = 5) {
+  const chain = [];
+  let currentUrl = url;
+  for (let hop = 0; hop <= maxHops; hop += 1) {
+    const live = await fetchRedirect(currentUrl);
+    const absoluteLocation = live.location ? normalizeHref(live.location, currentUrl) : "";
+    chain.push({ ...live, absoluteLocation });
+    if (!absoluteLocation || live.status < 300 || live.status >= 400) break;
+    currentUrl = absoluteLocation;
+  }
+  return chain;
+}
+
 function parseJsonLd(html) {
   const scripts = [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
   return scripts.map((match, index) => {
@@ -159,6 +190,69 @@ function collectReferencedAssets() {
 }
 
 const assetRoutes = collectReferencedAssets();
+
+function readVercelRedirects() {
+  if (!fs.existsSync(vercelConfigPath)) return [];
+  const config = JSON.parse(fs.readFileSync(vercelConfigPath, "utf8"));
+  return Array.isArray(config.redirects) ? config.redirects : [];
+}
+
+function sampleForRedirectSource(source) {
+  if (source.includes(":path*")) return source.replace(":path*", "sample-path");
+  return source;
+}
+
+function applyRedirectDestinationSample(destination, sourcePath) {
+  if (!destination.includes(":path*")) return destination;
+  const sample = sourcePath.split("/").filter(Boolean).at(-1) || "sample-path";
+  return destination.replace(":path*", sample);
+}
+
+function expectedRedirectStatus(redirect) {
+  return redirect.permanent === false ? new Set([302, 307]) : permanentRedirectStatuses;
+}
+
+function redirectRequestOrigin(redirect) {
+  const hostRule = redirect.has?.find((rule) => rule.type === "host" && rule.value);
+  return hostRule ? `https://${hostRule.value}` : origin;
+}
+
+function normalizeHref(value, baseUrl) {
+  try {
+    return new URL(value, baseUrl).href;
+  } catch {
+    return value || "";
+  }
+}
+
+async function verifyRedirect(redirect, index) {
+  const sourcePath = sampleForRedirectSource(redirect.source || "/");
+  const requestOrigin = redirectRequestOrigin(redirect);
+  const requestUrl = new URL(sourcePath, requestOrigin).href;
+  const rawExpectedDestination = applyRedirectDestinationSample(redirect.destination || "/", sourcePath);
+  const expectedLocation = normalizeHref(rawExpectedDestination, origin);
+  const chain = await fetchRedirectChain(requestUrl);
+  const first = chain[0] || { status: null, location: "" };
+  const last = chain.at(-1) || first;
+  const actualLocation = last.absoluteLocation || last.url || "";
+  const expectedStatuses = expectedRedirectStatus(redirect);
+  return {
+    kind: "redirect",
+    index,
+    source: redirect.source,
+    destination: redirect.destination,
+    requestUrl,
+    status: first.status,
+    finalStatus: last.status,
+    statusOk: expectedStatuses.has(first.status),
+    expectedStatuses: [...expectedStatuses],
+    location: first.location,
+    actualLocation,
+    expectedLocation,
+    matchesDestination: actualLocation === expectedLocation,
+    chain,
+  };
+}
 
 async function compareRoute(entry, kind) {
   const local = localText(entry.file);
@@ -218,6 +312,12 @@ for (const entry of discoveryRoutes) discoveryChecks.push(await compareRoute(ent
 const assetChecks = [];
 for (const entry of assetRoutes) assetChecks.push(await compareAsset(entry));
 
+const redirectChecks = [];
+const redirects = readVercelRedirects();
+for (let index = 0; index < redirects.length; index += 1) {
+  redirectChecks.push(await verifyRedirect(redirects[index], index));
+}
+
 const checks = [...htmlChecks, ...discoveryChecks, ...assetChecks];
 const issues = [];
 
@@ -225,6 +325,15 @@ for (const check of checks) {
   if (!check.ok) issues.push(`${check.route} returned ${check.status}`);
   if (!check.matchesLocal) issues.push(`${check.route} live hash does not match public/${check.file}`);
   if (check.kind === "html" && !check.jsonLdValid) issues.push(`${check.route} has invalid JSON-LD`);
+}
+
+for (const check of redirectChecks) {
+  if (!check.statusOk) {
+    issues.push(`${check.source} redirect returned ${check.status}; expected ${check.expectedStatuses.join(" or ")}`);
+  }
+  if (!check.matchesDestination) {
+    issues.push(`${check.source} redirect location ${check.actualLocation || "(none)"} did not match ${check.expectedLocation}`);
+  }
 }
 
 const report = {
@@ -238,6 +347,7 @@ const report = {
   htmlChecks,
   discoveryChecks,
   assetChecks,
+  redirectChecks,
 };
 
 const jsonPath = path.join(outDir, "live-deploy-surface-report.json");
@@ -272,6 +382,12 @@ const md = [
   ...assetChecks.map(
     (check) =>
       `- ${check.route}: ${check.status}, matches local: ${check.matchesLocal ? "yes" : "no"}, hash: ${check.liveHash.slice(0, 12)}`,
+  ),
+  "",
+  "## Redirects",
+  ...redirectChecks.map(
+    (check) =>
+      `- ${check.source}: ${check.status}, destination ok: ${check.matchesDestination ? "yes" : "no"}, location: ${check.actualLocation || "(none)"}`,
   ),
   "",
 ];

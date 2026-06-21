@@ -205,6 +205,7 @@ const allPassed = preflight.passed && summarizedSteps.every((step) => step.passe
 const inspectionCoverage = {
   latestLiveInspection: latestLiveInspectionSummary(),
 };
+const requireNativeBrowser = process.env.REQUIRE_NATIVE_BROWSER === "1";
 
 const actionItems = [];
 if (!preflight.passed) {
@@ -237,6 +238,12 @@ if (!preflight.passed) {
   }
 }
 
+if (requireNativeBrowser && inspectionCoverage.latestLiveInspection.nativeBrowserInspected !== true) {
+  actionItems.push(
+    "REQUIRE_NATIVE_BROWSER=1 is set but the latest live inspection did not use the native Codex in-app browser.",
+  );
+}
+
 if (actionItems.length === 0) {
   actionItems.push("No machine-detected blockers. Do a human screenshot pass before deploy.");
 }
@@ -249,6 +256,7 @@ const report = {
   generatedAt: new Date().toISOString(),
   preflight,
   inspectionCoverage,
+  requireNativeBrowser,
   sourceCommit,
   steps: summarizedSteps,
   actionItems,
@@ -280,6 +288,7 @@ const md = [
   `- latest live inspection mode: ${inspectionCoverage.latestLiveInspection.inspectionMode || "unknown"}`,
   `- native browser inspected: ${inspectionCoverage.latestLiveInspection.nativeBrowserInspected ? "yes" : "no"}`,
   `- fallback used: ${inspectionCoverage.latestLiveInspection.fallbackUsed === null ? "unknown" : inspectionCoverage.latestLiveInspection.fallbackUsed ? "yes" : "no"}`,
+  `- native browser required: ${requireNativeBrowser ? "yes" : "no"}`,
   "",
   "## Step Results",
   ...summarizedSteps.map((step) => {

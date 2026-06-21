@@ -112,6 +112,19 @@ const runtimeAclHasSandboxRx = Boolean(runtimeAcl?.stdout.match(/CodexSandboxUse
 const browserClientHashTrusted = browserClientHash ? trustedHashes.includes(browserClientHash.toLowerCase()) : false;
 const latestLiveReportPath = newestQaReport("live-custom-domain-final-", "live-custom-domain-final-report.json");
 const latestLiveReport = readJson(latestLiveReportPath);
+const nativePipeMatch = configText.match(/SKY_CUA_NATIVE_PIPE_DIRECTORY\s*=\s*['"]([^'"]+)['"]/);
+const nativePipeConfigured = nativePipeMatch ? nativePipeMatch[1] : null;
+const nativePipeList = run("powershell", [
+  "-NoProfile",
+  "-ExecutionPolicy",
+  "Bypass",
+  "-Command",
+  "[System.IO.Directory]::GetFiles('\\\\.\\pipe\\') | Where-Object { $_ -like '*codex-computer-use*' } | Sort-Object",
+]);
+const nativePipes = lines(nativePipeList.stdout);
+const nativePipeConfiguredPresent = nativePipeConfigured
+  ? nativePipes.some((item) => item.toLowerCase() === nativePipeConfigured.toLowerCase())
+  : false;
 const browserBridgePrerequisitesPass =
   nodeReplExists && runtimeAclHasSandboxRx && browserClientHashTrusted;
 
@@ -147,9 +160,11 @@ const report = {
     browserClientHashTrusted,
   },
   nativeBrowserTransport: {
-    status: "not verified by this script",
+    status: nativePipeConfiguredPresent ? "pipe present but not attached by this script" : "configured native pipe not present",
+    configuredPipe: nativePipeConfigured,
+    discoveredPipes: nativePipes,
     note:
-      "Prerequisites passing only means local files, ACLs, and trusted hashes look correct. It does not prove the native in-app Browser transport can attach.",
+      "Prerequisites passing only means local files, ACLs, and trusted hashes look correct. Native browser attach also requires the Codex app pipe to be live.",
   },
   latestVisualInspectionMode: latestLiveReport
     ? {
@@ -186,6 +201,7 @@ fs.writeFileSync(
     `- ignored generated/local artifacts: ${report.ignoredArtifactSummary.count}`,
     `- browser bridge prerequisites: ${report.browserBridgePrerequisites.passed ? "pass" : "check required"}`,
     `- native browser transport: ${report.nativeBrowserTransport.status}`,
+    `- configured native pipe: ${report.nativeBrowserTransport.configuredPipe || "not configured"}`,
     `- latest visual inspection mode: ${
       report.latestVisualInspectionMode.inspectionMode || "unknown"
     }; native browser inspected: ${report.latestVisualInspectionMode.nativeBrowserInspected ? "yes" : "no"}`,
