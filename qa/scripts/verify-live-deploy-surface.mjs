@@ -14,6 +14,7 @@ const outDir = path.join(qaDir, `live-deploy-surface-${runId}`);
 fs.mkdirSync(outDir, { recursive: true });
 
 const origin = process.env.VERA_LIVE_ORIGIN || "https://verasroofing.com";
+const fetchTimeoutMs = Number.parseInt(process.env.LIVE_FETCH_TIMEOUT_MS || "20000", 10);
 
 const htmlRoutes = [
   { route: "/", file: "index.html" },
@@ -74,56 +75,93 @@ function localBytes(file) {
 
 async function fetchText(route) {
   const url = new URL(route, origin).href;
-  const response = await fetch(url, {
-    headers: {
-      "cache-control": "no-cache",
-      pragma: "no-cache",
-    },
-  });
-  const text = (await response.text()).replace(/^\uFEFF/, "");
-  return {
-    url,
-    status: response.status,
-    ok: response.ok,
-    contentType: response.headers.get("content-type") || "",
-    etag: response.headers.get("etag") || "",
-    text,
-  };
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "cache-control": "no-cache",
+        pragma: "no-cache",
+      },
+      signal: AbortSignal.timeout(fetchTimeoutMs),
+    });
+    const text = (await response.text()).replace(/^\uFEFF/, "");
+    return {
+      url,
+      status: response.status,
+      ok: response.ok,
+      contentType: response.headers.get("content-type") || "",
+      etag: response.headers.get("etag") || "",
+      text,
+    };
+  } catch (error) {
+    return {
+      url,
+      status: 0,
+      ok: false,
+      contentType: "",
+      etag: "",
+      text: "",
+      error: error?.name === "TimeoutError" ? `Timed out after ${fetchTimeoutMs}ms` : error?.message || String(error),
+    };
+  }
 }
 
 async function fetchBytes(route) {
   const url = new URL(route, origin).href;
-  const response = await fetch(url, {
-    headers: {
-      "cache-control": "no-cache",
-      pragma: "no-cache",
-    },
-  });
-  const bytes = Buffer.from(await response.arrayBuffer());
-  return {
-    url,
-    status: response.status,
-    ok: response.ok,
-    contentType: response.headers.get("content-type") || "",
-    cacheControl: response.headers.get("cache-control") || "",
-    etag: response.headers.get("etag") || "",
-    bytes,
-  };
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "cache-control": "no-cache",
+        pragma: "no-cache",
+      },
+      signal: AbortSignal.timeout(fetchTimeoutMs),
+    });
+    const bytes = Buffer.from(await response.arrayBuffer());
+    return {
+      url,
+      status: response.status,
+      ok: response.ok,
+      contentType: response.headers.get("content-type") || "",
+      cacheControl: response.headers.get("cache-control") || "",
+      etag: response.headers.get("etag") || "",
+      bytes,
+    };
+  } catch (error) {
+    return {
+      url,
+      status: 0,
+      ok: false,
+      contentType: "",
+      cacheControl: "",
+      etag: "",
+      bytes: Buffer.alloc(0),
+      error: error?.name === "TimeoutError" ? `Timed out after ${fetchTimeoutMs}ms` : error?.message || String(error),
+    };
+  }
 }
 
 async function fetchRedirect(url) {
-  const response = await fetch(url, {
-    redirect: "manual",
-    headers: {
-      "cache-control": "no-cache",
-      pragma: "no-cache",
-    },
-  });
-  return {
-    url,
-    status: response.status,
-    location: response.headers.get("location") || "",
-  };
+  try {
+    const response = await fetch(url, {
+      redirect: "manual",
+      headers: {
+        "cache-control": "no-cache",
+        pragma: "no-cache",
+      },
+      signal: AbortSignal.timeout(fetchTimeoutMs),
+    });
+    return {
+      url,
+      status: response.status,
+      location: response.headers.get("location") || "",
+    };
+  } catch (error) {
+    return {
+      url,
+      status: 0,
+      location: "",
+      error: error?.name === "TimeoutError" ? `Timed out after ${fetchTimeoutMs}ms` : error?.message || String(error),
+    };
+  }
 }
 
 async function fetchRedirectChain(url, maxHops = 5) {
@@ -340,6 +378,7 @@ const report = {
   runId,
   generatedAt: new Date().toISOString(),
   origin,
+  fetchTimeoutMs,
   sourceCommit: runGit(["rev-parse", "HEAD"]).stdout || null,
   gitStatus: runGit(["status", "--short", "--branch"]),
   issueCount: issues.length,
