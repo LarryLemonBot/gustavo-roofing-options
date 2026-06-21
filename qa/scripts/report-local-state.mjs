@@ -79,17 +79,65 @@ const visibleUntrackedEntries = lines(visibleUntracked.stdout);
 const releaseBlockingEntries = lines(porcelain.stdout);
 
 const configPath = path.join(process.env.USERPROFILE || "C:\\Users\\alexl", ".codex", "config.toml");
-const browserClientPath = path.join(
+let configText = "";
+try {
+  configText = fs.readFileSync(configPath, "utf8");
+} catch {
+  configText = "";
+}
+
+const browserPluginRoot = path.join(
   process.env.USERPROFILE || "C:\\Users\\alexl",
   ".codex",
   "plugins",
   "cache",
   "openai-bundled",
   "browser",
-  "26.616.41845",
-  "scripts",
-  "browser-client.mjs",
 );
+
+function newestBrowserClientPath() {
+  if (!fs.existsSync(browserPluginRoot)) return null;
+  const candidates = fs
+    .readdirSync(browserPluginRoot, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => {
+      const clientPath = path.join(browserPluginRoot, entry.name, "scripts", "browser-client.mjs");
+      return {
+        version: entry.name,
+        clientPath,
+        exists: fs.existsSync(clientPath),
+        mtimeMs: fs.statSync(path.join(browserPluginRoot, entry.name)).mtimeMs,
+      };
+    })
+    .filter((entry) => entry.exists)
+    .sort((a, b) => b.mtimeMs - a.mtimeMs);
+  return candidates[0] || null;
+}
+
+const browserVersionMatch = configText.match(/BROWSER_USE_CODEX_APP_VERSION\s*=\s*["']([^"']+)["']/);
+const configuredBrowserVersion = browserVersionMatch ? browserVersionMatch[1] : null;
+const configuredBrowserClientPath = configuredBrowserVersion
+  ? path.join(
+      browserPluginRoot,
+      configuredBrowserVersion,
+      "scripts",
+      "browser-client.mjs",
+    )
+  : null;
+const newestBrowserClient = newestBrowserClientPath();
+const browserClientPath =
+  configuredBrowserClientPath && fs.existsSync(configuredBrowserClientPath)
+    ? configuredBrowserClientPath
+    : newestBrowserClient?.clientPath || path.join(
+        browserPluginRoot,
+        configuredBrowserVersion || "unknown",
+        "scripts",
+        "browser-client.mjs",
+      );
+const browserClientVersion =
+  configuredBrowserClientPath && fs.existsSync(configuredBrowserClientPath)
+    ? configuredBrowserVersion
+    : newestBrowserClient?.version || configuredBrowserVersion || null;
 const runtimeRoot = path.join(
   process.env.LOCALAPPDATA || path.join(process.env.USERPROFILE || "C:\\Users\\alexl", "AppData", "Local"),
   "OpenAI",
@@ -97,13 +145,6 @@ const runtimeRoot = path.join(
   "runtimes",
   "cua_node",
 );
-
-let configText = "";
-try {
-  configText = fs.readFileSync(configPath, "utf8");
-} catch {
-  configText = "";
-}
 
 const nodeReplPathMatch = configText.match(/command\s*=\s*['"]([^'"]*node_repl\.exe)['"]/i);
 const nodeReplPath = nodeReplPathMatch ? nodeReplPathMatch[1] : null;
@@ -186,6 +227,9 @@ const report = {
     runtimeRoot,
     runtimeExists,
     runtimeAclHasSandboxRx,
+    browserPluginRoot,
+    configuredBrowserVersion,
+    browserClientVersion,
     browserClientPath,
     browserClientExists,
     browserClientHash,
