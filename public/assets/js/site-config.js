@@ -40,4 +40,41 @@
     });
     node.nodeValue = text;
   });
+
+  const anchorOffset = () => {
+    const topbar = document.querySelector(".topbar");
+    const height = topbar ? topbar.getBoundingClientRect().height : 0;
+    return Math.min(132, Math.max(18, height + 22));
+  };
+
+  const scrollToCurrentHash = () => {
+    if (!window.location.hash) return;
+    const id = window.decodeURIComponent(window.location.hash.slice(1));
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    const targetTop = target.getBoundingClientRect().top + window.scrollY - anchorOffset();
+    window.scrollTo({ top: Math.max(0, targetTop), left: 0, behavior: "auto" });
+  };
+
+  const scheduleHashScroll = () => {
+    window.requestAnimationFrame(scrollToCurrentHash);
+    window.setTimeout(scrollToCurrentHash, 180);
+  };
+
+  window.addEventListener("load", scheduleHashScroll);
+  window.addEventListener("hashchange", scheduleHashScroll);
+
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : event.target?.parentElement;
+    const link = target?.closest('a[href*="#"]');
+    if (!link) return;
+
+    const url = new URL(link.href, window.location.href);
+    if (url.origin !== window.location.origin) return;
+    if (url.pathname !== window.location.pathname) return;
+    if (!url.hash) return;
+
+    window.setTimeout(scheduleHashScroll, 0);
+  });
 })();
