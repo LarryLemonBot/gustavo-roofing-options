@@ -116,6 +116,8 @@ Before deploy, also follow [qa/VISUAL-QA-WORKFLOW.md](qa/VISUAL-QA-WORKFLOW.md).
 - `/photos#epdm-carolina-beach`
 - `/contact`
 
+Before production deploy, run the final Codex GPT 5.5 xhigh subagent review described in `qa/VISUAL-QA-WORKFLOW.md`. The subagents should audit latest screenshots and QA artifacts, and their findings must name exact words, paragraphs, images, sections, routes, or files before a patch is made.
+
 After deploy, verify:
 
 - `https://verasroofing.com/` returns the current site.

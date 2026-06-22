@@ -23,6 +23,12 @@ const steps = [
     reportPrefix: null,
   },
   {
+    name: "image render quality QA",
+    command: ["node", "qa/scripts/verify-image-render-quality.mjs"],
+    reportPrefix: "image-render-quality-",
+    reportFile: "image-render-quality-report.json",
+  },
+  {
     name: "rendered touch-target QA",
     command: ["node", "qa/scripts/verify-rendered-touch-targets.mjs"],
     reportPrefix: "rendered-touch-targets-",

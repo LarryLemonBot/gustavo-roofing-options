@@ -242,13 +242,17 @@ const blockingIssues = [];
 const warnings = [];
 const resolvedFindings = [];
 const nonActions = [];
+const triagePhase = process.env.TRIAGE_PHASE || "postdeploy";
 
 const dirty = currentDirtyFiles();
 if (dirty.deployRelevantFiles.length) {
   addUnique(blockingIssues, `Current worktree has deploy-relevant uncommitted changes: ${dirty.deployRelevantFiles.join(", ")}`);
 }
 if (dirty.deployExcludedFiles.length) {
-  addUnique(nonActions, `Current uncommitted changes are deploy-excluded only: ${dirty.deployExcludedFiles.join(", ")}`);
+  const deployExcludedLabel = dirty.deployRelevantFiles.length
+    ? "Deploy-excluded uncommitted changes are also present"
+    : "Current uncommitted changes are deploy-excluded only";
+  addUnique(nonActions, `${deployExcludedLabel}: ${dirty.deployExcludedFiles.join(", ")}`);
 }
 
 const automations = expectedAutomations.map((expected) => {
@@ -292,6 +296,12 @@ const automations = expectedAutomations.map((expected) => {
 const latestReleaseGatePath = newestReport("release-gate-", "release-gate-report.json");
 const latestReleaseGate = readJson(latestReleaseGatePath);
 const latestReleaseGateSourceCommit = latestReleaseGate?.sourceCommit || latestReleaseGate?.preflight?.sourceCommit || null;
+const cleanReleaseCandidate =
+  dirty.deployRelevantFiles.length === 0 &&
+  latestReleaseGate?.allPassed === true &&
+  latestReleaseGate?.preflight?.strictCleanTree === true &&
+  (latestReleaseGate?.preflight?.dirtyEntries || []).length === 0;
+const predeployPendingDeploy = triagePhase === "predeploy" && cleanReleaseCandidate;
 if (!latestReleaseGatePath) {
   addUnique(warnings, "No release-gate report exists yet.");
 } else if (latestReleaseGate?.allPassed !== true) {
@@ -307,29 +317,52 @@ if (!latestLivePath) {
   addUnique(blockingIssues, `Latest live custom-domain visual report has ${latestLiveReport?.issueCount ?? "unknown"} issue(s): ${path.relative(root, latestLivePath)}`);
 }
 
+const latestLiveDeploySurfacePath = newestReport("live-deploy-surface-", "live-deploy-surface-report.json");
+const latestLiveDeploySurface = readJson(latestLiveDeploySurfacePath);
+if (latestLiveDeploySurfacePath && latestLiveDeploySurface?.issueCount > 0) {
+  const surfaceIssues = Array.isArray(latestLiveDeploySurface.issues) ? latestLiveDeploySurface.issues.join("; ") : "unknown live deploy-surface issue";
+  const message = `Latest live deploy-surface report has ${latestLiveDeploySurface.issueCount} issue(s): ${path.relative(root, latestLiveDeploySurfacePath)} (${surfaceIssues})`;
+  if (predeployPendingDeploy) {
+    addUnique(nonActions, `PENDING_DEPLOY: ${message}`);
+  } else {
+    addUnique(blockingIssues, message);
+  }
+}
+
 const latestReleaseGateMtime = mtimeMs(latestReleaseGatePath);
 const latestLiveMtime = mtimeMs(latestLivePath);
 const latestDeployDiff = deployDiffBetween(latestLiveSourceCommit, latestReleaseGateSourceCommit);
 const hasDeployRelevantCommitDrift = !latestDeployDiff.diffReadable || latestDeployDiff.deployRelevantFiles.length > 0;
+const hasLiveDeploySurfaceDrift = latestLiveDeploySurface?.issueCount > 0;
 if (latestReleaseGatePath && latestLivePath && latestLiveMtime < latestReleaseGateMtime) {
-  if (hasDeployRelevantCommitDrift) {
-    addUnique(
-      blockingIssues,
-      `Latest live custom-domain QA is older than the latest release gate for deploy-relevant changes; run node qa/scripts/capture-live-custom-domain-final-qa.mjs after deploy. Live: ${path.relative(root, latestLivePath)}; release: ${path.relative(root, latestReleaseGatePath)}`,
-    );
+  if (hasDeployRelevantCommitDrift || hasLiveDeploySurfaceDrift) {
+    const driftReason = hasDeployRelevantCommitDrift
+      ? "deploy-relevant commit drift"
+      : `live deploy-surface drift (${(latestLiveDeploySurface?.issues || []).join("; ")})`;
+    const message = `Latest live custom-domain QA is older than the latest release gate and still needs a fresh post-deploy capture because of ${driftReason}. Live: ${path.relative(root, latestLivePath)}; release: ${path.relative(root, latestReleaseGatePath)}`;
+    if (predeployPendingDeploy) {
+      addUnique(nonActions, `PENDING_DEPLOY: ${message}`);
+    } else {
+      addUnique(blockingIssues, message);
+    }
   } else {
+    const deployExcludedSummary = latestDeployDiff.deployExcludedFiles.length
+      ? latestDeployDiff.deployExcludedFiles.join(", ")
+      : "no deploy-excluded files";
     addUnique(
       nonActions,
-      `Latest release gate is newer than live QA only because deploy-excluded files changed (${latestDeployDiff.deployExcludedFiles.join(", ")}). No public redeploy is required for this drift.`,
+      `Latest release gate is newer than live QA only because deploy-excluded files changed (${deployExcludedSummary}). No public redeploy is required for this drift.`,
     );
   }
 }
 if (latestReleaseGateSourceCommit && latestLiveSourceCommit && latestReleaseGateSourceCommit !== latestLiveSourceCommit) {
   if (hasDeployRelevantCommitDrift) {
-    addUnique(
-      blockingIssues,
-      `Latest live custom-domain QA commit does not match latest release gate commit for deploy-relevant changes. Live: ${latestLiveSourceCommit}; release: ${latestReleaseGateSourceCommit}`,
-    );
+    const message = `Latest live custom-domain QA commit does not match latest release gate commit for deploy-relevant changes. Live: ${latestLiveSourceCommit}; release: ${latestReleaseGateSourceCommit}`;
+    if (predeployPendingDeploy) {
+      addUnique(nonActions, `PENDING_DEPLOY: ${message}`);
+    } else {
+      addUnique(blockingIssues, message);
+    }
   } else {
     addUnique(
       nonActions,
@@ -399,6 +432,8 @@ const report = {
   generatedAt: new Date().toISOString(),
   root,
   automationBase,
+  triagePhase,
+  predeployPendingDeploy,
   automations,
   dirty,
   qaReports: {
@@ -409,6 +444,9 @@ const report = {
     latestLiveIssueCount: latestLiveReport?.issueCount ?? null,
     latestLiveCaptureCount: latestLiveReport?.captures?.length ?? null,
     latestLiveSourceCommit,
+    latestLiveDeploySurfacePath,
+    latestLiveDeploySurfaceIssueCount: latestLiveDeploySurface?.issueCount ?? null,
+    latestLiveDeploySurfaceIssues: latestLiveDeploySurface?.issues ?? [],
     latestDeployDiff,
     sourceCommitMatches:
       latestReleaseGateSourceCommit && latestLiveSourceCommit

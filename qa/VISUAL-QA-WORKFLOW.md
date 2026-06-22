@@ -130,6 +130,14 @@ Before deploy, explicitly review the current screenshots as:
 - a homeowner deciding whether to call
 - a designer looking for clutter, awkward hierarchy, generic visuals, or mobile rough edges
 
+For the final Codex review gate, spawn GPT 5.5 xhigh subagents before production deploy:
+
+- one visual/copy reviewer using the latest mobile, tablet, and desktop screenshots
+- one workflow/deploy reviewer using the latest release-gate, live-deploy-surface, and automation-triage reports
+- one benchmark reviewer only when the pass depends on competitive or traffic research
+
+Each subagent must return exact words, paragraphs, images, sections, files, or routes that need action. Do not accept broad redesign advice or type-wide roofing rules unless the finding names the concrete public surface and evidence.
+
 If any perspective finds a visible issue, fix before deploy.
 
 ## 6. Post-Deploy Custom-Domain Pass

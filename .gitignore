@@ -20,6 +20,8 @@ qa/**
 !qa/scripts/**
 !qa/AUTOMATION-LOOPS.md
 !qa/VISUAL-QA-WORKFLOW.md
+!qa/final-gpt55-xhigh-subagent-review-*.md
+!qa/ship-revert-decision-*.md
 !qa/native-sidepanel-signoff.template.json
 !qa/FINAL-QA-VERA-2026-06-11.md
 !qa/FINAL-EXPERT-SCORECARD-VERA-2026-06-11.md

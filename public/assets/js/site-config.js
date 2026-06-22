@@ -59,12 +59,14 @@
 
   const scheduleHashScroll = () => {
     window.requestAnimationFrame(scrollToCurrentHash);
-    [180, 520, 1100, 2100].forEach((delay) => {
+    [180, 520, 1100, 2100, 3600, 5200].forEach((delay) => {
       window.setTimeout(scrollToCurrentHash, delay);
     });
   };
 
+  window.addEventListener("DOMContentLoaded", scheduleHashScroll, { once: true });
   window.addEventListener("load", scheduleHashScroll);
+  window.addEventListener("pageshow", scheduleHashScroll);
   window.addEventListener("hashchange", scheduleHashScroll);
 
   if (document.fonts?.ready) {
@@ -88,4 +90,6 @@
 
     window.setTimeout(scheduleHashScroll, 0);
   });
+
+  scheduleHashScroll();
 })();

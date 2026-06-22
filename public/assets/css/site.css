@@ -305,6 +305,19 @@ p { text-wrap: pretty; }
 }
 .service:hover, .why-item:hover, .capability-grid article:hover { transform: translateY(-4px); border-color: rgba(78, 32, 116, 0.28); box-shadow: 0 22px 48px rgba(24, 21, 31, 0.13); }
 .service img { width: 100%; height: 205px; object-fit: cover; }
+
+.service img.source-limited-service-photo {
+  display: block;
+  width: min(100%, 320px);
+  margin-inline: auto;
+}
+
+@media (max-width: 560px) {
+  .service img.source-limited-service-photo {
+    width: min(100%, 240px);
+    height: 180px;
+  }
+}
 .service div { display: flex; flex: 1; flex-direction: column; padding: 22px; }
 .service span { display: inline-grid; place-items: center; width: 42px; height: 42px; margin-bottom: 18px; border-radius: 50%; color: #fff; background: var(--purple); font-weight: 900; }
 .service h3 { margin-bottom: 12px; font-size: 1.95rem; }
@@ -1731,6 +1744,11 @@ p { text-wrap: pretty; }
   box-shadow: 0 14px 34px rgba(24, 21, 31, 0.08);
 }
 
+.service-photo-strip.source-limited-photo-strip img {
+  min-height: 0;
+  aspect-ratio: 3 / 4;
+}
+
 .service-edge-note-card {
   align-self: stretch;
   display: flex;
@@ -1981,14 +1999,26 @@ p { text-wrap: pretty; }
     grid-template-columns: 1fr;
   }
 
+  .service-photo-strip.source-limited-photo-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .service-photo-strip img {
     height: clamp(142px, 42vw, 168px);
     min-height: 0;
     border-radius: 14px;
   }
 
+  .service-photo-strip.source-limited-photo-strip img {
+    height: clamp(112px, 30vw, 132px);
+  }
+
   .services-page .service-panel:not(.service-panel-feature) .service-photo-strip img:nth-child(n+2) {
     display: none;
+  }
+
+  .services-page .service-panel:not(.service-panel-feature) .service-photo-strip.source-limited-photo-strip img:nth-child(n+2) {
+    display: block;
   }
 
   .service-cta-row {
@@ -2363,6 +2393,12 @@ section.section.why .why-list > p.eyebrow {
   height: clamp(250px, 31vw, 410px);
 }
 
+.source-limited-photo-grid figure {
+  justify-self: center;
+  width: 100%;
+  max-width: 360px;
+}
+
 .photo-contact {
   padding: clamp(52px, 8vw, 96px) 0;
   background: var(--purple-950);
@@ -2392,8 +2428,23 @@ section.section.why .why-list > p.eyebrow {
     grid-template-columns: 1fr;
   }
 
+  .photo-page .source-limited-photo-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 220px));
+    justify-content: center;
+  }
+
+  .photo-page .source-limited-photo-grid figure {
+    width: 100%;
+    max-width: 220px;
+  }
+
   .epdm-photo-grid img {
     height: clamp(260px, 76vw, 440px);
+  }
+
+  .source-limited-photo-grid img {
+    height: clamp(220px, 38vw, 300px);
+    transform: none;
   }
 
   .photo-hero h1,
@@ -2427,6 +2478,22 @@ section.section.why .why-list > p.eyebrow {
   .photo-grid figcaption {
     bottom: 12px;
     max-width: calc(100% - 24px);
+  }
+
+  .photo-page .source-limited-photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    width: min(100%, 360px);
+    margin-inline: auto;
+  }
+
+  .photo-page .source-limited-photo-grid figure {
+    max-width: none;
+    border-radius: 18px;
+  }
+
+  .photo-page .source-limited-photo-grid img {
+    height: clamp(190px, 54vw, 238px);
   }
 }
 
@@ -3704,6 +3771,10 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .service-photo-strip.source-limited-photo-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .service-photo-strip img {
     height: auto;
     min-height: 0;
@@ -3713,6 +3784,10 @@ body {
 
   .service-photo-strip img:first-child {
     grid-column: 1 / -1;
+  }
+
+  .service-photo-strip.source-limited-photo-strip img:first-child {
+    grid-column: auto;
   }
 }
 
@@ -4079,7 +4154,7 @@ h3 {
 .mobile-photo-hero-card img,
 .service img,
 .epdm-gallery img {
-  transform: scale(1.03);
+  transform: none;
   transform-origin: center center;
 }
 
@@ -5226,8 +5301,8 @@ a.btn-secondary:hover,
   }
 
   .brand img.brand-lockup {
-    width: min(100%, 128px);
-    max-height: 58px;
+    width: min(100%, 148px);
+    max-height: 68px;
   }
 
   .navlinks {
@@ -5288,8 +5363,8 @@ a.btn-secondary:hover,
 
 @media (max-width: 380px) {
   .brand img.brand-lockup {
-    width: min(100%, 122px);
-    max-height: 55px;
+    width: min(100%, 136px);
+    max-height: 62px;
   }
 }
 
@@ -5302,8 +5377,8 @@ a.btn-secondary:hover,
   }
 
   .interior-page .brand img.brand-lockup {
-    width: min(100%, 118px);
-    max-height: 52px;
+    width: min(100%, 138px);
+    max-height: 62px;
   }
 
   .interior-page .navlinks {
