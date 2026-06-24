@@ -11,10 +11,34 @@ const outDir = path.join(qaDir, `release-gate-${runId}`);
 const logDir = path.join(outDir, "logs");
 fs.mkdirSync(logDir, { recursive: true });
 
+function firstExisting(candidates) {
+  return candidates.filter(Boolean).find((candidate) => fs.existsSync(candidate)) || null;
+}
+
+function defaultBrowserPath() {
+  return firstExisting([
+    process.env.EDGE_PATH,
+    process.env.CHROME_PATH,
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+    "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+    "C:\\Users\\alexl\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe",
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/chromium",
+  ]);
+}
+
+const childEnv = { ...process.env };
+const resolvedBrowserPath = defaultBrowserPath();
+if (!childEnv.EDGE_PATH && resolvedBrowserPath) childEnv.EDGE_PATH = resolvedBrowserPath;
+
 const steps = [
   {
     name: "public mirror verification",
-    command: ["powershell", "-ExecutionPolicy", "Bypass", "-File", "scripts/verify-public-mirrors.ps1"],
+    command: ["node", "qa/scripts/verify-public-mirrors.mjs"],
     reportPrefix: null,
   },
   {
@@ -109,7 +133,7 @@ function runStep(step) {
     const child = spawn(step.command[0], step.command.slice(1), {
       cwd: root,
       shell: false,
-      env: process.env,
+      env: childEnv,
     });
 
     child.stdout.pipe(stdout);
@@ -343,6 +367,7 @@ const report = {
   outDir,
   allPassed,
   generatedAt: new Date().toISOString(),
+  browserPath: childEnv.EDGE_PATH || null,
   preflight,
   inspectionCoverage,
   requireNativeBrowser,
@@ -361,6 +386,7 @@ const md = [
   "",
   "## Preflight",
   `- source commit: ${sourceCommit || "unknown"}`,
+  `- browser path: ${childEnv.EDGE_PATH || "not resolved"}`,
   `- clean worktree required: ${strictCleanTree ? "yes" : "no"}`,
   `- git status: ${gitStatus.code === 0 ? "read" : "failed"}`,
   ...(dirtyEntries.length ? dirtyEntries.map((item) => `  - ${item}`) : ["  - clean"]),

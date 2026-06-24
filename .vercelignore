@@ -22,6 +22,8 @@ POLISH-PASS-RECOMMENDATION.md
 .DS_Store
 local-photo-label-audit-sheet.jpg
 scripts/**
+package.json
+package-lock.json
 HANDOFF-EDITING.md
 00-NEXT-SESSION-HANDOFF.md
 HANDOFF-MINI-M3-FOR-VERA-2026-06-10.md

@@ -72,21 +72,25 @@ Known-good local deploy tools on June 18, 2026:
 - Vercel CLI `54.1.0`
 - Vercel scope `orbitals-projects`
 
-From this folder:
+From this folder on macOS, Windows, or Linux:
 
-```powershell
-.\scripts\sync-public-index.ps1
-.\scripts\verify-public-mirrors.ps1
+```bash
+npm run qa:mirrors
 node qa/scripts/report-local-state.mjs
 git status --short --branch
-node qa/scripts/run-release-gate.mjs
-vercel deploy --prod --yes --scope orbitals-projects
-node qa/scripts/capture-live-custom-domain-final-qa.mjs
-node scripts/submit-indexnow.mjs
+npm run qa:release
+npm run build:prod
+npm run qa:vercel-output
+npm run deploy:prod
+npm run qa:live:surface
+npm run qa:live:browser
+npm run indexnow
 node qa/scripts/triage-automation-outputs.mjs
 ```
 
-Or run the guarded production sequence with:
+The older PowerShell scripts are optional Windows wrappers. They are not required for the default release gate.
+
+On Windows, you can still run the guarded production sequence with:
 
 ```powershell
 .\scripts\deploy-production.ps1
@@ -101,12 +105,12 @@ Use `.\scripts\deploy-production.ps1 -SkipDeploy` to run the local release check
 
 If native Codex Browser control fails while `report-local-state.mjs` shows browser bridge prerequisites passing, the remaining safe repair is to restart Codex Desktop or its app-server, then retry the Browser tool. Do not change or redeploy the website to fix a local Browser bridge failure.
 
-If you intentionally use the prebuilt path, verify the build output before uploading it:
+The guarded production path intentionally uses prebuilt output so the uploaded artifact matches the local build:
 
-```powershell
-vercel build --prod --yes --scope orbitals-projects
-.\scripts\verify-vercel-output.ps1
-vercel deploy --prebuilt --prod --scope orbitals-projects
+```bash
+npm run build:prod
+npm run qa:vercel-output
+npm run deploy:prod
 ```
 
 Before deploy, also follow [qa/VISUAL-QA-WORKFLOW.md](qa/VISUAL-QA-WORKFLOW.md). At minimum, run a native Codex browser mobile pass at `390x844` for:
@@ -129,7 +133,7 @@ After deploy, verify:
 
 Do not deploy if the mobile nav/logo feels oversized, first-viewport CTAs duplicate each other, text overlaps, image pills stretch wider than their text, unsupported license/insurance/FORTIFIED/review claims appear, or the homepage has grown past the intended seven sections.
 
-Do not deploy if `scripts/verify-public-mirrors.ps1` reports any mismatch. The `public/*.html` files are the deploy source; the root mirrors must match them before a Vercel upload.
+Do not deploy if `npm run qa:mirrors` reports any mismatch. The `public/*.html` files are the deploy source; the root mirrors must match them before a Vercel upload.
 
 ## Handoff principle
 

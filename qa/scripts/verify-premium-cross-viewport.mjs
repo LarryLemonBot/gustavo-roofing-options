@@ -132,7 +132,7 @@ const expression = `(() => {
   const vw = window.innerWidth;
   const visibleEls = Array.from(document.querySelectorAll('body *')).filter(visible);
   const offenders = visibleEls.map(el => ({tag:el.tagName.toLowerCase(), cls:String(el.className||''), text:text(el), rect:rect(el)})).filter(item => item.rect.left < -1 || item.rect.right > vw + 1).slice(0, 20);
-  const images = Array.from(document.images).map(img => ({src: img.currentSrc || img.src, alt: img.alt || '', complete: img.complete, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight, rect: rect(img)}));
+  const images = Array.from(document.images).map(img => ({src: img.currentSrc || img.src, alt: img.alt || '', ariaHidden: img.getAttribute('aria-hidden') === 'true', complete: img.complete, naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight, rect: rect(img)}));
   const symmetryGroups = Array.from(document.querySelectorAll('.navlinks, .hero-actions, .contact-actions, .contact-hero-actions, .compact-actions, .home-area-actions, .footer-links, .footer-contact, .footer-trust-logos, .hero-issue-links, .hero-proof-pills, .gallery-nav, .area-list')).filter(visible);
   const symmetryIssues = [];
   for (const group of symmetryGroups) {
@@ -188,7 +188,7 @@ const expression = `(() => {
     offenders,
     brokenLoadedImages: images.filter(img => img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)),
     unloadedImages: images.filter(img => !img.complete).length,
-    emptyAltImages: images.filter(img => !img.alt && !img.src.includes('favicon')).length,
+    emptyAltImages: images.filter(img => !img.alt && !img.ariaHidden && !img.src.includes('favicon')).length,
     footerCount: document.querySelectorAll('footer.site-footer').length,
     headerCount: document.querySelectorAll('header.site-header').length,
     requestCtaCount: Array.from(document.querySelectorAll('a')).filter(a => /Request an Inspection|Request Gutter Help|Call to Request|Text to Request/i.test(a.textContent || '')).length,

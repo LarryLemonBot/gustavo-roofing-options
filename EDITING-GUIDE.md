@@ -202,14 +202,16 @@ Avoid unsupported claims like:
 
 From this folder:
 
-```powershell
-.\scripts\sync-public-index.ps1
-.\scripts\verify-public-mirrors.ps1
+```bash
+npm run qa:mirrors
 node qa/scripts/report-local-state.mjs
 git status --short --branch
-node qa/scripts/run-release-gate.mjs
-vercel deploy --prod --yes --scope orbitals-projects
-node qa/scripts/capture-live-custom-domain-final-qa.mjs
+npm run qa:release
+npm run build:prod
+npm run qa:vercel-output
+npm run deploy:prod
+npm run qa:live:surface
+npm run qa:live:browser
 node qa/scripts/triage-automation-outputs.mjs
 ```
 
@@ -219,12 +221,12 @@ The release gate records the source commit and fails on uncommitted tracked chan
 
 If native Codex Browser control is unavailable but the local-state report says the Browser bridge prerequisites pass, treat it as a local Codex app-server issue. Restart Codex Desktop or the app-server, then retry native browser control; do not change public site files for a local browser bridge failure.
 
-If you intentionally use the prebuilt path, verify the generated output before uploading it:
+The deploy path intentionally uses prebuilt output so the uploaded artifact matches the local build:
 
-```powershell
-vercel build --prod --yes --scope orbitals-projects
-.\scripts\verify-vercel-output.ps1
-vercel deploy --prebuilt --prod --scope orbitals-projects
+```bash
+npm run build:prod
+npm run qa:vercel-output
+npm run deploy:prod
 ```
 
 Then open:

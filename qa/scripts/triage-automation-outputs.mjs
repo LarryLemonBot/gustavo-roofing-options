@@ -296,6 +296,14 @@ const automations = expectedAutomations.map((expected) => {
 const latestReleaseGatePath = newestReport("release-gate-", "release-gate-report.json");
 const latestReleaseGate = readJson(latestReleaseGatePath);
 const latestReleaseGateSourceCommit = latestReleaseGate?.sourceCommit || latestReleaseGate?.preflight?.sourceCommit || null;
+const latestReleaseGateDirtyEntries = Array.isArray(latestReleaseGate?.preflight?.dirtyEntries)
+  ? latestReleaseGate.preflight.dirtyEntries
+  : [];
+const latestReleaseGateDirtyFiles = latestReleaseGateDirtyEntries
+  .map((entry) => entry.slice(3).trim())
+  .filter(Boolean);
+const latestReleaseGateDeployRelevantDirtyFiles = latestReleaseGateDirtyFiles.filter((file) => !isDeployExcluded(file));
+const latestReleaseGateDeployExcludedDirtyFiles = latestReleaseGateDirtyFiles.filter((file) => isDeployExcluded(file));
 const cleanReleaseCandidate =
   dirty.deployRelevantFiles.length === 0 &&
   latestReleaseGate?.allPassed === true &&
@@ -305,7 +313,20 @@ const predeployPendingDeploy = triagePhase === "predeploy" && cleanReleaseCandid
 if (!latestReleaseGatePath) {
   addUnique(warnings, "No release-gate report exists yet.");
 } else if (latestReleaseGate?.allPassed !== true) {
-  addUnique(blockingIssues, `Latest release gate did not pass: ${path.relative(root, latestReleaseGatePath)}`);
+  const releaseGateStoppedOnDeployExcludedPreflight =
+    latestReleaseGate?.preflight?.strictCleanTree === true &&
+    latestReleaseGate?.preflight?.passed === false &&
+    latestReleaseGateDeployRelevantDirtyFiles.length === 0 &&
+    latestReleaseGateDeployExcludedDirtyFiles.length > 0 &&
+    (!Array.isArray(latestReleaseGate?.steps) || latestReleaseGate.steps.length === 0);
+  if (releaseGateStoppedOnDeployExcludedPreflight) {
+    addUnique(
+      nonActions,
+      `Latest release gate stopped on clean-worktree preflight only, and the dirty path is deploy-excluded (${latestReleaseGateDeployExcludedDirtyFiles.join(", ")}). No deploy blocker is implied for current live QA.`,
+    );
+  } else {
+    addUnique(blockingIssues, `Latest release gate did not pass: ${path.relative(root, latestReleaseGatePath)}`);
+  }
 }
 
 const latestLivePath = newestReport("live-custom-domain-final-", "live-custom-domain-final-report.json");
@@ -346,12 +367,13 @@ if (latestReleaseGatePath && latestLivePath && latestLiveMtime < latestReleaseGa
       addUnique(blockingIssues, message);
     }
   } else {
-    const deployExcludedSummary = latestDeployDiff.deployExcludedFiles.length
-      ? latestDeployDiff.deployExcludedFiles.join(", ")
-      : "no deploy-excluded files";
+    const deployExcludedSummary = latestDeployDiff.deployExcludedFiles.join(", ");
+    const nonActionMessage = latestDeployDiff.changedFiles.length === 0
+      ? "Latest release gate is newer than live QA, but source commits match and the latest live deploy-surface report is clean. No public redeploy is required for this timing-only drift."
+      : `Latest release gate is newer than live QA only because deploy-excluded files changed (${deployExcludedSummary}). No public redeploy is required for this drift.`;
     addUnique(
       nonActions,
-      `Latest release gate is newer than live QA only because deploy-excluded files changed (${deployExcludedSummary}). No public redeploy is required for this drift.`,
+      nonActionMessage,
     );
   }
 }

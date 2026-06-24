@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "qa:mirrors": "node qa/scripts/verify-public-mirrors.mjs",
+    "qa:release": "node qa/scripts/run-release-gate.mjs",
+    "qa:vercel-output": "node qa/scripts/verify-vercel-output.mjs",
+    "qa:live:surface": "node qa/scripts/verify-live-deploy-surface.mjs",
+    "qa:live:browser": "node qa/scripts/capture-live-custom-domain-final-qa.mjs",
+    "build:prod": "vercel build --prod --yes --scope orbitals-projects",
+    "deploy:prod": "vercel deploy --prebuilt --prod --yes --scope orbitals-projects",
+    "indexnow": "node scripts/submit-indexnow.mjs"
+  }
+}
